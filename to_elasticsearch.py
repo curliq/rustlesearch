@@ -17,19 +17,22 @@ def paths_to_messages(paths):
             contents = f.read().splitlines()
         channel = path.stem.split("::")[0]
         for line in contents:
-            ts_str, username, text = re.search(message_regex, line).groups()
-            ts = parse(ts_str)
-            yield {
-                "_index": "oversearch",
-                "_type": "message",
-                "_id": f"{username}-{ts}",
-                "_source": {
-                    "ts": ts,
-                    "channel": channel,
-                    "username": username,
-                    "text": text,
-                },
-            }
+            try:
+                ts_str, username, text = re.search(message_regex, line).groups()
+                ts = parse(ts_str)
+                yield {
+                    "_index": "oversearch",
+                    "_type": "message",
+                    "_id": f"{username}-{ts}",
+                    "_source": {
+                        "ts": ts,
+                        "channel": channel,
+                        "username": username,
+                        "text": text,
+                    },
+                }
+            except:
+                print(line)
 
         with open("cache.txt", "a") as cache:
             cache.write(f"{base_path}/{path.name}\n")

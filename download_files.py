@@ -41,7 +41,7 @@ def get_channels():
 
 def get_url_list(channels, days_back):
     urls = []
-    for day in range(days_back):
+    for day in range(1, days_back):
         d = datetime.today() - timedelta(days=day)
         date_format = d.strftime("%B %Y/%Y-%m-%d")
         day_stamp = d.strftime("%Y-%m-%d")

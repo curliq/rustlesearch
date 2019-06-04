@@ -28,7 +28,7 @@ def elasticsearch_query(username, channel, text, starting_timestamp, ending_time
                 "filter": [
                     {
                         "range": {
-                            "timestamp": {
+                            "ts": {
                                 "gte": starting_timestamp or "now-30d/h",
                                 "lt": ending_timestamp or "now/h",
                             }
@@ -38,7 +38,7 @@ def elasticsearch_query(username, channel, text, starting_timestamp, ending_time
                 "must": must,
             }
         },
-        "sort": [{"timestamp": {"order": "desc"}}],
+        "sort": [{"ts": {"order": "desc"}}],
     }
 
 
@@ -50,9 +50,8 @@ def basic_search():
     text = request.args.get("text")
     starting_timestamp = request.args.get("starting_timestamp")
     ending_timestamp = request.args.get("ending_timestamp")
-    print(text, username, starting_timestamp, ending_timestamp)
     res = es.search(
-        index="chat-search",
+        index="oversearch",
         body=elasticsearch_query(
             username, channel, text, starting_timestamp, ending_timestamp
         ),
