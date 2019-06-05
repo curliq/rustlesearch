@@ -12,7 +12,7 @@ limiter = Limiter(app, key_func=get_remote_address, default_limits=["1 per 3 sec
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 
 
-def elasticsearch_query(username, channel, text, starting_timestamp, ending_timestamp):
+def elasticsearch_query(username, channel, text, starting_date, ending_date):
     must = []
     if username:
         must.append({"match": {"username": username}})
@@ -29,8 +29,8 @@ def elasticsearch_query(username, channel, text, starting_timestamp, ending_time
                     {
                         "range": {
                             "ts": {
-                                "gte": starting_timestamp or "now-30d/h",
-                                "lt": ending_timestamp or "now/h",
+                                "gte": starting_date or "now-30d/h",
+                                "lt": ending_date or "now/h",
                             }
                         }
                     }
@@ -48,13 +48,11 @@ def basic_search():
     username = request.args.get("username")
     channel = request.args.get("channel")
     text = request.args.get("text")
-    starting_timestamp = request.args.get("starting_timestamp")
-    ending_timestamp = request.args.get("ending_timestamp")
+    starting_date = request.args.get("starting_date")
+    ending_date = request.args.get("ending_date")
     res = es.search(
         index="oversearch",
-        body=elasticsearch_query(
-            username, channel, text, starting_timestamp, ending_timestamp
-        ),
+        body=elasticsearch_query(username, channel, text, starting_date, ending_date),
     )
     return jsonify([r["_source"] for r in res["hits"]["hits"]])
 

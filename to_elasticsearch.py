@@ -4,6 +4,7 @@ from pathlib import Path
 from dateutil.parser import parse
 import re
 import glob
+from itertools import islice, chain
 
 es = Elasticsearch()
 
@@ -46,5 +47,18 @@ with open("cache.txt") as cache:
 paths = [Path(x) for x in all_paths if x not in cache_paths]
 
 print(len(paths))
+
 messages = paths_to_messages(paths)
-helpers.bulk(es, messages)
+
+
+def batch(iterable, size):
+    sourceiter = iter(iterable)
+    while True:
+        batchiter = islice(sourceiter, size)
+        yield chain([next(batchiter)], batchiter)
+
+
+for x in batch(messages, 4000):
+
+    helpers.bulk(es, x)
+
