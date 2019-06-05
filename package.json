@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.1.0",
+    "glob": "^7.1.4",
+    "lodash": "^4.17.11"
+  }
+}

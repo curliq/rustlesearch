@@ -57,6 +57,6 @@ get_channels()
 with open(f"{base_path}/channels.json") as f:
     channels = json.load(f)
 
-url_list = get_url_list(channels, 20)
+url_list = get_url_list(channels, 25)
 pool = multiprocessing.Pool(processes=20)
 pool.map(download_cached, url_list)
