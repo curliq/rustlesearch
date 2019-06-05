@@ -17,19 +17,6 @@ services:
       - ./data/esdata:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
-  # elasticsearch:
-  #       image: khezen/elasticsearch:6.7
-  #       environment:
-  #           ELASTIC_PWD: bob234
-  #           KIBANA_PWD: bob456
-
-  #       volumes:
-  #           - ./data/esdata:/elasticsearch/data
-  #           - ./data/config/es:/elasticsearch/config
-  #       ports:
-  #            - "9200:9200"
-  #            - "9300:9300"
-  #       restart: always
   kibana:
     image: docker.elastic.co/kibana/kibana:7.1.1
     ports:
