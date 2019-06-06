@@ -1,4 +1,11 @@
 {
+  "name": "oversearch-server",
+  "engines": {
+    "node": "12"
+  },
+  "version": "0.0.1",
+  "description": "Server for oversearch ingest & web api",
+  "main": "index.js",
   "dependencies": {
     "@elastic/elasticsearch": "7.1.0",
     "etl": "0.6.3",
