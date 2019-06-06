@@ -6,6 +6,7 @@
   "version": "0.0.1",
   "description": "Server for oversearch ingest & web api",
   "main": "index.js",
+  "license": "AGPL-3.0-or-later",
   "contributors": [
     {
       "name": "John P. Penaloza",
