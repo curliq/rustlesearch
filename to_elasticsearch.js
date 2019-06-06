@@ -9,6 +9,7 @@ const client = new Client({ node: 'http://localhost:9200' })
 const util = require('util')
 
 const readFile = util.promisify(fs.readFile)
+const writeFile = util.promisify(fs.writeFile)
 let success_count = 0
 let count = 0
 
@@ -80,6 +81,10 @@ const paths_to_messages = async paths => {
     for (let contents3 of _.chunk(contents20, 5)) {
       await Promise.all(contents3.map(contents_to_es))
     }
+    await writeFile('./cache.txt', file_paths.join('\n') + '\n', {
+      encoding: 'utf8',
+      flag: 'a'
+    })
   }
 }
 
@@ -90,4 +95,3 @@ console.log(cache.length)
 const paths = all_paths.filter(x => !cache.includes(x))
 console.log(paths.length)
 paths_to_messages(paths)
-console.log(`${count} / ${count + success_count}`)
