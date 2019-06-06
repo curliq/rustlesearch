@@ -28,7 +28,7 @@ const lineToMessage = (line, channel) => {
   }
 }
 const paths_to_messages = async paths => {
-  for (let file_paths of _.chunk(paths.slice(0, 50), 50)) {
+  for (let file_paths of _.chunk(paths, 50)) {
     for (let file_path of file_paths) {
       const channel = path.parse(file_path).name.split('::')[0]
 
