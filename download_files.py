@@ -46,7 +46,7 @@ def get_url_list(channels, days_back, farthest_years):
         d = datetime.today() - timedelta(days=day)
         date_format = d.strftime("%B %Y/%Y-%m-%d")
         day_stamp = d.strftime("%Y-%m-%d")
-        year_stamp = d.strftime('%Y')
+        year_stamp = d.strftime("%Y")
         for channel in channels:
             if int(year_stamp) >= int(farthest_years[channel]):
                 path = f"{base_path}/rustle/{channel}::{day_stamp}.txt"
@@ -74,7 +74,7 @@ channels = [
 ]
 farthest_years = {}
 for channel in channels:
-    r = requests.get(f'{base_url}/api/v1/{channel}/months.json')
+    r = requests.get(f"{base_url}/api/v1/{channel}/months.json")
     farthest_years[channel] = r.json()[-1][-4:]
 print(farthest_years)
 url_list = get_url_list(channels, int(sys.argv[1]), farthest_years)
