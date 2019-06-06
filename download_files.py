@@ -3,6 +3,7 @@ import requests
 from datetime import datetime, timedelta
 import json
 import multiprocessing
+import sys
 
 base_url = "https://overrustlelogs.net"
 base_path = "./data"
@@ -39,7 +40,7 @@ def get_channels():
     download((path, download_url))
 
 
-def get_url_list(channels, days_back):
+def get_url_list(channels, days_back=7):
     urls = []
     for day in range(1, days_back):
         d = datetime.today() - timedelta(days=day)
@@ -54,9 +55,22 @@ def get_url_list(channels, days_back):
 
 get_channels()
 
-with open(f"{base_path}/channels.json") as f:
-    channels = json.load(f)
-
-url_list = get_url_list(channels, 25)
+# with open(f"{base_path}/channels.json") as f:
+#     channels = json.load(f)
+channels = [
+    "Destinygg",
+    "Trainwreckstv",
+    "Forsen",
+    "Hasanabi",
+    "Pokimane",
+    "Lilypichu",
+    "Vaushgg",
+    "Reckful",
+    "Rajjpatel",
+    "Whitenervosa",
+    "Mrmouton",
+    "Greekgodx",
+]
+url_list = get_url_list(channels, int(sys.argv[1]))
 pool = multiprocessing.Pool(processes=20)
 pool.map(download_cached, url_list)
