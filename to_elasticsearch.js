@@ -16,7 +16,7 @@ const messages_to_bulk_array = messages => {
       return [
         {
           index: {
-            _index: 'oversearch_test',
+            _index: 'oversearch',
             _id: message.username + message.ts
           }
         },
@@ -64,7 +64,7 @@ const paths_to_messages = async paths => {
     const contents = fs
       .readFileSync(file_path, { encoding: 'utf8' })
       .split('\n')
-    const channel = path.parse(file_path).name
+    const channel = path.parse(file_path).name.split('::')[0]
     const messages = contents_to_messages(contents, channel)
     await bulk_to_es(messages)
   }
