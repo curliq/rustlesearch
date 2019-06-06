@@ -57,17 +57,9 @@ def basic_search():
     return jsonify([r["_source"] for r in res["hits"]["hits"]])
 
 
-@app.route("/advanced_search")
-def advanced_search():
-    return "wow"
-
-
-@app.route("/", defaults={"path": ""})
-@app.route("/<path:path>")
-@limiter.limit("2 per second")
-def catch_all(path):
-
-    return render_template("index.html")
+# @app.route("/advanced_search")
+# def advanced_search():
+#     return "wow"
 
 
 if __name__ == "__main__":
