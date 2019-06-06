@@ -7,6 +7,10 @@
   "description": "Server for oversearch ingest & web api",
   "main": "index.js",
   "license": "AGPL-3.0-or-later",
+  "scripts": {
+    "start": "node index.js",
+    "pretty": "prettier --loglevel warn --write '**/*.js' && eslint --ext .js --fix ./"
+  },
   "contributors": [
     {
       "name": "John P. Penaloza",
@@ -25,5 +29,14 @@
     "glob": "7.1.4",
     "lodash": "4.17.11",
     "node-etl": "1.0.3"
+  },
+  "devDependencies": {
+    "eslint": "5.16.0",
+    "eslint-config-standard": "12.0.0",
+    "eslint-plugin-import": "2.17.3",
+    "eslint-plugin-node": "9.1.0",
+    "eslint-plugin-promise": "4.1.1",
+    "eslint-plugin-standard": "4.0.0",
+    "prettier": "1.17.1"
   }
 }
