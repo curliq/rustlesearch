@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@elastic/elasticsearch@^7.1.0":
+"@elastic/elasticsearch@7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@elastic/elasticsearch/-/elasticsearch-7.1.0.tgz#e6f940e634d034cc0613050a1b4232cd0b4d95cc"
   integrity sha512-evfs+W6hrC0wu11w/0xL1ZXADHiCbWnVBUbAhZe3xjaFKDfOGioHkPULaEE8uALe7PPPNAMuFErWzutAwwcU9g==
@@ -81,10 +81,10 @@ end-of-stream@^1.1.0:
   dependencies:
     once "^1.4.0"
 
-etl@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/etl/-/etl-0.6.2.tgz#f2428262c0d3dc32c588daf234c80a1fc9d9a1e6"
-  integrity sha512-N6yzp4RlkzG7R5dtYSRyrx1O8Fjo+vTDAMhsyMKffoxn8voNynQKNKF/+msSjFU3R+xzHy2kd2KPfjoLzq+ZJQ==
+etl@0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/etl/-/etl-0.6.3.tgz#9ea25c3b1de91362d0de216fe73da5fd94353d6e"
+  integrity sha512-tSbq8t6P5pfFtNey0uc7aqlabZtDh6O84W7w45NO63JSe6cfD2GzUOX9sKE1up31jipc6Uwo2ODXH/Pnh8KQuQ==
   dependencies:
     bluebird "~3.5.0"
     csv-parser "~1.8.0"
@@ -117,7 +117,7 @@ generate-object-property@^1.0.0:
   dependencies:
     is-property "^1.0.0"
 
-glob@^7.1.4:
+glob@7.1.4:
   version "7.1.4"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.4.tgz#aa608a2f6c577ad357e1ae5a5c26d9a8d1969255"
   integrity sha512-hkLPepehmnKk41pUGm3sYxoFs/umurYfYJCerbXEyFIWcAzvpipAgVkBqqT9RBKMGjnq6kMuyYwha6csxbiM1A==
@@ -170,7 +170,7 @@ json-stringify-safe@^5.0.1:
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
   integrity sha1-Epai1Y/UXxmg9s4B1lcB4sc1tus=
 
-lodash@^4.17.11:
+lodash@4.17.11:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
   integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
@@ -203,9 +203,9 @@ moment@~2.21.0:
   integrity sha512-TCZ36BjURTeFTM/CwRcViQlfkMvL1/vFISuNLO5GkcVm1+QHfbSiNqZuWeMFjj1/3+uAjXswgRk30j1kkLYJBQ==
 
 ms@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
-  integrity sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
+  integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
 ndjson@^1.4.0:
   version "1.5.0"
@@ -217,7 +217,7 @@ ndjson@^1.4.0:
     split2 "^2.1.0"
     through2 "^2.0.3"
 
-node-etl@^1.0.3:
+node-etl@1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/node-etl/-/node-etl-1.0.3.tgz#b716109f7a4663fa00f3e772b01330998df0c605"
   integrity sha1-txYQn3pGY/oA8+dysBMwmY3wxgU=
