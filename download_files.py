@@ -40,23 +40,24 @@ def get_channels():
     download((path, download_url))
 
 
-def get_url_list(channels, days_back=7):
+def get_url_list(channels, days_back, farthest_years):
     urls = []
     for day in range(1, days_back):
         d = datetime.today() - timedelta(days=day)
         date_format = d.strftime("%B %Y/%Y-%m-%d")
         day_stamp = d.strftime("%Y-%m-%d")
+        year_stamp = d.strftime('%Y')
         for channel in channels:
-            path = f"{base_path}/rustle/{channel}::{day_stamp}.txt"
-            url = f"{base_url}/{channel} chatlog/{date_format}.txt"
-            urls.append((path, url))
+            if int(year_stamp) >= int(farthest_years[channel]):
+                path = f"{base_path}/rustle/{channel}::{day_stamp}.txt"
+                url = f"{base_url}/{channel} chatlog/{date_format}.txt"
+                urls.append((path, url))
+                print(url)
     return urls
 
 
 get_channels()
 
-# with open(f"{base_path}/channels.json") as f:
-#     channels = json.load(f)
 channels = [
     "Destinygg",
     "Trainwreckstv",
@@ -71,6 +72,11 @@ channels = [
     "Mrmouton",
     "Greekgodx",
 ]
-url_list = get_url_list(channels, int(sys.argv[1]))
+farthest_years = {}
+for channel in channels:
+    r = requests.get(f'{base_url}/api/v1/{channel}/months.json')
+    farthest_years[channel] = r.json()[-1][-4:]
+print(farthest_years)
+url_list = get_url_list(channels, int(sys.argv[1]), farthest_years)
 pool = multiprocessing.Pool(processes=20)
 pool.map(download_cached, url_list)
