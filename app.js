@@ -14,7 +14,7 @@ const limiter = rateLimit({
 })
 
 app.use(cors())
-app.use(morgan(':remote-addr :method :url :status - :response-time ms'))
+app.use(morgan(':method :url :status - :response-time ms'))
 app.get('/ping', (req, res, next) => {
   res.json({msg: 'Pong'})
 })
