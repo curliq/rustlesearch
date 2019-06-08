@@ -9,8 +9,7 @@
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "start": "node index.js",
-    "pretty": "prettier --loglevel warn --write '**/*.js' && eslint --ext .js --fix ./",
-    "pretty:py": "black -t py37 ."
+    "pretty": "prettier --loglevel warn --write '**/*.js' && eslint --ext .js --fix ./"
   },
   "contributors": [
     {
@@ -52,7 +51,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn pretty && yarn pretty:py"
+      "pre-commit": "yarn pretty"
     }
   }
 }
