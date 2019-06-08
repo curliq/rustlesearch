@@ -33,6 +33,7 @@
     "express-rate-limit": "5.0.0",
     "glob": "7.1.4",
     "lodash": "4.17.11",
+    "morgan": "1.9.1",
     "node-etl": "1.0.3",
     "ramda": "0.26.1",
     "request": "2.88.0",

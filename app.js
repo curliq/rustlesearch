@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const rateLimit = require('express-rate-limit')
 const {Client} = require('@elastic/elasticsearch')
+const morgan = require('morgan')
 
 const PORT = 5000
 const app = express()
@@ -13,7 +14,7 @@ const limiter = rateLimit({
 })
 
 app.use(cors())
-
+app.use(morgan(':remote-addr :method :url :status - :response-time ms'))
 app.get('/ping', (req, res, next) => {
   res.json({msg: 'Pong'})
 })
