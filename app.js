@@ -2,9 +2,8 @@ const express = require('express')
 const cors = require('cors')
 const rateLimit = require('express-rate-limit')
 const {Client} = require('@elastic/elasticsearch')
-const {expressLogger} = require('./src/lib/logger')
+const {logger, expressLogger} = require('./src/lib/logger')
 
-const PORT = 5000
 const app = express()
 const client = new Client({node: 'http://localhost:9200'})
 
@@ -28,20 +27,17 @@ app.get('/api/search', limiter, async(req, res, next) => {
   res.json(searchResult.body.hits.hits.map(x => x['_source']))
 })
 
-app.listen(PORT, function() {
-  console.log(`App listening at http://localhost:${PORT}`)
+app.listen(process.env.APP_PORT, () => {
+  logger.info(`App listening at http://localhost:${process.env.APP_PORT}`)
 })
 
 function generateESQuery({username, channel, text, startingDate, endingDate}) {
   let must = []
-  if (channel)
-    must.push({match: {channel: channel}})
+  if (channel) must.push({match: {channel: channel}})
 
-  if (username)
-    must.push({match: {username: username}})
+  if (username) must.push({match: {username: username}})
 
-  if (text)
-    must.push({match: {text: {query: text, operator: 'AND'}}})
+  if (text) must.push({match: {text: {query: text, operator: 'AND'}}})
 
   return {
     size: 100,
