@@ -30,7 +30,15 @@ app.get('/api/search', limiter, async(req, res, next) => {
 })
 
 app.listen(process.env.APP_PORT, () => {
-  logger.info(`App listening at http://localhost:${process.env.APP_PORT}`)
+  client
+    .info()
+    .then(() =>
+      logger.info(`App listening at http://localhost:${process.env.APP_PORT}`)
+    )
+    .catch(err => {
+      logger.crit(`Failed to connect to Elastic: ${err}`)
+      process.exit(1)
+    })
 })
 
 function generateESQuery({username, channel, text, startingDate, endingDate}) {
