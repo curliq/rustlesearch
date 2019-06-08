@@ -5,10 +5,14 @@ const {Client} = require('@elastic/elasticsearch')
 const _ = require('lodash')
 const util = require('util')
 const etl = require('etl')
+const {logger} = require('../src/lib/logger')
 
 const basePath = './data/rustle'
 const messageRegex = /^\[(.*?)\]\s(.*?):\s(.*)$/
-const client = new Client({node: 'http://localhost:9200'})
+
+const elasticLocation = {node: process.env.ELASTIC_LOCATION}
+const client = new Client(elasticLocation)
+
 const writeFile = util.promisify(fs.writeFile)
 
 const lineToMessage = (line, channel) => {
@@ -55,4 +59,10 @@ const pathsToMessages = async paths => {
 const allPaths = glob.sync(`${basePath}/*.txt`)
 const cache = fs.readFileSync('./cache.txt', {encoding: 'utf8'}).split('\n')
 const paths = allPaths.filter(x => !cache.includes(x))
-pathsToMessages(paths)
+client
+  .info()
+  .then(() => pathsToMessages(paths))
+  .catch(err => {
+    logger.crit(`Failed to connect to Elastic: ${err}`)
+    process.exit(1)
+  })

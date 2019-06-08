@@ -10,6 +10,7 @@
   "scripts": {
     "start:download": "node --require dotenv/config ./scripts/downloadFiles.js",
     "start:app": "node --require dotenv/config index.js",
+    "start:index": "node --require dotenv/config ./scripts/indexToElasticsearch.js",
     "pretty": "prettier --loglevel warn --write '**/*.js' && eslint --ext .js --fix ./"
   },
   "contributors": [
