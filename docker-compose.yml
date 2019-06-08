@@ -5,7 +5,7 @@ services:
     environment:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
-      - 'ES_JAVA_OPTS=-Xms16g -Xmx16g'
+      - 'ES_JAVA_OPTS=-Xms8g -Xmx8g'
       - discovery.type=single-node
       # - index.number_of_replicas=0
       # - index.refresh_interval=30s

@@ -12,6 +12,6 @@ module.exports = {
     'object-curly-spacing': ['error', 'never'],
     'operator-linebreak': ['error', 'before'],
     'comma-dangle': ['error', 'always-multiline'],
-    'curly': ['error', 'multi-or-nest'],
+    // 'curly': ['error', 'multi-or-nest'],
   },
 }

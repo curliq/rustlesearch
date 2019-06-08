@@ -9,6 +9,7 @@ es = Elasticsearch()
 app = Flask(__name__, static_folder="./dist/static", template_folder="./dist")
 CORS(app)
 limiter = Limiter(app, key_func=get_remote_address, default_limits=["1 per 3 seconds"])
+
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 
 
@@ -44,7 +45,6 @@ def elasticsearch_query(username, channel, text, starting_date, ending_date):
 
 @app.route("/api/basic_search")
 def basic_search():
-
     username = request.args.get("username")
     channel = request.args.get("channel")
     text = request.args.get("text")
@@ -64,3 +64,6 @@ def basic_search():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
+
+# print

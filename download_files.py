@@ -8,8 +8,6 @@ import sys
 base_url = "https://overrustlelogs.net"
 base_path = "./data"
 
-# /Sodapoppin chatlog/January 2019/userlogs/chocolatemilkbandit#17623-17778
-
 os.makedirs("./data/rustle", exist_ok=True)
 
 
