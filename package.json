@@ -8,7 +8,8 @@
   "main": "index.js",
   "license": "AGPL-3.0-or-later",
   "scripts": {
-    "start": "node index.js",
+    "start:download": "node --require dotenv/config ./scripts/downloadFiles.js",
+    "start:app": "node --require dotenv/config index.js",
     "pretty": "prettier --loglevel warn --write '**/*.js' && eslint --ext .js --fix ./"
   },
   "contributors": [
@@ -27,6 +28,7 @@
     "@elastic/elasticsearch": "7.1.0",
     "cors": "2.8.5",
     "date-fns": "1.30.1",
+    "dotenv": "8.0.0",
     "etl": "0.6.3",
     "express": "4.17.1",
     "express-rate-limit": "5.0.0",

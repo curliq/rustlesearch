@@ -5,7 +5,9 @@ const {Client} = require('@elastic/elasticsearch')
 const {logger, expressLogger} = require('./src/lib/logger')
 
 const app = express()
-const client = new Client({node: 'http://localhost:9200'})
+
+const elasticLocation = {node: process.env.ELASTIC_LOCATION}
+const client = new Client(elasticLocation)
 
 const limiter = rateLimit({
   windowMs: 3000,

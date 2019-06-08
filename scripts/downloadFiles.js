@@ -9,26 +9,28 @@ const rp = util.promisify(request)
 const readFile = util.promisify(fs.readFile)
 const writeFile = util.promisify(fs.writeFile)
 
+const channelFileLocation = './channels.txt'
 const baseUrl = 'https://overrustlelogs.net'
 const basePath = './data/rustle'
 
 function getUrlList(channels, daysBack, farthestYears) {
-  let urls = []
-  for (let dayBack of _.range(1, daysBack)) {
-    let d = subDays(new Date(), dayBack)
-    let fullFormat = format(d, 'MMMM YYYY/YYYY-MM-DD')
-    let dateFormat = format(d, 'YYYY-MM-DD')
-    let yearFormat = format(d, 'YYYY')
-    for (let channel of channels) {
+  const urls = []
+  for (const dayBack of _.range(1, daysBack)) {
+    const d = subDays(new Date(), dayBack)
+    const fullFormat = format(d, 'MMMM YYYY/YYYY-MM-DD')
+    const dateFormat = format(d, 'YYYY-MM-DD')
+    const yearFormat = format(d, 'YYYY')
+    for (const channel of channels) {
       if (parseInt(yearFormat) >= farthestYears[channel]) {
-        let path = `${basePath}/${channel}::${dateFormat}.txt`
-        let url = `${baseUrl}/${channel} chatlog/${fullFormat}.txt`
+        const path = `${basePath}/${channel}::${dateFormat}.txt`
+        const url = `${baseUrl}/${channel} chatlog/${fullFormat}.txt`
         urls.push([path, url])
       }
     }
   }
   return urls
 }
+
 async function downloadFile([path, url], json = false) {
   const res = await rp({uri: url, json})
   if (res.statusCode === 200) {
@@ -37,10 +39,11 @@ async function downloadFile([path, url], json = false) {
     return path
   } else return false
 }
+
 async function getFarthestYears(channels) {
   const farthestYears = {}
-  for (let channel of channels) {
-    let {body: contents} = await rp({
+  for (const channel of channels) {
+    const {body: contents} = await rp({
       uri: `${baseUrl}/api/v1/${channel}/months.json`,
       json: true,
     })
@@ -50,7 +53,7 @@ async function getFarthestYears(channels) {
 }
 
 async function main() {
-  const channelsFile = await readFile('./channels.txt')
+  const channelsFile = await readFile(channelFileLocation)
   const channels = channelsFile
     .toString()
     .split('\n')
@@ -65,9 +68,8 @@ async function main() {
   const urls = allUrls.filter(x => !urlsDownloaded.includes(x[0]))
 
   console.log(allUrls.length, urlsDownloaded.length, urls.length)
-  for (let chunk of _.chunk(urls, 20)) {
+  for (const chunk of _.chunk(urls, 20))
     await Promise.all(chunk.map(downloadFile))
-  }
 }
 
 main()
