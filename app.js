@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const rateLimit = require('express-rate-limit')
 const {Client} = require('@elastic/elasticsearch')
-const morgan = require('morgan')
+const {expressLogger} = require('./src/lib/logger')
 
 const PORT = 5000
 const app = express()
@@ -14,7 +14,7 @@ const limiter = rateLimit({
 })
 
 app.use(cors())
-app.use(morgan(':method :url :status - :response-time ms'))
+app.use(expressLogger)
 app.get('/ping', (req, res, next) => {
   res.json({msg: 'Pong'})
 })
@@ -34,15 +34,14 @@ app.listen(PORT, function() {
 
 function generateESQuery({username, channel, text, startingDate, endingDate}) {
   let must = []
-  if (channel) {
+  if (channel)
     must.push({match: {channel: channel}})
-  }
-  if (username) {
+
+  if (username)
     must.push({match: {username: username}})
-  }
-  if (text) {
+
+  if (text)
     must.push({match: {text: {query: text, operator: 'AND'}}})
-  }
 
   return {
     size: 100,
