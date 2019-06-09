@@ -1,7 +1,7 @@
 {
-  "name": "oversearch-server",
+  "name": "rustlesearch-server",
   "version": "0.0.1",
-  "description": "Server for oversearch ingest & web api",
+  "description": "Server for rustlesearch ingest & web api",
   "license": "AGPL-3.0-or-later",
   "engines": {
     "node": "12"

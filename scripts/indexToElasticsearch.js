@@ -10,25 +10,27 @@ const {logger} = require('../src/lib/logger')
 const basePath = './data/rustle'
 const messageRegex = /^\[(.*?)\]\s(.*?):\s(.*)$/
 
-const elasticLocation = {node: process.env.ELASTIC_LOCATION}
-const client = new Client(elasticLocation)
+const client = new Client({node: process.env.ELASTIC_LOCATION})
 
 const writeFile = util.promisify(fs.writeFile)
 
 const lineToMessage = (line, channel) => {
-  try {
-    const replacedLine = line.replace('\r', '')
-    const matched = replacedLine.match(messageRegex)
-    const [, tsStr, username, text] = matched
-    const ts = new Date(tsStr)
-    return {
-      ts: ts.toISOString(),
-      channel,
-      username,
-      text,
+  if (line.length > 0) {
+    try {
+      const replacedLine = line.replace('\r', '')
+      const matched = replacedLine.match(messageRegex)
+      const [, tsStr, username, text] = matched
+      const ts = new Date(tsStr).toISOString()
+      return {
+        _id: `${username}-${ts}`,
+        ts,
+        channel,
+        username,
+        text,
+      }
+    } catch (e) {
+      console.log(channel, line, line.length)
     }
-  } catch (e) {
-    console.error(e)
   }
 }
 
@@ -43,7 +45,7 @@ const pathsToMessages = async paths => {
         .pipe(etl.map(line => lineToMessage(line.text, channel)))
         .pipe(etl.collect(2000))
         .pipe(
-          etl.elastic.index(client, 'oversearch', 'message', {
+          etl.elastic.index(client, process.env.INDEX_NAME, 'message', {
             concurrency: 10,
           })
         )
@@ -59,6 +61,7 @@ const pathsToMessages = async paths => {
 const allPaths = glob.sync(`${basePath}/*.txt`)
 const cache = fs.readFileSync('./cache.txt', {encoding: 'utf8'}).split('\n')
 const paths = allPaths.filter(x => !cache.includes(x))
+console.log(allPaths.length, cache.length, paths.length)
 client
   .info()
   .then(() => pathsToMessages(paths))

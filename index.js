@@ -22,7 +22,7 @@ app.get('/ping', (req, res, next) => {
 
 app.get('/api/search', limiter, async(req, res, next) => {
   const searchResult = await client.search({
-    index: 'oversearch',
+    index: process.env.INDEX_NAME,
     body: generateESQuery(req.query),
   })
 
