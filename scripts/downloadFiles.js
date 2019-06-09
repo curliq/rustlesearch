@@ -1,75 +1,66 @@
 const fs = require('fs')
 const request = require('request')
-const _ = require('lodash')
 const util = require('util')
-const glob = require('glob')
+const fg = require('fast-glob')
 const {subDays, format} = require('date-fns')
+const Promise = require('bluebird')
+const R = require('ramda')
 
+// Promisify functions
 const rp = util.promisify(request)
 const readFile = util.promisify(fs.readFile)
 const writeFile = util.promisify(fs.writeFile)
 
-const channelFileLocation = './channels.txt'
+// "Constants"
 const baseUrl = 'https://overrustlelogs.net'
 const basePath = './data/rustle'
+const today = new Date()
 
-function getUrlList(channels, daysBack, farthestYears) {
-  const urls = []
-  for (const dayBack of _.range(1, daysBack)) {
-    const d = subDays(new Date(), dayBack)
-    const fullFormat = format(d, 'MMMM YYYY/YYYY-MM-DD')
-    const dateFormat = format(d, 'YYYY-MM-DD')
-    const yearFormat = format(d, 'YYYY')
-    for (const channel of channels) {
-      if (parseInt(yearFormat) >= farthestYears[channel]) {
-        const path = `${basePath}/${channel}::${dateFormat}.txt`
-        const url = `${baseUrl}/${channel} chatlog/${fullFormat}.txt`
-        urls.push([path, url])
-      }
-    }
-  }
-  return urls
-}
+// Smol Functions
+const notEq = R.complement(R.equals)
+const fullDateFormat = date => format(date, 'MMMM YYYY/YYYY-MM-DD')
+const fileDateFormat = date => format(date, 'YYYY-MM-DD')
+const getChannelsList = R.pipe(
+  R.split('\n'),
+  R.filter(notEq(''))
+)
+const toPathAndUrl = ({channel, date}) => [
+  `${basePath}/${channel}::${fileDateFormat(date)}.txt`,
+  `${baseUrl}/${channel} chatlog/${fullDateFormat(date)}.txt`,
+]
 
-async function downloadFile([path, url], json = false) {
+// Swol Functions
+const getUrlList = (channels, daysBack) =>
+  R.pipe(
+    R.inc,
+    R.range(1),
+    R.map(day => subDays(today, day)),
+    R.map(date => channels.map(channel => toPathAndUrl({channel, date}))),
+    R.unnest
+  )(daysBack)
+
+const downloadFile = async([path, url], json = false) => {
   const res = await rp({uri: url, json})
   if (res.statusCode === 200) {
     await writeFile(path, res.body)
     console.log(`Wrote ${path} to disk.`)
-    return path
-  } else return false
-}
-
-async function getFarthestYears(channels) {
-  const farthestYears = {}
-  for (const channel of channels) {
-    const {body: contents} = await rp({
-      uri: `${baseUrl}/api/v1/${channel}/months.json`,
-      json: true,
-    })
-    farthestYears[channel] = parseInt(contents[contents.length - 1].slice(-4))
+  } else {
+    await writeFile(path, '')
+    console.log(`404, but wrote empty to ${path}.`)
   }
-  return farthestYears
 }
 
-async function main() {
-  const channelsFile = await readFile(channelFileLocation)
-  const channels = channelsFile
-    .toString()
-    .split('\n')
-    .filter(x => x !== '')
-  console.log(channels)
-
-  const farthestYears = await getFarthestYears(channels)
-  console.log(farthestYears)
-
-  const allUrls = getUrlList(channels, process.argv[2] || 10, farthestYears)
-  const urlsDownloaded = glob.sync(`${basePath}/*.txt`)
+// Main
+const main = async() => {
+  const channelsFile = await readFile('./channels.txt')
+  const channels = getChannelsList(channelsFile.toString())
+  const allUrls = getUrlList(channels, parseInt(process.argv[2]) || 10)
+  const urlsDownloaded = await fg.async(`${basePath}/*.txt`)
   const urls = allUrls.filter(x => !urlsDownloaded.includes(x[0]))
 
   console.log(allUrls.length, urlsDownloaded.length, urls.length)
-  for (const chunk of _.chunk(urls, 20))
-    await Promise.all(chunk.map(downloadFile))
+
+  Promise.map(urls, downloadFile, {concurrency: 20})
 }
 
 main()

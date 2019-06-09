@@ -27,7 +27,7 @@
     {
       "email": "48770555+alg1142@users.noreply.github.com",
       "name": "alice lilith iris eleonore gladwyn",
-      "url": "ayaya.dev"
+      "url": "https://ayaya.dev"
     }
   ],
   "dependencies": {
@@ -39,12 +39,11 @@
     "express": "4.17.1",
     "express-rate-limit": "5.0.0",
     "express-winston": "3.1.0",
-    "glob": "7.1.4",
+    "fast-glob": "2.2.7",
     "lodash": "4.17.11",
     "node-etl": "1.0.3",
     "ramda": "0.26.1",
     "request": "2.88.0",
-    "restify": "8.3.3",
     "winston": "3.2.1"
   },
   "devDependencies": {
