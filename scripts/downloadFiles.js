@@ -20,7 +20,7 @@ const today = new Date()
 const notEq = R.complement(R.equals)
 const fullDateFormat = date => format(date, 'MMMM YYYY/YYYY-MM-DD')
 const fileDateFormat = date => format(date, 'YYYY-MM-DD')
-const getChannelsList = R.pipe(
+const parseByLine = R.pipe(
   R.split('\n'),
   R.filter(notEq(''))
 )
@@ -45,18 +45,26 @@ const downloadFile = async([path, url], json = false) => {
     await writeFile(path, res.body)
     console.log(`Wrote ${path} to disk.`)
   } else {
-    await writeFile(path, '')
-    console.log(`404, but wrote empty to ${path}.`)
+    await writeFile('./download_cache.txt', path + '\n', {
+      encoding: 'utf8',
+      flag: 'a',
+    })
+    console.log(`${path} 404, wrote file to download cache.`)
   }
 }
 
 // Main
 const main = async() => {
   const channelsFile = await readFile('./channels.txt')
-  const channels = getChannelsList(channelsFile.toString())
+  const downloadCacheFile = await readFile('./download_cache.txt')
+  const channels = parseByLine(channelsFile.toString())
+  const downloadCache = parseByLine(downloadCacheFile.toString())
+
   const allUrls = getUrlList(channels, parseInt(process.argv[2]) || 10)
   const urlsDownloaded = await fg.async(`${basePath}/*.txt`)
-  const urls = allUrls.filter(x => !urlsDownloaded.includes(x[0]))
+  const urls = allUrls.filter(
+    x => !(urlsDownloaded.includes(x[0]) || downloadCache.includes(x[0]))
+  )
 
   console.log(allUrls.length, urlsDownloaded.length, urls.length)
 
