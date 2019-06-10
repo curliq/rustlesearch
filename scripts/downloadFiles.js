@@ -22,7 +22,7 @@ const fullDateFormat = date => format(date, 'MMMM YYYY/YYYY-MM-DD')
 const fileDateFormat = date => format(date, 'YYYY-MM-DD')
 const parseByLine = R.pipe(
   R.split('\n'),
-  R.filter(notEq(''))
+  R.filter(notEq('')),
 )
 const toPathAndUrl = ({channel, date}) => [
   `${basePath}/${channel}::${fileDateFormat(date)}.txt`,
@@ -36,7 +36,7 @@ const getUrlList = (channels, daysBack) =>
     R.range(1),
     R.map(day => subDays(today, day)),
     R.map(date => channels.map(channel => toPathAndUrl({channel, date}))),
-    R.unnest
+    R.unnest,
   )(daysBack)
 
 const downloadFile = async([path, url], json = false) => {

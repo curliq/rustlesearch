@@ -1,3 +1,5 @@
+require('module-alias/register')
+
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
@@ -5,7 +7,7 @@ const {Client} = require('@elastic/elasticsearch')
 const _ = require('lodash')
 const util = require('util')
 const etl = require('etl')
-const {logger} = require('../src/lib/logger')
+const {logger} = require('@lib/logger')
 
 const basePath = './data/rustle'
 const messageRegex = /^\[(.*?)\]\s(.*?):\s(.*)$/
@@ -30,6 +32,12 @@ const lineToMessage = (line, channel) => {
     } catch (e) {
       console.log(channel, line, line.length)
     }
+  } catch (e) {
+    logger.warn(
+      `Failed to convert line to message at: ${channel}, ${line}, ${
+        line.length
+      }. Error: ${e.message}`,
+    )
   }
 }
 
@@ -46,7 +54,7 @@ const pathsToMessages = async paths => {
         .pipe(
           etl.elastic.index(client, process.env.INDEX_NAME, 'message', {
             concurrency: 10,
-          })
+          }),
         )
         .promise()
     }
@@ -65,6 +73,6 @@ client
   .info()
   .then(() => pathsToMessages(paths))
   .catch(err => {
-    logger.crit(`Failed to connect to Elastic: ${err}`)
+    logger.error(`Failed to connect to Elastic: ${err}`)
     process.exit(1)
   })
