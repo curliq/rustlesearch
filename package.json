@@ -10,9 +10,9 @@
   "scripts": {
     "pretty": "prettier --loglevel warn --write '**/*.{js,yml,json}' && eslint --ext .js --fix ./",
     "start:app": "node --require dotenv/config index.js",
-    "start:download": "node --require dotenv/config ./scripts/downloadFiles.js",
-    "start:index": "node --require dotenv/config ./scripts/indexToElasticsearch.js",
-    "start:benchmark": "node --require dotenv/config ./scripts/benchmarkIngest.js"
+    "run:download": "node --require dotenv/config ./scripts/downloadFiles.js",
+    "run:index": "node --require dotenv/config ./scripts/indexToElasticsearch.js",
+    "benchmark:index": "node --require dotenv/config ./scripts/benchmarkIngest.js"
   },
   "husky": {
     "hooks": {

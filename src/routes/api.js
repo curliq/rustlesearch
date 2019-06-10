@@ -1,7 +1,18 @@
 const {elasticClient, generateElasticQuery} = require('@lib/elastic')
 const {co} = require('@lib/util')
 
-const search = co(function * (fastify, options) {
+const api = co(function * (fastify, options, next) {
+  fastify.get(
+    '/healthcheck',
+    co(function * (req, res) {
+      return 'ALIVE'
+    }),
+  )
+  // TODO: use redis for cache... to allow scaling past 1 process
+  fastify.register(require('fastify-rate-limit'), {
+    max: 1,
+    timeWindow: 2000,
+  })
   fastify.get(
     '/search',
     co(function * (req, res) {
@@ -13,6 +24,7 @@ const search = co(function * (fastify, options) {
       return searchResult.body.hits.hits.map(x => x['_source'])
     }),
   )
+  next()
 })
 
-module.exports = search
+module.exports = api

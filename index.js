@@ -16,16 +16,7 @@ const fastify = Fastify({
 fastify.register(require('fastify-helmet'))
 fastify.register(require('fastify-cors'))
 
-fastify.register(require('@routes/healthcheck'), {prefix})
-
-// TODO: use redis for cache... to allow scaling past 1 process
-fastify.register(require('fastify-rate-limit'), {
-  max: 1,
-  timeWindow: 2000,
-})
-
-// after rate limit
-fastify.register(require('@routes/search'), {prefix})
+fastify.register(require('@routes/api'), {prefix})
 
 fastify.addHook(
   'onError',
