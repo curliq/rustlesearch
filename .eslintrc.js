@@ -1,8 +1,11 @@
 module.exports = {
   env: {
-    es6: true,
+    'es6': true,
+    'jest/globals': true,
+    'node': true,
   },
-  extends: ['standard'],
+  extends: ['standard', 'plugin:jest/recommended'],
+  plugins: ['jest'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
