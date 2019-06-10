@@ -4,7 +4,8 @@ import {logger} from '@lib/logger'
 
 export default (fastify, options, next) => {
   // throws here if we can't connect
-  elasticClient.info()
+  elasticClient
+    .info()
     .then()
     .catch(e => {
       logger.error(`Elastic failed: ${e.message}`)
