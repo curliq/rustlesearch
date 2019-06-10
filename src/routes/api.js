@@ -1,7 +1,7 @@
 const {elasticClient, generateElasticQuery} = require('@lib/elastic')
 const {co} = require('@lib/util')
 
-const api = co(function * (fastify, options, next) {
+const api = (fastify, options, next) => {
   fastify.get(
     '/healthcheck',
     co(function * (req, res) {
@@ -25,6 +25,6 @@ const api = co(function * (fastify, options, next) {
     }),
   )
   next()
-})
+}
 
 module.exports = api
