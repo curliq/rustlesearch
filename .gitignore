@@ -11,5 +11,11 @@ download_cache.txt
 # logs
 *.log
 
+# tern
+.tern-project
+
+# built app
+dist/
+
 # data directory
 data/
