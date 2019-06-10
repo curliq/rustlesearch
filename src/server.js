@@ -1,9 +1,10 @@
-require('module-alias/register')
-
-const Fastify = require('fastify')
-const {logger} = require('@lib/logger')
-const {co} = require('@lib/util')
-const {elasticClient} = require('@lib/elastic')
+import Fastify from 'fastify'
+import {logger} from '@lib/logger'
+import {co} from '@lib/util'
+import {elasticClient} from '@lib/elastic'
+import helmet from 'fastify-helmet'
+import cors from 'fastify-cors'
+import api from '@routes/api'
 
 const prefix = process.env.ROUTE_PREFIX
 
@@ -13,10 +14,10 @@ const fastify = Fastify({
   logger,
 })
 
-fastify.register(require('fastify-helmet'))
-fastify.register(require('fastify-cors'))
+fastify.register(helmet)
+fastify.register(cors)
 
-fastify.register(require('@routes/api'), {prefix})
+fastify.register(api, {prefix})
 
 fastify.addHook(
   'onError',
@@ -36,3 +37,5 @@ fastify.listen(process.env.APP_PORT, () => {
       process.exit(1)
     })
 })
+
+export default fastify
