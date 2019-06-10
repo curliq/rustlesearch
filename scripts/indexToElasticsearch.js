@@ -17,27 +17,20 @@ const client = new Client({node: process.env.ELASTIC_LOCATION})
 const writeFile = util.promisify(fs.writeFile)
 
 const lineToMessage = (line, channel) => {
-  if (line.length > 0) {
-    try {
-      const replacedLine = line.replace('\r', '')
-      const matched = replacedLine.match(messageRegex)
-      const [, tsStr, username, text] = matched
-      const ts = new Date(tsStr).toISOString()
-      return {
-        ts,
-        channel,
-        username,
-        text,
-      }
-    } catch (e) {
-      console.log(channel, line, line.length)
+  if (line.length <= 0) return
+  try {
+    const replacedLine = line.replace('\r', '')
+    const matched = replacedLine.match(messageRegex)
+    const [, tsStr, username, text] = matched
+    const ts = new Date(tsStr).toISOString()
+    return {
+      ts,
+      channel,
+      username,
+      text,
     }
   } catch (e) {
-    logger.warn(
-      `Failed to convert line to message at: ${channel}, ${line}, ${
-        line.length
-      }. Error: ${e.message}`,
-    )
+    logger.warn(`Error: ${e.message}. ${channel}, ${line}, ${line.length}`)
   }
 }
 

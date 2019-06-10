@@ -31,21 +31,30 @@
       "url": "https://ayaya.dev"
     }
   ],
+  "_moduleAliases": {
+    "@root": ".",
+    "@src": "./src",
+    "@lib": "./src/lib",
+    "@routes": "./src/routes"
+  },
   "dependencies": {
     "@elastic/elasticsearch": "7.1.0",
-    "cors": "2.8.5",
+    "bluebird": "3.5.5",
     "date-fns": "1.30.1",
     "dotenv": "8.0.0",
     "etl": "0.6.3",
-    "express": "4.17.1",
-    "express-rate-limit": "5.0.0",
-    "express-winston": "3.1.0",
     "fast-glob": "2.2.7",
+    "fastify": "2.4.1",
+    "fastify-cors": "2.1.3",
+    "fastify-helmet": "3.0.0",
+    "fastify-rate-limit": "2.1.1",
     "lodash": "4.17.11",
+    "module-alias": "2.2.0",
     "node-etl": "1.0.3",
+    "pino": "5.12.6",
+    "pino-pretty": "3.1.0",
     "ramda": "0.26.1",
-    "request": "2.88.0",
-    "winston": "3.2.1"
+    "request": "2.88.0"
   },
   "devDependencies": {
     "eslint": "5.16.0",
@@ -55,7 +64,7 @@
     "eslint-plugin-promise": "4.1.1",
     "eslint-plugin-standard": "4.0.0",
     "husky": "2.4.0",
-    "prettier": "1.17.1",
+    "prettier": "1.18.2",
     "yaml": "1.6.0",
     "yaml-unist-parser": "1.0.0"
   }

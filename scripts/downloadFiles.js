@@ -63,7 +63,7 @@ const main = async() => {
   const allUrls = getUrlList(channels, parseInt(process.argv[2]) || 10)
   const urlsDownloaded = await fg.async(`${basePath}/*.txt`)
   const urls = allUrls.filter(
-    x => !(urlsDownloaded.includes(x[0]) || downloadCache.includes(x[0]))
+    x => !(urlsDownloaded.includes(x[0]) || downloadCache.includes(x[0])),
   )
 
   console.log(allUrls.length, urlsDownloaded.length, urls.length)
