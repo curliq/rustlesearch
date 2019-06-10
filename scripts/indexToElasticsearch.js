@@ -57,7 +57,9 @@ const pathsToMessages = async paths => {
 }
 
 const allPaths = glob.sync(`${basePath}/*.txt`)
-const cache = fs.readFileSync('./cache.txt', {encoding: 'utf8'}).split('\n')
+const cache = fs
+  .readFileSync('./cache.txt', {encoding: 'utf8', flag: 'a+'})
+  .split('\n')
 const paths = allPaths.filter(x => !cache.includes(x))
 console.log(allPaths.length, cache.length, paths.length)
 client

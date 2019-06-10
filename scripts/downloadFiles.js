@@ -6,6 +6,8 @@ const {subDays, format} = require('date-fns')
 const Promise = require('bluebird')
 const R = require('ramda')
 
+const {existsSync, mkdirSync} = fs
+
 // Promisify functions
 const rp = util.promisify(request)
 const readFile = util.promisify(fs.readFile)
@@ -14,6 +16,9 @@ const writeFile = util.promisify(fs.writeFile)
 // "Constants"
 const baseUrl = 'https://overrustlelogs.net'
 const basePath = './data/rustle'
+
+if (!existsSync(basePath)) mkdirSync(basePath, {recursive: true})
+
 const today = new Date()
 
 // Smol Functions
@@ -55,8 +60,9 @@ const downloadFile = async([path, url], json = false) => {
 
 // Main
 const main = async() => {
-  const channelsFile = await readFile('./channels.txt')
-  const downloadCacheFile = await readFile('./download_cache.txt')
+  // make file if it doesnt exist
+  const channelsFile = await readFile('./channels.txt', {flag: 'a+'})
+  const downloadCacheFile = await readFile('./download_cache.txt', {flag: 'a+'})
   const channels = parseByLine(channelsFile.toString())
   const downloadCache = parseByLine(downloadCacheFile.toString())
 
