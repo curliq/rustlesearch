@@ -1,7 +1,6 @@
 import Fastify from 'fastify'
 import {logger} from '@lib/logger'
 import {co} from '@lib/util'
-import {elasticClient} from '@lib/elastic'
 import helmet from 'fastify-helmet'
 import cors from 'fastify-cors'
 import api from '@routes/api'
@@ -27,15 +26,7 @@ fastify.addHook(
 )
 
 fastify.listen(process.env.APP_PORT, () => {
-  elasticClient
-    .info()
-    .then(() =>
-      logger.info(`App listening at http://localhost:${process.env.APP_PORT}`),
-    )
-    .catch(err => {
-      logger.error(`Failed to connect to Elastic: ${err}`)
-      process.exit(1)
-    })
+  logger.info(`App listening at http://localhost:${process.env.APP_PORT}`)
 })
 
 export default fastify
