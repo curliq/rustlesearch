@@ -22,7 +22,6 @@ const lineToMessage = (line, channel) => {
       const [, tsStr, username, text] = matched
       const ts = new Date(tsStr).toISOString()
       return {
-        _id: `${username}-${ts}`,
         ts,
         channel,
         username,
@@ -35,7 +34,7 @@ const lineToMessage = (line, channel) => {
 }
 
 const pathsToMessages = async paths => {
-  for (let filePaths of _.chunk(paths, 50)) {
+  for (let filePaths of _.chunk(paths, 10)) {
     for (let filePath of filePaths) {
       const channel = path.parse(filePath).name.split('::')[0]
 
