@@ -8,7 +8,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "pretty": "prettier --loglevel warn --write '**/*.js' && eslint --ext .js --fix ./",
+    "pretty": "prettier --loglevel warn --write '**/*.{js,yml,json}' && eslint --ext .js --fix ./",
     "start:app": "node --require dotenv/config index.js",
     "start:download": "node --require dotenv/config ./scripts/downloadFiles.js",
     "start:index": "node --require dotenv/config ./scripts/indexToElasticsearch.js",
@@ -55,6 +55,8 @@
     "eslint-plugin-promise": "4.1.1",
     "eslint-plugin-standard": "4.0.0",
     "husky": "2.4.0",
-    "prettier": "1.17.1"
+    "prettier": "1.17.1",
+    "yaml": "1.6.0",
+    "yaml-unist-parser": "1.0.0"
   }
 }
