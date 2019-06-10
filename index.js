@@ -1,72 +1,47 @@
-const express = require('express')
-const cors = require('cors')
-const rateLimit = require('express-rate-limit')
-const {Client} = require('@elastic/elasticsearch')
-const {logger, expressLogger} = require('./src/lib/logger')
+require('module-alias/register')
 
-const app = express()
+const Fastify = require('fastify')
+const {logger} = require('@lib/logger')
+const {co} = require('@lib/util')
+const {elasticClient} = require('@lib/elastic')
 
-const elasticLocation = {node: process.env.ELASTIC_LOCATION}
-const client = new Client(elasticLocation)
+const prefix = process.env.ROUTE_PREFIX
 
-const limiter = rateLimit({
-  windowMs: 3000,
+const fastify = Fastify({
+  // we are behind nginx, so we trust it as a proxy
+  trustProxy: true,
+  logger,
+})
+
+fastify.register(require('fastify-helmet'))
+fastify.register(require('fastify-cors'))
+
+fastify.register(require('@routes/healthcheck'), {prefix})
+
+// TODO: use redis for cache... to allow scaling past 1 process
+fastify.register(require('fastify-rate-limit'), {
   max: 1,
+  timeWindow: 2000,
 })
 
-app.use(cors())
-app.use(expressLogger)
-app.get('/ping', (req, res, next) => {
-  res.json({msg: 'Pong'})
-})
+// after rate limit
+fastify.register(require('@routes/search'), {prefix})
 
-app.get('/api/search', limiter, async(req, res, next) => {
-  const searchResult = await client.search({
-    index: process.env.INDEX_NAME,
-    body: generateESQuery(req.query),
-  })
+fastify.addHook(
+  'onError',
+  co(function * (request, reply, error) {
+    logger.error(error)
+  }),
+)
 
-  res.json(searchResult.body.hits.hits.map(x => x['_source']))
-})
-
-app.listen(process.env.APP_PORT, () => {
-  client
+fastify.listen(process.env.APP_PORT, () => {
+  elasticClient
     .info()
     .then(() =>
-      logger.info(`App listening at http://localhost:${process.env.APP_PORT}`)
+      logger.info(`App listening at http://localhost:${process.env.APP_PORT}`),
     )
     .catch(err => {
-      logger.crit(`Failed to connect to Elastic: ${err}`)
+      logger.error(`Failed to connect to Elastic: ${err}`)
       process.exit(1)
     })
 })
-
-function generateESQuery({username, channel, text, startingDate, endingDate}) {
-  let must = []
-  if (channel) must.push({match: {channel: channel}})
-
-  if (username) must.push({match: {username: username}})
-
-  if (text) must.push({match: {text: {query: text, operator: 'AND'}}})
-
-  return {
-    size: 100,
-    from: 0,
-    query: {
-      bool: {
-        filter: [
-          {
-            range: {
-              ts: {
-                gte: startingDate || 'now-30d/h',
-                lt: endingDate || 'now/h',
-              },
-            },
-          },
-        ],
-        must: must,
-      },
-    },
-    sort: [{ts: {order: 'desc'}}],
-  }
-}
