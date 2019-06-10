@@ -1,9 +1,10 @@
-const {Client} = require('@elastic/elasticsearch')
+import {Client} from '@elastic/elasticsearch'
 
 const elasticLocation = {node: process.env.ELASTIC_LOCATION}
-const elasticClient = new Client(elasticLocation)
 
-const generateElasticQuery = ({
+export const elasticClient = new Client(elasticLocation)
+
+export const generateElasticQuery = ({
   username,
   channel,
   text,
@@ -38,5 +39,3 @@ const generateElasticQuery = ({
     sort: [{ts: {order: 'desc'}}],
   }
 }
-
-module.exports = {elasticClient, generateElasticQuery}

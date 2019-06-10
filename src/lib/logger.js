@@ -1,5 +1,5 @@
-const pino = require('pino')
-const {isProd} = require('@lib/environment')
+import pino from 'pino'
+import {isProd} from '@lib/environment'
 
 const name = process.env.APP_NAME
 
@@ -10,6 +10,4 @@ const pinoOptions = {
   prettyPrint: !isProd(),
 }
 
-const logger = pino(pinoOptions)
-
-module.exports = {logger}
+export const logger = pino(pinoOptions)
