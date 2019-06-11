@@ -7,6 +7,9 @@ const prefix = process.env.ROUTE_PREFIX
 
 const app = express()
 
+// behind nginx
+app.set('trust proxy', 1)
+
 app.use((req, res, next) => {
   logger.info(req)
   next()

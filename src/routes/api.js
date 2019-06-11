@@ -13,6 +13,7 @@ elasticClient
     logger.error(`Elastic failed: ${e.message}`)
     process.exit(1)
   })
+
 const limiter = rateLimit({
   windowMs: 4000,
   max: 2,
@@ -34,14 +35,13 @@ router.get(
         index: process.env.INDEX_NAME,
         body: generateElasticQuery(req.query),
       })
-      // not sure if this works
       res.json(searchResult.body.hits.hits.map(x => x['_source']))
     } catch (e) {
       // just respond with elastics error
       // usually a 404
       res
         .status(e.meta.statusCode)
-        .send({error: 'beep boop there was an error 4head'})
+        .send({error: 'squadW'})
     }
   }),
 )
