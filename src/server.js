@@ -1,5 +1,5 @@
 import express from 'express'
-import {logger} from '@lib/logger'
+import {logger, loggerMiddleware} from '@lib/logger'
 import helmet from 'helmet'
 import cors from 'cors'
 import api from '@routes/api'
@@ -10,16 +10,16 @@ const app = express()
 // behind nginx
 app.set('trust proxy', 1)
 
-app.use((req, res, next) => {
-  // don't log healthchecks
-  if (req.path === `${prefix}/healthcheck`) next()
-  logger.info(req)
-  next()
-})
 app.use(cors())
+app.use(
+  loggerMiddleware({
+    level: 'info',
+    ignore: [`${prefix}/healthcheck`],
+  }),
+)
 app.use(helmet())
 app.use(prefix, api)
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   logger.error(err)
   res.status(500).send('Something broke!')
 })

@@ -40,3 +40,17 @@ const pinoOptions = {
 }
 
 export const logger = pino(pinoOptions)
+
+export const loggerMiddleware = options => (req, res, next) => {
+  const ignore = options?.ignore ?? []
+  // the level to log at, not the level for ignoring logs
+  const level = options?.level ?? 'info'
+
+  // we can pass an array of paths to ignore
+  if (Array.isArray(ignore) && ignore.includes(req.path)) next()
+
+  // call level logger if exists
+  // eslint-disable-next-line
+  logger?.[level](req)
+  next()
+}
