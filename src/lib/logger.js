@@ -42,7 +42,7 @@ const pinoOptions = {
 export const logger = pino(pinoOptions)
 
 export const loggerMiddleware = options => (req, res, next) => {
-  const ignore = options?.ignore ?? []
+  const {ignore} = options
   // the level to log at, not the level for ignoring logs
   const level = options?.level ?? 'info'
 
