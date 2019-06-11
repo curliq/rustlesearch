@@ -2,9 +2,9 @@ version: '3.7'
 services:
   rustlesearch_api:
     image: rustlesearch_api:latest
+    container_name: rustlesearch_api
     build:
       context: .
-    container_name: rustlesearch_api
     restart: unless-stopped
     env_file: .env
     expose:
@@ -14,6 +14,7 @@ services:
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
+    container_name: rustlesearch_elastic
     restart: unless-stopped
     environment:
       - cluster.name=docker-cluster
@@ -28,12 +29,30 @@ services:
         hard: -1
     volumes:
       - ./data/esdata:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
+    expose:
+      - 9200
+
   kibana:
-    restart: unless-stopped
     image: docker.elastic.co/kibana/kibana:7.1.1
+    container_name: rustlesearch_kibana
+    restart: unless-stopped
     depends_on:
       - elasticsearch
     ports:
       - 5601:5601
+
+  redis:
+    image: redis:5-alpine
+    container_name: rustlesearch_redis
+    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
+    restart: unless-stopped
+    env_file: .env
+    healthcheck:
+      test: ['redis-cli', 'ping']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+    expose:
+      - $REDIS_PORT
