@@ -2,15 +2,16 @@ import {elasticClient, generateElasticQuery} from '@lib/elastic'
 import {co} from '@lib/util'
 import {logger} from '@lib/logger'
 
+// throws here if we can't connect
+elasticClient
+  .info()
+  .then()
+  .catch(e => {
+    logger.error(`Elastic failed: ${e.message}`)
+    process.exit()
+  })
+
 export default (fastify, options, next) => {
-  // throws here if we can't connect
-  elasticClient
-    .info()
-    .then()
-    .catch(e => {
-      logger.error(`Elastic failed: ${e.message}`)
-      process.exit()
-    })
   fastify.get(
     '/healthcheck',
     co(function * (req, res) {
