@@ -11,7 +11,7 @@ elasticClient
   .then()
   .catch(e => {
     logger.error(`Elastic failed: ${e.message}`)
-    process.exit()
+    process.exit(1)
   })
 const limiter = rateLimit({
   windowMs: 4000,
