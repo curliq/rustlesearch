@@ -48,6 +48,7 @@
     "dotenv": "8.0.0",
     "etl": "0.6.3",
     "express": "4.17.1",
+    "express-pino-logger": "4.0.0",
     "express-rate-limit": "5.0.0",
     "fast-glob": "2.2.7",
     "helmet": "3.18.0",

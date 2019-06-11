@@ -6,14 +6,13 @@ const name = process.env.APP_NAME
 
 const getDate = timestamp => {
   const parsed = parseInt(timestamp)
-  if (isNaN(parsed)) return ''
+  if (isNaN(parsed)) return undefined
   const date = DateTime.fromMillis(parsed)
   return date.toFormat('yyyy-MM-dd')
 }
 
 const getLoggerInfo = req => {
   const ip = req.headers['X-Real-IP']
-
   const {channel, username, text, startingDate, endingDate} = req.query
   return {
     ip,
@@ -31,11 +30,7 @@ const pinoOptions = {
   level: process.env.LOG_LEVEL,
   prettyPrint: !isProd(),
   serializers: {
-    req(req) {
-      return {
-        ...getLoggerInfo(req),
-      }
-    },
+    req: req => getLoggerInfo(req.raw),
   },
 }
 
