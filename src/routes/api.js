@@ -29,12 +29,20 @@ router.get(
   '/search',
   limiter,
   co(function * (req, res) {
-    const searchResult = yield elasticClient.search({
-      index: process.env.INDEX_NAME,
-      body: generateElasticQuery(req.query),
-    })
-    // not sure if this works
-    res.json(searchResult.body.hits.hits.map(x => x['_source']))
+    try {
+      const searchResult = yield elasticClient.search({
+        index: process.env.INDEX_NAME,
+        body: generateElasticQuery(req.query),
+      })
+      // not sure if this works
+      res.json(searchResult.body.hits.hits.map(x => x['_source']))
+    } catch (e) {
+      // just respond with elastics error
+      // usually a 404
+      res
+        .status(e.meta.statusCode)
+        .send({error: 'beep boop there was an error 4head'})
+    }
   }),
 )
 

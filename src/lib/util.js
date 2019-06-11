@@ -1,5 +1,3 @@
-const Promise = require('bluebird')
+import Promise from 'bluebird'
 
-const co = fn => Promise.coroutine(fn)
-
-module.exports = {co}
+export const co = fn => Promise.coroutine(fn)
