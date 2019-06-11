@@ -26,12 +26,18 @@ export default (fastify, options, next) => {
   fastify.get(
     '/search',
     co(function * (req, res) {
-      const searchResult = yield elasticClient.search({
-        index: process.env.INDEX_NAME,
-        body: generateElasticQuery(req.query),
-      })
-      // not sure if this works
-      return searchResult.body.hits.hits.map(x => x['_source'])
+      try {
+        const searchResult = yield elasticClient.search({
+          index: process.env.INDEX_NAME,
+          body: generateElasticQuery(req.query),
+        })
+        return searchResult.body.hits.hits.map(x => x['_source'])
+      } catch (e) {
+        // just respond with elastics error
+        // usually a 404
+        res.code(e.meta.statusCode)
+        res.send()
+      }
     }),
   )
   next()

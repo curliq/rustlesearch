@@ -18,10 +18,13 @@ fastify.register(cors)
 
 fastify.register(api, {prefix})
 
+// catchall error handler
 fastify.addHook(
   'onError',
-  co(function * (request, reply, error) {
+  co(function * (req, res, error) {
     logger.error(error)
+    res.code(500)
+    res.send()
   }),
 )
 
