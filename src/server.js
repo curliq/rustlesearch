@@ -19,10 +19,6 @@ app.use(
 )
 app.use(helmet())
 app.use(prefix, api)
-app.use((err, req, res, next) => {
-  logger.error(err)
-  res.status(500).send('Something broke!')
-})
 
 app.listen(process.env.APP_PORT, () => {
   logger.info(`App listening at http://localhost:${process.env.APP_PORT}`)
