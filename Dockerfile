@@ -7,7 +7,7 @@ RUN yarn build
 FROM node:12-alpine
 WORKDIR /app
 COPY --from=builder /build/dist ./dist
-COPY package.json yarn.lock .
+COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile --production && \
         chown -R node:node /app
 
