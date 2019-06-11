@@ -43,6 +43,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "7.1.0",
     "bluebird": "3.5.5",
+    "cors": "2.8.5",
     "date-fns": "1.30.1",
     "dotenv": "8.0.0",
     "etl": "0.6.3",
