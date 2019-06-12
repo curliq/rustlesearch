@@ -2259,6 +2259,11 @@ expect@^24.8.0:
     jest-message-util "^24.8.0"
     jest-regex-util "^24.3.0"
 
+express-graceful-shutdown@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/express-graceful-shutdown/-/express-graceful-shutdown-1.0.0.tgz#5c201eeefc41db662f8dd7bccd160cc9e419e7b0"
+  integrity sha512-Lez1DoZ3/2e/lr/RWS97vlP36k3+UrsARAjuKNEXUo8nAp+JBUCTxLCH25KPadjFQKG4cCaqAUu0f93F1+hK8g==
+
 express-pino-logger@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/express-pino-logger/-/express-pino-logger-4.0.0.tgz#775cf253a4e0e7ee2c24804f8a32900d6d0168ca"
