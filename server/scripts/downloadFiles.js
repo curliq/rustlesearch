@@ -41,7 +41,15 @@ const getUrlList = (channels, daysBack) =>
     R.inc,
     R.range(1),
     R.map(day => today.minus({days: day})),
+<<<<<<< HEAD:server/scripts/downloadFiles.js
     R.map(date => channels.map(channel => toPathAndUrl({channel, date}))),
+=======
+    R.map(date =>
+      channels.map(channel =>
+        toPathAndUrl({channel, date}),
+      ),
+    ),
+>>>>>>> Switched to single repo:scripts/downloadFiles.js
     R.unnest,
   )(daysBack)
 
