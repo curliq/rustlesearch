@@ -30,9 +30,7 @@ const pinoOptions = {
   level: process.env.LOG_LEVEL,
   prettyPrint: !isProd(),
   timestamp: () => {
-    return `,"time":"${DateTime.utc().toLocaleString(
-      DateTime.DATETIME_SHORT_WITH_SECONDS,
-    )}"`
+    return `,"time":"${DateTime.utc().toISO()}"`
   },
   serializers: {
     req: req => getLoggerInfo(req.raw),
