@@ -15,7 +15,8 @@ services:
 
   redis:
     image: redis:5-alpine
-    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
+    command:
+      ['redis-server', '/usr/local/etc/redis/redis.conf']
     restart: unless-stopped
     env_file: .env
     networks:

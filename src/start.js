@@ -5,12 +5,16 @@ import logger from '@lib/logger'
 import {isProd} from '@lib/environment'
 
 if (cluster.isMaster) {
-  const workerCount = isProd() ? process.env.WORKER_COUNT : 1
+  const workerCount = isProd()
+    ? process.env.WORKER_COUNT
+    : 1
 
   for (let i = 0; i < workerCount; i += 1) cluster.fork()
 
   logger.info(`Started ${workerCount} workers`)
-  logger.info(`App listening at http://localhost:${process.env.APP_PORT}`)
+  logger.info(
+    `App listening at http://localhost:${process.env.APP_PORT}`,
+  )
 } else {
   const app = require('./server')
   const server = http.createServer(app)
@@ -23,5 +27,7 @@ cluster.on('exit', worker => {
 })
 
 cluster.on('error', err => {
-  logger.error(`Got error from worker process: ${err.message}`)
+  logger.error(
+    `Got error from worker process: ${err.message}`,
+  )
 })

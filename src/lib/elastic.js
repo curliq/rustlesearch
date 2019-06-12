@@ -16,7 +16,11 @@ export const generateElasticQuery = ({
 
   if (username) must.push({match: {username: username}})
 
-  if (text) must.push({match: {text: {query: text, operator: 'AND'}}})
+  if (text) {
+    must.push({
+      match: {text: {query: text, operator: 'AND'}},
+    })
+  }
 
   return {
     size: 100,

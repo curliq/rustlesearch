@@ -1,4 +1,7 @@
-import {elasticClient, generateElasticQuery} from '@lib/elastic'
+import {
+  elasticClient,
+  generateElasticQuery,
+} from '@lib/elastic'
 import {co} from '@lib/util'
 import logger from '@lib/logger'
 import express from 'express'
@@ -39,7 +42,9 @@ router.get(
         index: process.env.INDEX_NAME,
         body: generateElasticQuery(req.query),
       })
-      res.json(searchResult.body.hits.hits.map(x => x['_source']))
+      res.json(
+        searchResult.body.hits.hits.map(x => x['_source']),
+      )
     } catch (e) {
       // just respond with elastics error
       // usually a 404

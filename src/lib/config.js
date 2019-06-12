@@ -13,5 +13,7 @@ const ourEnv = [
 ourEnv.forEach(
   val =>
     process.env[val]
-    || throw new Error(`${val} not found in configuration file`),
+    || throw new Error(
+      `${val} not found in configuration file`,
+    ),
 )
