@@ -24,6 +24,7 @@ module.exports = {
           '@src': './src',
           '@lib': './src/lib',
           '@routes': './src/routes',
+          '@middleware': './src/middleware',
         },
       },
     ],

@@ -1,5 +1,5 @@
 import express from 'express'
-import {loggerMiddleware} from '@lib/logger'
+import loggerMiddleware from '@middleware/express-logger'
 import helmet from 'helmet'
 import cors from 'cors'
 import api from '@routes/api'
@@ -16,6 +16,7 @@ app.use(
   loggerMiddleware({
     level: 'info',
     ignore: [`${prefix}/healthcheck`],
+    honorDNT: true,
   }),
 )
 app.use(helmet())
