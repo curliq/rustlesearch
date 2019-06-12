@@ -1,19 +1,29 @@
 import pino from 'pino'
 import {isProd} from '@lib/environment'
-import {DateTime} from 'luxon'
 
 const name = process.env.APP_NAME
 
+const pad = n => `00${n}`.slice(-2)
+
 const getDate = timestamp => {
-  const parsed = parseInt(timestamp)
-  if (isNaN(parsed)) return undefined
-  const date = DateTime.fromMillis(parsed)
-  return date.toFormat('yyyy-MM-dd')
+  const ts = parseInt(timestamp)
+  if (isNaN(ts)) return undefined
+  const date = new Date(ts)
+  const formattedDate = `${date.getFullYear()}-${pad(
+    date.getMonth(),
+  )}-${pad(date.getDay())}`
+  return formattedDate
 }
 
 const getLoggerInfo = req => {
   const ip = req.headers['X-Real-IP']
-  const {channel, username, text, startingDate, endingDate} = req.query
+  const {
+    channel,
+    username,
+    text,
+    startingDate,
+    endingDate,
+  } = req.query
   return {
     ip,
     channel,
@@ -30,7 +40,7 @@ const pinoOptions = {
   level: process.env.LOG_LEVEL,
   prettyPrint: !isProd(),
   timestamp: () => {
-    return `,"time":"${DateTime.utc().toISO()}"`
+    return `,"time":"${new Date(Date.now()).toISOString()}"`
   },
   serializers: {
     req: req => getLoggerInfo(req.raw),
