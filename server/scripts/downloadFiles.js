@@ -2,7 +2,7 @@ const fs = require('fs')
 const request = require('request')
 const util = require('util')
 const fg = require('fast-glob')
-const {subDays, format} = require('date-fns')
+const {DateTime} = require('luxon')
 const Promise = require('bluebird')
 const R = require('ramda')
 
@@ -20,13 +20,13 @@ const basePath = './data/rustle'
 if (!existsSync(basePath))
   mkdirSync(basePath, {recursive: true})
 
-const today = new Date()
+const today = DateTime.utc()
 
 // Smol Functions
 const notEq = R.complement(R.equals)
-const fullDateFormat = date =>
-  format(date, 'MMMM YYYY/YYYY-MM-DD')
-const fileDateFormat = date => format(date, 'YYYY-MM-DD')
+const fullDateFormat = date => date.toFormat('MMMM yyyy/yyyy-MM-dd')
+const fileDateFormat = date => date.toFormat('yyyy-MM-dd')
+
 const parseByLine = R.pipe(
   R.split('\n'),
   R.filter(notEq('')),
@@ -43,7 +43,7 @@ const getUrlList = (channels, daysBack) =>
   R.pipe(
     R.inc,
     R.range(1),
-    R.map(day => subDays(today, day)),
+    R.map(day => today.minus({days: day})),
     R.map(date =>
       channels.map(channel =>
         toPathAndUrl({channel, date}),
