@@ -1,6 +1,6 @@
 import {elasticClient, generateElasticQuery} from '@lib/elastic'
 import {co} from '@lib/util'
-import {logger} from '@lib/logger'
+import logger from '@lib/logger'
 import express from 'express'
 import RateLimiter from 'express-rate-limit'
 import RedisStore from 'rate-limit-redis'

@@ -1,7 +1,7 @@
 import '@lib/config'
 import cluster from 'cluster'
 import http from 'http'
-import {logger} from '@lib/logger'
+import logger from '@lib/logger'
 import {isProd} from '@lib/environment'
 
 if (cluster.isMaster) {

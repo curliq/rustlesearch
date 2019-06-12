@@ -5,7 +5,7 @@ const {Client} = require('@elastic/elasticsearch')
 const _ = require('lodash')
 const util = require('util')
 const etl = require('etl')
-const {logger} = require('@lib/logger')
+const logger = require('@lib/logger')
 
 const basePath = './data/rustle'
 const messageRegex = /^\[(.*?)\]\s(.*?):\s(.*)$/

@@ -39,7 +39,7 @@ const pinoOptions = {
   },
 }
 
-export const logger = pino(pinoOptions)
+export default pino(pinoOptions)
 
 export const loggerMiddleware = options => (req, res, next) => {
   const {ignore} = options
