@@ -17,5 +17,6 @@ module.exports = {
     'operator-linebreak': ['error', 'before'],
     'comma-dangle': ['error', 'always-multiline'],
     'curly': ['error', 'multi-or-nest'],
+    'max-len': ['error', 80],
   },
 }
