@@ -59,7 +59,6 @@
     "module-alias": "2.2.0",
     "node-etl": "1.0.3",
     "pino": "5.12.6",
-    "pino-pretty": "3.1.0",
     "ramda": "0.26.1",
     "rate-limit-redis": "1.6.0",
     "redis-mock": "0.44.0",
@@ -91,6 +90,7 @@
     "jest": "24.8.0",
     "jest-cli": "24.8.0",
     "jest-raw-loader": "1.0.1",
+    "pino-pretty": "3.1.0",
     "prettier": "1.18.2",
     "yaml": "1.6.0",
     "yaml-unist-parser": "1.0.0"
