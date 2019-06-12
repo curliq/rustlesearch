@@ -2,49 +2,24 @@ version: '3.7'
 services:
   rustlesearch_api:
     image: rustlesearch_api:latest
-    container_name: rustlesearch_api
     build:
       context: .
     restart: unless-stopped
     env_file: .env
+    networks:
+      - rustle-host-bridge
     expose:
       - $APP_PORT
     depends_on:
-      - elasticsearch
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
-    container_name: rustlesearch_elastic
-    restart: unless-stopped
-    environment:
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - 'ES_JAVA_OPTS=-Xms8g -Xmx8g'
-      - discovery.type=single-node
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - ./data/esdata:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.1.1
-    container_name: rustlesearch_kibana
-    restart: unless-stopped
-    depends_on:
-      - elasticsearch
-    ports:
-      - 5601:5601
+      - redis
 
   redis:
     image: redis:5-alpine
-    container_name: rustlesearch_redis
     command: ['redis-server', '/usr/local/etc/redis/redis.conf']
     restart: unless-stopped
     env_file: .env
+    networks:
+      - rustle-host-bridge
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 30s
@@ -54,3 +29,10 @@ services:
       - ./config/redis.conf:/usr/local/etc/redis/redis.conf
     expose:
       - $REDIS_PORT
+
+networks:
+  rustle-host-bridge:
+    driver: bridge
+    driver_opts:
+      subnet: 10.0.0.0/24
+      gateway: 10.0.0.1
