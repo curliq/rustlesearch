@@ -1,3 +1,4 @@
+import '@lib/config'
 import express from 'express'
 import {logger, loggerMiddleware} from '@lib/logger'
 import helmet from 'helmet'
