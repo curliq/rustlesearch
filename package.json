@@ -10,8 +10,8 @@
   "scripts": {
     "pretty": "prettier --loglevel warn --write '**/*.{js,yml,json}' && eslint --ext .js --fix ./",
     "test": "jest --forceExit",
-    "start:app": "node --require @babel/register --require dotenv/config src/server.js",
-    "start:app:production": "node --require dotenv/config dist/server.js",
+    "start:app": "node --require @babel/register --require dotenv/config src/start.js",
+    "start:app:production": "node --require dotenv/config dist/start.js",
     "build": "babel -d ./dist ./src --copy-files --delete-dir-on-start",
     "run:download": "node --require dotenv/config ./scripts/downloadFiles.js",
     "run:index": "node --require @babel/register --require dotenv/config ./scripts/indexToElasticsearch.js",

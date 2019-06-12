@@ -1,9 +1,9 @@
-import '@lib/config'
 import express from 'express'
-import {logger, loggerMiddleware} from '@lib/logger'
+import {loggerMiddleware} from '@lib/logger'
 import helmet from 'helmet'
 import cors from 'cors'
 import api from '@routes/api'
+
 const prefix = process.env.ROUTE_PREFIX
 
 const app = express()
@@ -20,9 +20,5 @@ app.use(
 )
 app.use(helmet())
 app.use(prefix, api)
-
-app.listen(process.env.APP_PORT, () => {
-  logger.info(`App listening at http://localhost:${process.env.APP_PORT}`)
-})
 
 export default app
