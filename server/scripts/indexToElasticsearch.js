@@ -46,7 +46,8 @@ const lineToMessage = (line, channel) => {
         username,
         text,
       }
-    } else logger.debug(`${username} in blacklist, ignoring message...`)
+    } else
+      logger.debug(`${username} in blacklist, ignoring message...`)
   } catch (e) {
     logger.warn(`Error: ${e.message}. ${channel}, ${line}, ${line.length}`)
   }
@@ -63,7 +64,7 @@ const pathsToMessages = async paths => {
         .pipe(etl.map(line => lineToMessage(line.text, channel)))
         .pipe(etl.collect(2000))
         .pipe(
-          etl.elastic.index(client, process.env.INDEX_NAME, 'message', {
+          etl.elastic.index(client, process.env.INDEX_NAME, null, {
             concurrency: 10,
           }),
         )
