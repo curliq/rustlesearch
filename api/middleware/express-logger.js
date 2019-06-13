@@ -20,7 +20,7 @@ export default options => {
 
   return (req, res, next) => {
     if (ignore.includes(req.path)) next()
-    if (honorDNT && req.header('DNT')) next()
+    if (honorDNT && req.headers['DNT']) next()
 
     logger[level](req)
     next()
