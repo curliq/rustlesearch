@@ -22,7 +22,7 @@
       </p>
     </div>
     <search-form
-      v-model="query"
+      :query.sync="query"
       :search-loading="searchLoading"
       @search="getResults"
     />
@@ -39,6 +39,8 @@ import axios from '@/axios'
 import Results from '@/components/Results.vue'
 import {DateTime} from 'luxon'
 import SearchForm from '@/components/SearchForm.vue'
+import {getToday, dateToSeconds} from '@/utils'
+import {mergeRight, pick} from 'ramda'
 export default {
   components: {
     Results,
@@ -53,7 +55,7 @@ export default {
         startingDate: DateTime.utc()
           .minus({days: 30})
           .toFormat('yyyy/MM/dd'),
-        endingDate: DateTime.utc().toFormat('yyyy/MM/dd'),
+        endingDate: getToday(),
       },
       searchLoading: false,
       results: null,
@@ -61,11 +63,13 @@ export default {
   },
   mounted() {
     if (Object.entries(this.$route.query).length > 0) {
-      this.username = this.$route.query.username || null
-      this.text = this.$route.query.text || null
-      this.channel = this.$route.query.channel || null
-      this.startingDate = this.$route.query.startingDate || this.startingDate
-      this.endingDate = this.$route.query.endingDate || this.endingDate
+      this.query = mergeRight(
+        this.query,
+        pick(
+          ['username', 'text', 'channel', 'startingDate', 'endingDate'],
+          this.$route.query,
+        ),
+      )
       this.getResults()
     }
   },
@@ -75,17 +79,11 @@ export default {
         this.searchLoading = true
         const {data} = await axios.get('api/search', {
           params: {
-            username: this.username,
-            text: this.text,
-            channel: this.channel,
-            startingDate: DateTime.fromFormat(
-              this.startingDate,
-              'yyyy/MM/dd',
-            ).toMillis(),
-            endingDate: DateTime.fromFormat(
-              this.endingDate,
-              'yyyy/MM/dd',
-            ).toMillis(),
+            username: this.query.username,
+            text: this.query.text,
+            channel: this.query.channel,
+            startingDate: dateToSeconds(this.query.startingDate),
+            endingDate: dateToSeconds(this.query.endingDate),
           },
         })
         this.searchLoading = false
@@ -96,13 +94,6 @@ export default {
         }, 2000)
         console.log(e)
       }
-    },
-    copiedNotification() {
-      this.$q.notify({
-        message: 'Copied!',
-        position: 'bottom-right',
-        timeout: 1000,
-      })
     },
   },
 }

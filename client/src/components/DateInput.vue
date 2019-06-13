@@ -1,9 +1,9 @@
 <template>
   <q-input
     :value="value"
-    class="col-md-2 col-6"
     label="Start"
     dense
+    hide-bottom-space
     outlined
     mask="date"
     :rules="['date']"
@@ -21,7 +21,7 @@
         >
           <q-date
             :value="value"
-            @input="v => $emit('input', v); $refs.dateProxy.hide()"
+            @input="emitValue"
           />
         </q-popup-proxy>
       </q-icon>
@@ -37,9 +37,13 @@ export default {
       default: '',
     },
   },
+  methods: {
+    emitValue(v) {
+      this.$emit('input', v)
+      this.$refs.dateProxy.hide()
+    },
+  },
 }
 </script>
 
-<style>
-
-</style>
+<style></style>

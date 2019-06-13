@@ -24,6 +24,7 @@ const lineToMessage = (line, channel) => {
     const [, tsStr, username, text] = matched
     const ts = new Date(tsStr).toISOString()
     return {
+      _id: `${username}-${ts}`,
       ts,
       channel,
       username,
