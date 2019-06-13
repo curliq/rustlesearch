@@ -5,8 +5,8 @@ const fg = require('fast-glob')
 const {DateTime} = require('luxon')
 const Promise = require('bluebird')
 const R = require('ramda')
-
-const {existsSync, mkdirSync} = fs
+const logger = require('@lib/logger').default
+const {rustleDataPath, downloadCachePath, channelFilePath} = require('./cache')
 
 // Promisify functions
 const rp = util.promisify(request)
@@ -15,9 +15,6 @@ const writeFile = util.promisify(fs.writeFile)
 
 // "Constants"
 const baseUrl = 'https://overrustlelogs.net'
-const basePath = './data/rustle'
-
-if (!existsSync(basePath)) mkdirSync(basePath, {recursive: true})
 
 const today = DateTime.utc()
 
@@ -31,7 +28,7 @@ const parseByLine = R.pipe(
   R.filter(notEq('')),
 )
 const toPathAndUrl = ({channel, date}) => [
-  `${basePath}/${channel}::${fileDateFormat(date)}.txt`,
+  `${rustleDataPath}/${channel}::${fileDateFormat(date)}.txt`,
   `${baseUrl}/${channel} chatlog/${fullDateFormat(date)}.txt`,
 ]
 
@@ -49,35 +46,37 @@ const downloadFile = async([path, url], json = false) => {
   const res = await rp({uri: url, json})
   if (res.statusCode === 200) {
     await writeFile(path, res.body)
-    console.log(`Wrote ${path} to disk.`)
+    logger.info(`Wrote ${path} to disk.`)
   } else {
-    await writeFile('./download_cache.txt', path + '\n', {
+    await writeFile(downloadCachePath, path + '\n', {
       encoding: 'utf8',
-      flag: 'a',
+      flag: 'a+',
     })
-    console.log(`${path} 404, wrote file to download cache.`)
+    logger.info(`${path} 404, wrote file to download cache.`)
   }
 }
 
-// Main
 const main = async() => {
-  // make file if it doesnt exist
-  const channelsFile = await readFile('./channels.txt', {
+  const channelsFile = await readFile(channelFilePath, {
     flag: 'a+',
   })
-  const downloadCacheFile = await readFile('./download_cache.txt', {flag: 'a+'})
   const channels = parseByLine(channelsFile.toString())
+
+  const downloadCacheFile = await readFile(downloadCachePath, {flag: 'a+'})
   const downloadCache = parseByLine(downloadCacheFile.toString())
 
-  const allUrls = getUrlList(channels, parseInt(process.argv[2]) || 10)
-  const urlsDownloaded = await fg.async(`${basePath}/*.txt`)
-  const urls = allUrls.filter(
-    x => !(urlsDownloaded.includes(x[0]) || downloadCache.includes(x[0])),
+  const totalUrls = getUrlList(channels, parseInt(process.argv[2]) || 10)
+  const downloadedUrls = await fg.async(`${rustleDataPath}/*.txt`)
+  const urlsToDownload = totalUrls.filter(
+    x => !(downloadedUrls.includes(x[0]) || downloadCache.includes(x[0])),
   )
 
-  console.log(allUrls.length, urlsDownloaded.length, urls.length)
+  logger.info(`
+  Total days to download: ${totalUrls.length}
+  Days already downloaded: ${downloadedUrls.length}
+  Days to download right now: ${urlsToDownload.length}`)
 
-  Promise.map(urls, downloadFile, {concurrency: 20})
+  Promise.map(urlsToDownload, downloadFile, {concurrency: 20})
 }
 
 main()

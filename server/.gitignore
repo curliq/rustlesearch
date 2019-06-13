@@ -4,10 +4,6 @@
 # node 
 node_modules
 
-# cache file
-cache.txt
-download_cache.txt
-
 # logs
 *.log
 
@@ -19,3 +15,6 @@ download_cache.txt
 
 # data directory
 data/
+
+# cache path
+cache/

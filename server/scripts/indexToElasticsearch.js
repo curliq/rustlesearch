@@ -5,9 +5,9 @@ const {Client} = require('@elastic/elasticsearch')
 const _ = require('lodash')
 const util = require('util')
 const etl = require('etl')
-const logger = require('@lib/logger')
+const logger = require('@lib/logger').default
+const {indexCachePath, rustleDataPath} = require('./cache')
 
-const basePath = './data/rustle'
 const messageRegex = /^\[(.*?)\]\s(.*?):\s(.*)$/
 
 const client = new Client({
@@ -35,8 +35,8 @@ const lineToMessage = (line, channel) => {
 }
 
 const pathsToMessages = async paths => {
-  for (let filePaths of _.chunk(paths, 10)) {
-    for (let filePath of filePaths) {
+  for (const filePaths of _.chunk(paths, 10)) {
+    for (const filePath of filePaths) {
       const channel = path.parse(filePath).name.split('::')[0]
 
       await etl
@@ -51,25 +51,29 @@ const pathsToMessages = async paths => {
         )
         .promise()
     }
-    await writeFile('./cache.txt', filePaths.join('\n') + '\n', {
+    await writeFile(indexCachePath, filePaths.join('\n') + '\n', {
       encoding: 'utf8',
-      flag: 'a',
+      flag: 'a+',
     })
   }
 }
 
-const allPaths = glob.sync(`${basePath}/*.txt`)
-const cache = fs
-  .readFileSync('./cache.txt', {
+const allPaths = glob.sync(`${rustleDataPath}/*.txt`)
+const ingestedPaths = fs
+  .readFileSync(indexCachePath, {
     encoding: 'utf8',
     flag: 'a+',
   })
   .split('\n')
-const paths = allPaths.filter(x => !cache.includes(x))
-console.log(allPaths.length, cache.length, paths.length)
+const pathsToIngest = allPaths.filter(x => !ingestedPaths.includes(x))
+logger.info(`
+  Number of days: ${allPaths.length}
+  Days ingested: ${ingestedPaths.length}
+  Days to ingest: ${pathsToIngest.length}
+  `)
 client
   .info()
-  .then(() => pathsToMessages(paths))
+  .then(() => pathsToMessages(pathsToIngest))
   .catch(err => {
     logger.error(`Failed to connect to Elastic: ${err}`)
     process.exit(1)

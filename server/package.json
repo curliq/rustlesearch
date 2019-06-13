@@ -12,7 +12,7 @@
     "start:api": "node -r @babel/register -r dotenv/config api/start.js",
     "start:api:production": "node api-dist/start.js",
     "build:api": "babel -d ./api-dist ./api --copy-files --delete-dir-on-start",
-    "run:download": "node -r dotenv/config ./scripts/downloadFiles.js",
+    "run:download": "node -r @babel/register -r dotenv/config ./scripts/downloadFiles.js",
     "run:index": "node -r @babel/register -r dotenv/config ./scripts/indexToElasticsearch.js",
     "benchmark:index": "node -r dotenv/config ./scripts/benchmarkIngest.js"
   },
@@ -47,6 +47,7 @@
     "helmet": "3.18.0",
     "ioredis": "4.10.0",
     "lodash": "4.17.11",
+    "luxon": "1.16.0",
     "module-alias": "2.2.0",
     "node-etl": "1.0.3",
     "pino": "5.12.6",
