@@ -1,7 +1,4 @@
-import {
-  elasticClient,
-  generateElasticQuery,
-} from '@lib/elastic'
+import {elasticClient, generateElasticQuery} from '@lib/elastic'
 import {co, fs} from '@lib/util'
 import logger from '@lib/logger'
 import express from 'express'

@@ -33,8 +33,7 @@ const pinoOptions = {
   base: {name},
   level: process.env.LOG_LEVEL,
   prettyPrint: !isProd(),
-  timestamp: () =>
-    `,"time":"${new Date(Date.now()).toISOString()}"`,
+  timestamp: () => `,"time":"${new Date(Date.now()).toISOString()}"`,
   serializers: {
     req: req => getLoggerInfo(req.raw),
   },

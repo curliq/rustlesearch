@@ -2,9 +2,7 @@ import logger from '@lib/logger'
 import {invert} from 'ramda'
 
 export default options => {
-  const supportedLevels = Object.keys(
-    invert(logger.levels.labels),
-  )
+  const supportedLevels = Object.keys(invert(logger.levels.labels))
   const level = options?.level ?? 'info'
   const ignore = options?.ignore ?? []
   const honorDNT = options?.honorDNT ?? false
