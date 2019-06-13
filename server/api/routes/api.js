@@ -26,7 +26,7 @@ const limiter = new RateLimiter({
 router.get(
   '/healthcheck',
   co(function* (req, res) {
-    res.send('ALIVE')
+    res.send('ALIVE\n')
   }),
 )
 
@@ -53,7 +53,8 @@ router.get(
   '/channels',
   co(function* (req, res) {
     const channelsFile = yield fs.readFileAsync('./channels.txt', 'utf8')
-    res.json(channelsFile.trim().split('\n'))
+    const channels = channelsFile.trim().split('\n')
+    res.json(channels)
   }),
 )
 

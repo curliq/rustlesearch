@@ -16,8 +16,8 @@ const blacklist = new Set(
     encoding: 'utf8',
     flag: 'a+',
   })
+    .trim()
     .split('\n')
-    .filter(name => name !== '')
     .map(name => name.toLowerCase()),
 )
 
