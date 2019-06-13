@@ -1,17 +1,14 @@
 import pino from 'pino'
 import {isProd} from '@lib/environment'
+import {getISODayDate} from '@lib/util'
 
 const name = process.env.APP_NAME
-
-const pad = n => `00${n}`.slice(-2)
 
 const getDate = timestamp => {
   const ts = parseInt(timestamp)
   if (isNaN(ts)) return undefined
   const date = new Date(ts)
-  const formattedDate = `${date.getFullYear()}-${pad(date.getMonth())}-${pad(
-    date.getDay(),
-  )}`
+  const formattedDate = getISODayDate(date)
   return formattedDate
 }
 

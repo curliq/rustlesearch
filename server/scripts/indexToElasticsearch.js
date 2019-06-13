@@ -5,6 +5,7 @@ const {Client} = require('@elastic/elasticsearch')
 const _ = require('lodash')
 const etl = require('etl')
 const {promisify} = require('util')
+const {getISODayDate} = require('@lib/util')
 const logger = require('@lib/logger').default
 const {blacklistPath, indexCachePath, rustleDataPath} = require('./cache')
 
@@ -26,19 +27,21 @@ const client = new Client({
   node: process.env.ELASTIC_LOCATION,
 })
 
-// const blacklist =
-
 const lineToMessage = (line, channel) => {
   if (line.length <= 0) return
   try {
     const replacedLine = line.replace('\r', '')
     const matched = replacedLine.match(messageRegex)
     const [, tsStr, username, text] = matched
-    const ts = Math.floor(new Date(tsStr) / 1000)
+    const parsedDate = new Date(tsStr)
+    const ts = Math.floor(parsedDate / 1000)
+    const date = getISODayDate(parsedDate)
+
     if (!blacklist.has(username.toLowerCase())) {
       return {
         _id: `${username}-${ts}`,
         ts,
+        date,
         channel,
         username,
         text,
