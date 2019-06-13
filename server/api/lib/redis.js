@@ -1,8 +1,8 @@
 import Redis from 'ioredis'
 import mockRedis from 'redis-mock'
-import {isProd} from '@lib/environment'
+import {isDev} from '@lib/environment'
 
-const getRedis = opts => (isProd() ? new Redis(opts) : mockRedis.createClient())
+const getRedis = opts => (isDev() ? mockRedis.createClient() : new Redis(opts))
 
 const redisOptions = {
   host: process.env.REDIS_HOST,
