@@ -1,0 +1,8 @@
+./data/rustle/Vaushgg::.txt
+./data/rustle/Vaushgg::.txt
+./data/rustle/Vaushgg::.txt
+./data/rustle/Vaushgg::.txt
+./data/rustle/Vaushgg::.txt
+./data/rustle/Vaushgg::2019-05-13.txt
+./data/rustle/Vaushgg::2019-05-14.txt
+./data/rustle/Vaushgg::2019-05-15.txt

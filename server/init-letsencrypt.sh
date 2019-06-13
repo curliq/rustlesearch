@@ -27,10 +27,8 @@ echo "### Creating dummy certificate for $domains ..."
 path="/etc/letsencrypt/live/$domains"
 mkdir -p "$data_path/conf/live/$domains"
 
-for domain in "${domains[@]}"; do
-  echo "Generating dhparams from $domain"
-  openssl dhparam -out "$data_path/conf/live/$domain/dhparam.pem" -dsaparam 4096
-done
+echo "Generating dhparams" 
+openssl dhparam -out "$data_path/conf/dhparam.pem" -dsaparam 4096
 
 docker-compose run --rm --entrypoint "\
   openssl req -x509 -nodes -newkey rsa:1024 -days 1\

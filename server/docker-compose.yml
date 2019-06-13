@@ -6,8 +6,8 @@ services:
       context: .
     restart: unless-stopped
     env_file: .env
-    ports:
-      - ${APP_PORT}:${APP_PORT}
+    expose:
+      - ${APP_PORT}
     depends_on:
       - redis
 
@@ -33,12 +33,16 @@ services:
     restart: unless-stopped
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -c /nginx/config/nginx.conf -g "daemon off;"'''
     env_file: .env
-    networks:
-      - rustle-host-bridge
     volumes:
       - ./config/nginx/:/nginx/config/
-      - ./data/certbot/conf/live/:/nginx/keys/
+      - ./data/certbot/conf/:/etc/letsencrypt/
       - ./data/certbot/www:/var/www/certbot/
+    ports:
+      - 443:443
+      - 80:80
+    depends_on:
+      - redis
+      - rustlesearch_api
 
   certbot:
     image: certbot/certbot
@@ -46,10 +50,3 @@ services:
     volumes:
       - ./data/certbot/conf:/etc/letsencrypt/
       - ./data/certbot/www/:/var/www/certbot
-
-networks:
-  rustle-host-bridge:
-    driver: bridge
-    driver_opts:
-      subnet: 10.0.0.0/24
-      gateway: 10.0.0.1
