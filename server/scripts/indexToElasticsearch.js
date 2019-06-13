@@ -46,8 +46,7 @@ const lineToMessage = (line, channel) => {
         username,
         text,
       }
-    } else
-      logger.debug(`${username} in blacklist, ignoring message...`)
+    } else logger.debug(`${username} in blacklist, ignoring message...`)
   } catch (e) {
     logger.warn(`Error: ${e.message}. ${channel}, ${line}, ${line.length}`)
   }
