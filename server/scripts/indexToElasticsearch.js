@@ -1,12 +1,24 @@
-const fs = require('fs')
+const {readFileSync, writeFile} = require('fs')
 const path = require('path')
 const glob = require('glob')
 const {Client} = require('@elastic/elasticsearch')
 const _ = require('lodash')
-const util = require('util')
 const etl = require('etl')
+const {promisify} = require('util')
 const logger = require('@lib/logger').default
-const {indexCachePath, rustleDataPath} = require('./cache')
+const {blacklistPath, indexCachePath, rustleDataPath} = require('./cache')
+
+const pWriteFile = promisify(writeFile)
+
+const blacklist = new Set(
+  readFileSync(blacklistPath, {
+    encoding: 'utf8',
+    flag: 'a+',
+  })
+    .split('\n')
+    .filter(name => name !== '')
+    .map(name => name.toLowerCase()),
+)
 
 const messageRegex = /^\[(.*?)\]\s(.*?):\s(.*)$/
 
@@ -14,7 +26,7 @@ const client = new Client({
   node: process.env.ELASTIC_LOCATION,
 })
 
-const writeFile = util.promisify(fs.writeFile)
+// const blacklist =
 
 const lineToMessage = (line, channel) => {
   if (line.length <= 0) return
@@ -22,13 +34,15 @@ const lineToMessage = (line, channel) => {
     const replacedLine = line.replace('\r', '')
     const matched = replacedLine.match(messageRegex)
     const [, tsStr, username, text] = matched
-    const ts = new Date(tsStr).toISOString()
-    return {
-      ts,
-      channel,
-      username,
-      text,
-    }
+    const ts = Math.floor(new Date(tsStr) / 1000)
+    if (!blacklist.has(username.toLowerCase())) {
+      return {
+        ts,
+        channel,
+        username,
+        text,
+      }
+    } else logger.debug(`${username} in blacklist, ignoring message...`)
   } catch (e) {
     logger.warn(`Error: ${e.message}. ${channel}, ${line}, ${line.length}`)
   }
@@ -51,7 +65,7 @@ const pathsToMessages = async paths => {
         )
         .promise()
     }
-    await writeFile(indexCachePath, filePaths.join('\n') + '\n', {
+    await pWriteFile(indexCachePath, filePaths.join('\n') + '\n', {
       encoding: 'utf8',
       flag: 'a+',
     })
@@ -59,12 +73,10 @@ const pathsToMessages = async paths => {
 }
 
 const allPaths = glob.sync(`${rustleDataPath}/*.txt`)
-const ingestedPaths = fs
-  .readFileSync(indexCachePath, {
-    encoding: 'utf8',
-    flag: 'a+',
-  })
-  .split('\n')
+const ingestedPaths = readFileSync(indexCachePath, {
+  encoding: 'utf8',
+  flag: 'a+',
+}).split('\n')
 const pathsToIngest = allPaths.filter(x => !ingestedPaths.includes(x))
 logger.info(`
   Number of days: ${allPaths.length}
