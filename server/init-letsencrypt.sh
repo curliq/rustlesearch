@@ -32,7 +32,7 @@ openssl dhparam -out "$data_path/conf/dhparam.pem" -dsaparam 4096
 
 docker-compose run --rm --entrypoint "\
   openssl req -x509 -nodes -newkey rsa:1024 -days 1\
-    -keyout '$path/privkey.pem' '','
+    -keyout '$path/privkey.pem' \
     -out '$path/fullchain.pem' \
     -subj '/CN=localhost'" certbot
 echo
