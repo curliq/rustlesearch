@@ -27,9 +27,30 @@ services:
       timeout: 5s
       retries: 3
     volumes:
-      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./config/redis/redis.conf:/usr/local/etc/redis/redis.conf
     expose:
       - $REDIS_PORT
+
+  nginx:
+    image: nginx:1.17-alpine
+    build:
+      context: ./nginx/
+    restart: unless-stopped
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -c /nginx/config/nginx.conf -g "daemon off;"'''
+    env_file: .env
+    networks:
+      - rustle-host-bridge
+    volumes:
+      - ./config/nginx/:/nginx/config/
+      - ./data/certbot/conf/live/:/nginx/keys/
+      - ./data/certbot/www:/var/www/certbot/
+
+  certbot:
+    image: certbot/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt/
+      - ./data/certbot/www/:/var/www/certbot
 
 networks:
   rustle-host-bridge:
