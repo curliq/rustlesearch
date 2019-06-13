@@ -5,7 +5,7 @@ const {Client} = require('@elastic/elasticsearch')
 const _ = require('lodash')
 const etl = require('etl')
 const {promisify} = require('util')
-const {getISODayDate} = require('@lib/util')
+const {DateTime} = require('luxon')
 const logger = require('@lib/logger').default
 const {blacklistPath, indexCachePath, rustleDataPath} = require('./cache')
 
@@ -33,9 +33,9 @@ const lineToMessage = (line, channel) => {
     const replacedLine = line.replace('\r', '')
     const matched = replacedLine.match(messageRegex)
     const [, tsStr, username, text] = matched
-    const parsedDate = new Date(tsStr)
-    const ts = Math.floor(parsedDate / 1000)
-    const date = getISODayDate(parsedDate)
+    const parsedDate = DateTime.fromSQL(tsStr)
+    const ts = parsedDate.toSeconds()
+    const date = parsedDate.toISODate()
 
     if (!blacklist.has(username.toLowerCase())) {
       return {

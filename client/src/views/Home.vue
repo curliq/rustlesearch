@@ -5,7 +5,7 @@
   >
     <div class="flex flex-center column">
       <img
-        alt="Quasar logo"
+        alt="RustleMagnify"
         src="../assets/rustle_magnify.png"
       >
       <p class="text-h2">
@@ -39,8 +39,11 @@ import axios from '@/axios'
 import Results from '@/components/Results.vue'
 import {DateTime} from 'luxon'
 import SearchForm from '@/components/SearchForm.vue'
-import {getToday, dateToSeconds} from '@/utils'
+import {getToday} from '@/utils'
 import {mergeRight, pick} from 'ramda'
+const pickQuery = pick([
+  'username', 'text', 'channel', 'startingDate', 'endingDate',
+])
 export default {
   components: {
     Results,
@@ -65,10 +68,7 @@ export default {
     if (Object.entries(this.$route.query).length > 0) {
       this.query = mergeRight(
         this.query,
-        pick(
-          ['username', 'text', 'channel', 'startingDate', 'endingDate'],
-          this.$route.query,
-        ),
+        pickQuery(this.$route.query)
       )
       this.getResults()
     }
@@ -78,13 +78,7 @@ export default {
       try {
         this.searchLoading = true
         const {data} = await axios.get('api/search', {
-          params: {
-            username: this.query.username,
-            text: this.query.text,
-            channel: this.query.channel,
-            startingDate: dateToSeconds(this.query.startingDate),
-            endingDate: dateToSeconds(this.query.endingDate),
-          },
+          params: pickQuery(this.query),
         })
         this.searchLoading = false
         this.results = data

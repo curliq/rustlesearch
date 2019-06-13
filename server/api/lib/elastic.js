@@ -1,5 +1,5 @@
 import {Client} from '@elastic/elasticsearch'
-
+import {DateTime} from 'luxon'
 const elasticLocation = {node: process.env.ELASTIC_LOCATION}
 
 export const elasticClient = new Client(elasticLocation)
@@ -30,9 +30,13 @@ export const generateElasticQuery = ({
         filter: [
           {
             range: {
-              ts: {
-                gte: startingDate || 'now-30d/h',
-                lt: endingDate || 'now/h',
+              date: {
+                gte:
+                  startingDate
+                  || DateTime.utc()
+                    .minus({days: 30})
+                    .toFormat('yyyy/MM/dd'),
+                lt: endingDate || DateTime.utc().toFormat('yyyy/MM/dd'),
               },
             },
           },
