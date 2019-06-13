@@ -2,7 +2,9 @@ import logger from '@lib/logger'
 import {invert} from 'ramda'
 
 export default options => {
-  const supportedLevels = Object.keys(invert(logger.levels.labels))
+  const supportedLevels = Object.keys(
+    invert(logger.levels.labels),
+  )
   const level = options?.level ?? 'info'
   const ignore = options?.ignore ?? []
   const honorDNT = options?.honorDNT ?? false
@@ -14,8 +16,8 @@ export default options => {
     throw new Error(`ignore option must be array. Got: ${ignore}`)
 
   return (req, res, next) => {
-    if (ignore.includes(req.path)) next()
-    if (honorDNT && req.headers?.DNT) next()
+    if (ignore.includes(req.path)) return next()
+    if (honorDNT && req.headers['DNT']) return next()
 
     logger[level](req)
     next()

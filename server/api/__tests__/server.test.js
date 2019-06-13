@@ -1,8 +1,7 @@
 import app from '@api/server'
 import request from 'supertest'
 
-const getApiURL = path =>
-  `${process.env.ROUTE_PREFIX}/${path}`
+const getApiURL = path => `${process.env.ROUTE_PREFIX}/${path}`
 
 const getManyRequests = (n, url, query) => {
   const requests = []
@@ -17,9 +16,7 @@ const getManyRequests = (n, url, query) => {
 
 describe('server test', () => {
   test('healthcheck passes', async() => {
-    const response = await request(app).get(
-      getApiURL('healthcheck'),
-    )
+    const response = await request(app).get(getApiURL('healthcheck'))
     expect(response.statusCode).toBe(200)
     expect(response.text).toBe('ALIVE')
   })

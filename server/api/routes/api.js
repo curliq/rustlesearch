@@ -1,10 +1,14 @@
-import {elasticClient, generateElasticQuery} from '@lib/elastic'
+import {
+  elasticClient,
+  generateElasticQuery,
+} from '@lib/elastic'
 import {co, fs} from '@lib/util'
 import logger from '@lib/logger'
 import express from 'express'
 import RateLimiter from 'express-rate-limit'
 import RedisStore from 'rate-limit-redis'
 import {redisLimiter} from '@lib/redis'
+
 const router = express.Router()
 
 // throws here if we can't connect
@@ -55,4 +59,5 @@ router.get(
     res.json(channelsFile.trim().split('\n'))
   }),
 )
+
 export default router

@@ -6,21 +6,16 @@ services:
       context: .
     restart: unless-stopped
     env_file: .env
-    networks:
-      - rustle-host-bridge
-    expose:
-      - $APP_PORT
+    ports:
+      - ${APP_PORT}:${APP_PORT}
     depends_on:
       - redis
 
   redis:
     image: redis:5-alpine
-    command:
-      ['redis-server', '/usr/local/etc/redis/redis.conf']
+    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
     restart: unless-stopped
     env_file: .env
-    networks:
-      - rustle-host-bridge
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 30s
