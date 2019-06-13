@@ -8,6 +8,10 @@ const ourEnv = [
   'ROUTE_PREFIX',
   'REDIS_HOST',
   'REDIS_PORT',
+  'WORKER_COUNT',
+  'HOSTNAME',
+  'RATE_LIMIT',
+  'RATE_LIMIT_TIMEOUT',
 ]
 
 ourEnv.forEach(

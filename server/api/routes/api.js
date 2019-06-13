@@ -19,8 +19,8 @@ elasticClient
 
 const limiter = new RateLimiter({
   store: new RedisStore({client: redisLimiter}),
-  windowMs: 4000,
-  max: 2,
+  windowMs: process.env.RATE_LIMIT_TIMEOUT,
+  max: process.env.RATE_LIMIT,
 })
 
 router.get(
