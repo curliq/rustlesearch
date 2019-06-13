@@ -1,6 +1,5 @@
 import '@lib/config'
 import cluster from 'cluster'
-import http from 'http'
 import logger from '@lib/logger'
 import {isProd} from '@lib/environment'
 
@@ -16,9 +15,8 @@ if (cluster.isMaster) {
     `App listening at http://localhost:${process.env.APP_PORT}`,
   )
 } else {
-  const app = require('./server')
-  const server = http.createServer(app)
-  server.listen(process.env.APP_PORT)
+  const app = require('./server').default
+  app.listen(process.env.APP_PORT)
 }
 
 cluster.on('exit', worker => {
