@@ -16,4 +16,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
 
 USER node
 EXPOSE $APP_PORT
-CMD yarn start:app:production
+CMD yarn start:api:production
