@@ -25,5 +25,5 @@ cluster.on('exit', worker => {
 })
 
 cluster.on('error', err => {
-  logger.error(`Got error from worker process: ${err.message}`)
+  logger.error({error: err.message})
 })

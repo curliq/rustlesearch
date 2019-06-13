@@ -48,7 +48,12 @@ const lineToMessage = (line, channel) => {
       }
     } else logger.debug(`${username} in blacklist, ignoring message...`)
   } catch (e) {
-    logger.warn(`Error: ${e.message}. ${channel}, ${line}, ${line.length}`)
+    logger.warn({
+      error: e.message,
+      channel,
+      message: line,
+      messageLength: line.length,
+    })
   }
 }
 
@@ -82,11 +87,11 @@ const ingestedPaths = readFileSync(indexCachePath, {
   flag: 'a+',
 }).split('\n')
 const pathsToIngest = allPaths.filter(x => !ingestedPaths.includes(x))
-logger.info(`
-  Number of days: ${allPaths.length}
-  Days ingested: ${ingestedPaths.length}
-  Days to ingest: ${pathsToIngest.length}
-  `)
+logger.info({
+  daysOfLogs: allPaths.length,
+  daysIngested: ingestedPaths.length,
+  daysToIngest: pathsToIngest.length,
+})
 client
   .info()
   .then(() => pathsToMessages(pathsToIngest))
