@@ -1,5 +1,6 @@
-import app from '@src/server'
+import app from '@api/server'
 import request from 'supertest'
+
 const getApiURL = path =>
   `${process.env.ROUTE_PREFIX}/${path}`
 

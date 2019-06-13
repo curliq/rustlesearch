@@ -15,7 +15,7 @@ download_cache.txt
 .tern-project
 
 # built app
-dist/
+*dist/
 
 # data directory
 data/
