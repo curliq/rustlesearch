@@ -19,9 +19,7 @@
             class="q-mt-sm"
             :lines="1"
           >
-            {{
-              result.channel
-            }}
+            {{ result.channel }}
           </q-item-label>
         </q-item-section>
         <q-item-section
@@ -36,7 +34,11 @@
             caption
             lines="1"
           >
-            {{ DateTime.fromISO(result.ts).toUTC().toFormat('HH:mm:ss MMM dd, yyyy') }}
+            {{
+              DateTime.fromISO(result.ts)
+                .toUTC()
+                .toFormat('HH:mm:ss MMM dd, yyyy')
+            }}
           </q-item-label>
         </q-item-section>
       </q-item>
@@ -47,19 +49,19 @@
 </template>
 
 <script>
-import { DateTime } from 'luxon'
+import {DateTime} from 'luxon'
 export default {
   props: {
     results: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   computed: {
     DateTime() {
       return DateTime
-    }
-  }
+    },
+  },
 }
 </script>
 

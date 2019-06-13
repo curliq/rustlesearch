@@ -11,7 +11,7 @@ import Quasar from 'quasar'
 import VueClipboard from 'vue-clipboard2'
 
 Vue.use(Quasar, {
-  config: {}
+  config: {},
 })
 
 VueClipboard.config.autoSetContainer = true // add this line
@@ -22,5 +22,5 @@ Vue.config.productionTip = false
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
 }).$mount('#app')

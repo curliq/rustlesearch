@@ -30,48 +30,31 @@ const lineToMessage = (line, channel) => {
       text,
     }
   } catch (e) {
-    logger.warn(
-      `Error: ${e.message}. ${channel}, ${line}, ${line.length}`,
-    )
+    logger.warn(`Error: ${e.message}. ${channel}, ${line}, ${line.length}`)
   }
 }
 
 const pathsToMessages = async paths => {
   for (let filePaths of _.chunk(paths, 10)) {
     for (let filePath of filePaths) {
-      const channel = path
-        .parse(filePath)
-        .name.split('::')[0]
+      const channel = path.parse(filePath).name.split('::')[0]
 
       await etl
         .file(filePath)
         .pipe(etl.split())
-        .pipe(
-          etl.map(line =>
-            lineToMessage(line.text, channel),
-          ),
-        )
+        .pipe(etl.map(line => lineToMessage(line.text, channel)))
         .pipe(etl.collect(2000))
         .pipe(
-          etl.elastic.index(
-            client,
-            process.env.INDEX_NAME,
-            'message',
-            {
-              concurrency: 10,
-            },
-          ),
+          etl.elastic.index(client, process.env.INDEX_NAME, 'message', {
+            concurrency: 10,
+          }),
         )
         .promise()
     }
-    await writeFile(
-      './cache.txt',
-      filePaths.join('\n') + '\n',
-      {
-        encoding: 'utf8',
-        flag: 'a',
-      },
-    )
+    await writeFile('./cache.txt', filePaths.join('\n') + '\n', {
+      encoding: 'utf8',
+      flag: 'a',
+    })
   }
 }
 

@@ -1,7 +1,7 @@
 module.exports = {
   assetsDir: 'static',
   pluginOptions: {
-    quasar: {}
+    quasar: {},
   },
-  transpileDependencies: [/[\\/]node_modules[\\/]quasar[\\/]/]
+  transpileDependencies: [/[\\/]node_modules[\\/]quasar[\\/]/],
 }

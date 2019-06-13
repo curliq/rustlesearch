@@ -8,7 +8,7 @@
         About RustleSearch
       </p>
       <p>
-        contact me at rustlesearch@gmail.com to start log removal process
+        contact me at rustlesearch@gmail.com for inquiry
       </p>
     </div>
   </q-page>
@@ -17,11 +17,9 @@
 <script>
 export default {
   data() {
-    return {
-    }
-  }
+    return {}
+  },
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

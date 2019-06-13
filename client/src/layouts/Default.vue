@@ -13,7 +13,7 @@
             style="display: inline-block;"
             class="cursor-pointer bg-blue-5 text-white q-pa-sm q-my-sm rounded-borders"
             tag="div"
-            :to="{ name: 'Home', query: $route.query }"
+            :to="{name: 'Home', query: $route.query}"
           >
             <strong>Rustle</strong>Search
           </router-link>
@@ -25,7 +25,7 @@
           flat
           label="About"
           class="text-grey-10"
-          :to="{ name: 'About', query: $route.query }"
+          :to="{name: 'About', query: $route.query}"
         />
       </q-toolbar>
     </q-header>
@@ -40,8 +40,8 @@
 export default {
   data() {
     return {
-      leftDrawerOpen: this.$q.platform.is.desktop
+      leftDrawerOpen: this.$q.platform.is.desktop,
     }
-  }
+  },
 }
 </script>

@@ -3,10 +3,8 @@ const {Client} = require('@elastic/elasticsearch')
 const client = new Client({
   node: process.env.ELASTIC_LOCATION,
 })
-const sleep = ms =>
-  new Promise(resolve => setTimeout(resolve, ms))
-const average = arr =>
-  arr.reduce((a, b) => a + b, 0) / arr.length
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+const average = arr => arr.reduce((a, b) => a + b, 0) / arr.length
 
 const getCount = async() => {
   const result = await client.count({
