@@ -35,7 +35,7 @@
             lines="1"
           >
             {{
-              DateTime.fromSeconds(result.ts)
+              DateTime.fromISO(result.ts)
                 .toUTC()
                 .toFormat('HH:mm:ss MMM dd, yyyy')
             }}
