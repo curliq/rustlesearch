@@ -89,10 +89,11 @@ export default {
         this.searchLoading = false
         this.results = data
       } catch (e) {
-        setTimeout(() => {
-          this.getResults()
-        }, 2000)
-        console.log(e)
+        if (e.response.status === 429) {
+          const retryAfter = e.response.headers['Retry-After']
+          setTimeout(() => this.getResults(), retryAfter)
+        }
+        // add more
       }
     },
   },
