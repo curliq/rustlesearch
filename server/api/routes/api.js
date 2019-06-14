@@ -27,7 +27,8 @@ router.get(
   ratelimit,
   co(function* (req, res) {
     if (!req.query.username && !req.query.channel && !req.query.text)
-      return res.json({error: 'squadW'})
+      return res.status(422).send('Fill at least one paramter')
+
     try {
       const searchResult = yield elasticClient.search({
         index: process.env.INDEX_NAME,

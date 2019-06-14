@@ -84,14 +84,26 @@ export default {
             pickQuery(this.query),
           ),
         })
+        if (!Array.isArray(data)) throw new Error('Bad')
         this.searchLoading = false
         this.results = data
       } catch (e) {
         if (e.response.status === 429) {
-          const retryAfter = e.response.headers['Retry-After']
-          setTimeout(() => this.getResults(), retryAfter)
-        } else this.searchLoading = false
+          const retryAfter = e.response.headers['retry-after']
+          console.log(retryAfter)
+          setTimeout(() => this.getResults(), retryAfter + 500)
+        } else {
+          this.notify(e.message)
+          this.searchLoading = false
+        }
       }
+    },
+    notify(text) {
+      this.$q.notify({
+        message: text,
+        position: 'bottom-right',
+        timeout: 1000,
+      })
     },
   },
 }
