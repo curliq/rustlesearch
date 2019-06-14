@@ -35,8 +35,9 @@ export const generateElasticQuery = ({
                   startingDate
                   || DateTime.utc()
                     .minus({days: 30})
-                    .toFormat('yyyy/MM/dd'),
-                lt: endingDate || DateTime.utc().toFormat('yyyy/MM/dd'),
+                    .toSeconds(),
+                lt: endingDate || DateTime.utc().toSeconds(),
+                format: 'epoch_seconds',
               },
             },
           },

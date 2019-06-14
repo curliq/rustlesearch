@@ -34,6 +34,8 @@ router.get(
   '/search',
   limiter,
   co(function* (req, res) {
+    if (!req.query.username || !req.query.channel || !req.query.text)
+      res.json({error: 'squadW'})
     try {
       const searchResult = yield elasticClient.search({
         index: process.env.INDEX_NAME,

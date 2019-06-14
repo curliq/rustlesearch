@@ -34,14 +34,13 @@ const lineToMessage = (line, channel) => {
     const matched = replacedLine.match(messageRegex)
     const [, tsStr, username, text] = matched
     const parsedDate = DateTime.fromSQL(tsStr)
-    const ts = parsedDate.toSeconds()
-    const date = parsedDate.toISODate()
+    const ts = parsedDate.toISO()
+    const seconds = parsedDate.toSeconds()
 
     if (!blacklist.has(username.toLowerCase())) {
       return {
-        _id: `${username}-${ts}`,
+        _id: `${username}-${seconds}`,
         ts,
-        date,
         channel,
         username,
         text,

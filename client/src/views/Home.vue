@@ -39,10 +39,14 @@ import axios from '@/axios'
 import Results from '@/components/Results.vue'
 import {DateTime} from 'luxon'
 import SearchForm from '@/components/SearchForm.vue'
-import {getToday} from '@/utils'
-import {mergeRight, pick} from 'ramda'
+import {getToday, dateToSeconds} from '@/utils'
+import {mergeRight, pick, evolve} from 'ramda'
 const pickQuery = pick([
-  'username', 'text', 'channel', 'startingDate', 'endingDate',
+  'username',
+  'text',
+  'channel',
+  'startingDate',
+  'endingDate',
 ])
 export default {
   components: {
@@ -66,10 +70,7 @@ export default {
   },
   mounted() {
     if (Object.entries(this.$route.query).length > 0) {
-      this.query = mergeRight(
-        this.query,
-        pickQuery(this.$route.query)
-      )
+      this.query = mergeRight(this.query, pickQuery(this.$route.query))
       this.getResults()
     }
   },
@@ -78,7 +79,10 @@ export default {
       try {
         this.searchLoading = true
         const {data} = await axios.get('api/search', {
-          params: pickQuery(this.query),
+          params: evolve(
+            {startingDate: dateToSeconds, endingDate: dateToSeconds},
+            pickQuery(this.query),
+          ),
         })
         this.searchLoading = false
         this.results = data
