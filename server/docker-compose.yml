@@ -21,6 +21,7 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+      start-period: 5s
     volumes:
       - ./config/redis/redis.conf:/usr/local/etc/redis/redis.conf
     expose:
