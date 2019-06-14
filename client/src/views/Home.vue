@@ -90,8 +90,7 @@ export default {
         if (e.response.status === 429) {
           const retryAfterString = e.response.headers['retry-after']
           const retryAfter = parseInt(retryAfterString)
-          if (Number.isInteger(retryAfter))
-            setTimeout(() => this.getResults(), retryAfter + 500)
+          setTimeout(() => this.getResults(), retryAfter + 500)
         } else {
           this.notify(e.response.data)
           this.searchLoading = false
