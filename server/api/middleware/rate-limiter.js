@@ -18,7 +18,6 @@ export default co(function* (req, res, next) {
     const retryAfter = rateLimiterResponse.msBeforeNext
     res.set({
       'Retry-After': retryAfter,
-      'X-RateLimit-Remaining': rateLimiterResponse.remainingPoints,
       'X-RateLimit-Reset': DateTime.utc()
         .plus(retryAfter)
         .toMillis(),
