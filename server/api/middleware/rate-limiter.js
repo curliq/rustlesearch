@@ -16,12 +16,15 @@ export default co(function* (req, res, next) {
     next()
   } catch (rateLimiterResponse) {
     const retryAfter = rateLimiterResponse.msBeforeNext
+    const resetAfter = DateTime.utc()
+      .plus(retryAfter)
+      .toMillis()
+
     res.set({
       'Retry-After': retryAfter,
-      'X-RateLimit-Reset': DateTime.utc()
-        .plus(retryAfter)
-        .toMillis(),
+      'X-RateLimit-Reset': resetAfter,
     })
+
     res.status(429).send('Too Many Requests')
   }
 })
