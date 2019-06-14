@@ -12,16 +12,23 @@ export const generateElasticQuery = ({
   endingDate,
 }) => {
   const must = []
-  if (channel) must.push({match: {channel: channel}})
+  if (channel) {
+    must.push({
+      match: {channel: {query: channel, operator: 'And'}},
+    })
+  }
 
-  if (username) must.push({match: {username: username}})
+  if (username) {
+    must.push({
+      match: {username: {query: username, operator: 'AND'}},
+    })
+  }
 
   if (text) {
     must.push({
       match: {text: {query: text, operator: 'AND'}},
     })
   }
-
   return {
     size: 100,
     from: 0,
@@ -30,14 +37,14 @@ export const generateElasticQuery = ({
         filter: [
           {
             range: {
-              date: {
+              ts: {
                 gte:
                   startingDate
                   || DateTime.utc()
                     .minus({days: 30})
-                    .toSeconds(),
-                lt: endingDate || DateTime.utc().toSeconds(),
-                format: 'epoch_seconds',
+                    .toFormat('X'),
+                lt: endingDate || DateTime.utc().toFormat('X'),
+                format: 'epoch_second',
               },
             },
           },
