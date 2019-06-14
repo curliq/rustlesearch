@@ -88,9 +88,9 @@ const ingestedPaths = readFileSync(indexCachePath, {
 }).split('\n')
 const pathsToIngest = allPaths.filter(x => !ingestedPaths.includes(x))
 logger.info({
-  daysOfLogs: allPaths.length,
-  daysIngested: ingestedPaths.length,
-  daysToIngest: pathsToIngest.length,
+  totalDaysOfLogs: allPaths.length,
+  totalDaysIngested: ingestedPaths.length,
+  totalDaysToIngest: pathsToIngest.length,
 })
 client
   .info()
