@@ -18,7 +18,7 @@ elasticClient
 router.get(
   '/healthcheck',
   co(function* (req, res) {
-    res.send('ALIVE\n')
+    return res.json({status: 'ALIVE'})
   }),
 )
 
@@ -27,7 +27,7 @@ router.get(
   ratelimit,
   co(function* (req, res) {
     if (!req.query.username && !req.query.channel && !req.query.text)
-      return res.status(422).send('Fill at least one paramter')
+      return res.status(422).json({error: 'Fill at least one parameter'})
 
     try {
       const searchResult = yield elasticClient.search({
@@ -36,10 +36,13 @@ router.get(
       })
       res.json(searchResult.body.hits.hits.map(x => x['_source']))
     } catch (e) {
-      // just respond with elastics error
-      // usually a 404
       logger.debug(`ES query failed: ${e.message}`)
-      res.status(e.meta.statusCode).send({error: 'squadW'})
+
+      const errorCode = e.meta.statusCode
+      res.status(errorCode)
+
+      if (errorCode === 404) return res.json({error: 'Not found'})
+      else return res.json({error: 'Unknown error'})
     }
   }),
 )

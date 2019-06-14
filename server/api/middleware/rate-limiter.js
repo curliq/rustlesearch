@@ -25,6 +25,6 @@ export default co(function* (req, res, next) {
       'X-RateLimit-Reset': resetAfter,
     })
 
-    res.status(429).send('Too Many Requests')
+    return res.status(429).json({error: 'Too Many Requests'})
   }
 })
