@@ -37,25 +37,21 @@
     "@elastic/elasticsearch": "7.1.0",
     "bluebird": "3.5.5",
     "cors": "2.8.5",
-    "date-fns": "1.30.1",
     "etl": "0.6.3",
     "express": "4.17.1",
     "express-graceful-shutdown": "1.0.0",
-    "express-pino-logger": "4.0.0",
     "express-rate-limit": "5.0.0",
     "fast-glob": "2.2.7",
     "helmet": "3.18.0",
     "ioredis": "4.10.0",
     "lodash": "4.17.11",
     "luxon": "1.16.0",
-    "module-alias": "2.2.0",
     "node-etl": "1.0.3",
     "pino": "5.12.6",
     "ramda": "0.26.1",
     "rate-limit-redis": "1.6.0",
     "redis-mock": "0.44.0",
-    "request": "2.88.0",
-    "supertest": "4.0.2"
+    "request": "2.88.0"
   },
   "devDependencies": {
     "@babel/cli": "7.4.4",
@@ -85,6 +81,7 @@
     "jest-raw-loader": "1.0.1",
     "pino-pretty": "3.1.0",
     "prettier": "1.18.2",
+    "supertest": "4.0.2",
     "yaml": "1.6.0",
     "yaml-unist-parser": "1.0.0"
   }
