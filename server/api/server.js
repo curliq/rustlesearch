@@ -19,7 +19,11 @@ const app = express()
 app.set('trust proxy', 1)
 
 app.use(grace(graceOptions))
-app.use(cors())
+app.use(
+  cors({
+    exposedHeaders: ['Retry-After', 'X-RateLimit-Reset'],
+  }),
+)
 app.use(extendReq)
 app.use(
   loggerMiddleware({
