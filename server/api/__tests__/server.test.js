@@ -18,7 +18,6 @@ describe('server test', () => {
   test('healthcheck passes', async() => {
     const response = await request(app).get(getApiURL('healthcheck'))
     expect(response.statusCode).toBe(200)
-    expect(response.text).toBe('ALIVE')
   })
 
   test('we can query something', async() => {
