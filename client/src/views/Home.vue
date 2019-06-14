@@ -88,10 +88,10 @@ export default {
         this.results = data
       } catch (e) {
         if (e.response.status === 429) {
-          const retryAfter = e.response.headers['retry-after']
-          console.log(retryAfter)
-          if (Number.isInteger(parseInt(retryAfter)))
-            setTimeout(() => this.getResults(), parseInt(retryAfter) + 500)
+          const retryAfterString = e.response.headers['retry-after']
+          const retryAfter = parseInt(retryAfterString)
+          if (Number.isInteger(retryAfter))
+            setTimeout(() => this.getResults(), retryAfter + 500)
         } else {
           this.notify(e.response.data)
           this.searchLoading = false
