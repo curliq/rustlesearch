@@ -2,9 +2,7 @@ import {elasticClient, generateElasticQuery} from '@lib/elastic'
 import {co, fs} from '@lib/util'
 import logger from '@lib/logger'
 import express from 'express'
-import RateLimiter from 'express-rate-limit'
-import RedisStore from 'rate-limit-redis'
-import {redisLimiter} from '@lib/redis'
+import ratelimit from '@middleware/rate-limiter'
 
 const router = express.Router()
 
@@ -17,12 +15,6 @@ elasticClient
     process.exit(1)
   })
 
-const limiter = new RateLimiter({
-  store: new RedisStore({client: redisLimiter}),
-  windowMs: process.env.RATE_LIMIT_TIMEOUT,
-  max: process.env.RATE_LIMIT,
-})
-
 router.get(
   '/healthcheck',
   co(function* (req, res) {
@@ -32,7 +24,7 @@ router.get(
 
 router.get(
   '/search',
-  limiter,
+  ratelimit,
   co(function* (req, res) {
     if (!req.query.username && !req.query.channel && !req.query.text)
       return res.json({error: 'squadW'})

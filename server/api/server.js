@@ -5,6 +5,7 @@ import grace from 'express-graceful-shutdown'
 import api from '@routes/api'
 import loggerMiddleware from '@middleware/express-logger'
 import logger from '@lib/logger'
+import extendReq from '@middleware/request-extender'
 
 const graceOptions = {
   logger,
@@ -19,6 +20,7 @@ app.set('trust proxy', 1)
 
 app.use(grace(graceOptions))
 app.use(cors())
+app.use(extendReq)
 app.use(
   loggerMiddleware({
     level: 'info',

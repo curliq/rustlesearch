@@ -4,7 +4,7 @@ import {isProd} from '@lib/environment'
 const name = process.env.APP_NAME
 
 const getLoggerInfo = req => {
-  const ip = req.headers['X-Real-IP']
+  const ip = req.realIp
   const {channel, username, text, startingDate, endingDate} = req.query
   return {
     ip,
