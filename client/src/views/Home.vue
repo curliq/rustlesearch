@@ -84,7 +84,6 @@ export default {
             pickQuery(this.query),
           ),
         })
-        if (!Array.isArray(data)) throw new Error('Bad')
         this.searchLoading = false
         this.results = data
       } catch (e) {
