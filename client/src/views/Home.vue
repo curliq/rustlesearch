@@ -92,8 +92,7 @@ export default {
         if (e.response.status === 429) {
           const retryAfter = e.response.headers['Retry-After']
           setTimeout(() => this.getResults(), retryAfter)
-        }
-        // add more
+        } else this.searchLoading = false
       }
     },
   },
