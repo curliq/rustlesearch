@@ -2,7 +2,7 @@ const {Client} = require('@elastic/elasticsearch')
 const Promise = require('bluebird')
 const R = require('ramda')
 const {co} = require('@lib/util')
-const logger = require('@lib/logger')
+const logger = require('@lib/logger').default
 
 const client = new Client({
   node: process.env.ELASTIC_LOCATION,
@@ -10,12 +10,9 @@ const client = new Client({
 
 const averageDelta = ([x, ...xs]) => {
   if (x === undefined) return NaN
-  else {
-    return (
-      xs.reduce(([acc, last], x) => [acc + (x - last), x], [0, x])[0]
-      / xs.length
-    )
-  }
+  return (
+    xs.reduce(([acc, last], x) => [acc + (x - last), x], [0, x])[0] / xs.length
+  )
 }
 
 const getCount = co(function* (timeout) {
@@ -23,13 +20,15 @@ const getCount = co(function* (timeout) {
   const result = yield client.count({
     index: process.env.INDEX_NAME,
   })
-  console.log(timeout, result.body.count)
+  logger.info({elapsedTime: `${timeout}m`, currentMessages: result.body.count})
   return result.body.count
 })
 
 const main = () =>
   Promise.map(R.range(0, 10), getCount)
     .then(averageDelta)
-    .then(speed => logger.info({message: 'Benchmark Finished', speed}))
+    .then(speed =>
+      logger.info({message: 'Benchmark Finished', speed: `${speed} / m`}),
+    )
 
 if (require.main === module) main()
