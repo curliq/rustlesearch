@@ -51,7 +51,8 @@
     "ramda": "0.26.1",
     "rate-limiter-flexible": "1.0.2",
     "redis-mock": "0.44.0",
-    "request": "2.88.0"
+    "request": "2.88.0",
+    "request-promise": "4.2.4"
   },
   "devDependencies": {
     "@babel/cli": "7.4.4",

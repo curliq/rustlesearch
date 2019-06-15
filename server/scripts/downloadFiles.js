@@ -1,21 +1,14 @@
-const fs = require('fs')
-const request = require('request')
-const util = require('util')
+const rp = require('request-promise')
 const fg = require('fast-glob')
 const {DateTime} = require('luxon')
 const Promise = require('bluebird')
 const R = require('ramda')
 const logger = require('@lib/logger').default
 const {rustleDataPath, downloadCachePath, channelFilePath} = require('./cache')
-
-// Promisify functions
-const rp = util.promisify(request)
-const readFile = util.promisify(fs.readFile)
-const writeFile = util.promisify(fs.writeFile)
+const {fs} = require('@lib/util')
 
 // "Constants"
 const baseUrl = 'https://overrustlelogs.net'
-
 const today = DateTime.utc()
 
 // Smol Functions
@@ -27,6 +20,7 @@ const parseByLine = R.pipe(
   R.split('\n'),
   R.filter(notEq('')),
 )
+
 const toPathAndUrl = ({channel, date}) => [
   `${rustleDataPath}/${channel}::${fileDateFormat(date)}.txt`,
   `${baseUrl}/${channel} chatlog/${fullDateFormat(date)}.txt`,
@@ -42,13 +36,13 @@ const getUrlList = (channels, daysBack) =>
     R.unnest,
   )(daysBack)
 
-const downloadFile = async([path, uri], json = false) => {
-  const res = await rp({uri, json})
-  if (res.statusCode === 200) {
-    await writeFile(path, res.body)
+const downloadFile = async([path, uri]) => {
+  try {
+    const res = await rp({uri})
+    await fs.writeFileAsync(path, res.body)
     logger.info(`Wrote ${path} to disk.`)
-  } else {
-    await writeFile(downloadCachePath, path + '\n', {
+  } catch {
+    await fs.writeFileAsync(downloadCachePath, path + '\n', {
       encoding: 'utf8',
       flag: 'a+',
     })
@@ -57,12 +51,14 @@ const downloadFile = async([path, uri], json = false) => {
 }
 
 const main = async() => {
-  const channelsFile = await readFile(channelFilePath, {
+  const channelsFile = await fs.readFileAsync(channelFilePath, {
     flag: 'a+',
   })
   const channels = parseByLine(channelsFile.toString())
 
-  const downloadCacheFile = await readFile(downloadCachePath, {flag: 'a+'})
+  const downloadCacheFile = await fs.readFileAsync(downloadCachePath, {
+    flag: 'a+',
+  })
   const downloadCache = parseByLine(downloadCacheFile.toString())
 
   const totalUrls = getUrlList(channels, parseInt(process.argv[2]) || 10)
