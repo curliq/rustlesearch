@@ -1,6 +1,6 @@
 const {readFileSync, writeFile} = require('fs')
 const path = require('path')
-const glob = require('glob')
+const fg = require('fast-glob')
 const {Client} = require('@elastic/elasticsearch')
 const _ = require('lodash')
 const etl = require('etl')
@@ -8,7 +8,7 @@ const {promisify} = require('util')
 const {DateTime} = require('luxon')
 const logger = require('@lib/logger').default
 const {blacklistPath, indexCachePath, rustleDataPath} = require('./cache')
-
+const R = require('ramda')
 const pWriteFile = promisify(writeFile)
 
 const blacklist = new Set(
@@ -20,7 +20,10 @@ const blacklist = new Set(
     .split('\n')
     .map(name => name.toLowerCase()),
 )
-
+const getYearRange = R.pipe(
+  R.range(R.__, 2019),
+  R.reverse,
+)
 const messageRegex = /^\[(.*?)\]\s(.*?):\s(.*)$/
 
 const client = new Client({
@@ -55,7 +58,11 @@ const lineToMessage = (line, channel) => {
     })
   }
 }
-
+const getYearFromPath = filepath =>
+  path
+    .parse(filepath)
+    .name.split('::')[1]
+    .split('-')[0]
 const pathsToMessages = async paths => {
   for (const filePaths of _.chunk(paths, 10)) {
     for (const filePath of filePaths) {
@@ -80,7 +87,7 @@ const pathsToMessages = async paths => {
   }
 }
 
-const allPaths = glob.sync(`${rustleDataPath}/*.txt`)
+const allPaths = fg.sync(`${rustleDataPath}/*.txt`)
 const ingestedPaths = readFileSync(indexCachePath, {
   encoding: 'utf8',
   flag: 'a+',

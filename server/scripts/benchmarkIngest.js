@@ -1,28 +1,32 @@
 const {Client} = require('@elastic/elasticsearch')
-
+const Promise = require('bluebird')
+const R = require('ramda')
 const client = new Client({
   node: process.env.ELASTIC_LOCATION,
 })
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-const average = arr => arr.reduce((a, b) => a + b, 0) / arr.length
 
-const getCount = async() => {
-  const result = await client.count({
-    index: process.env.INDEX_NAME,
-  })
-  return result.body.count
+const averageDelta = ([x, ...xs]) => {
+  if (x === undefined) return NaN
+  else {
+    return (
+      xs.reduce(([acc, last], x) => [acc + (x - last), x], [0, x])[0]
+      / xs.length
+    )
+  }
 }
 
+const getCount = Promise.coroutine(function* (timeout) {
+  yield Promise.delay(timeout * 1000 * 60)
+  const result = yield client.count({
+    index: process.env.INDEX_NAME,
+  })
+  console.log(timeout, result.body.count)
+  return result.body.count
+})
+
 const main = async() => {
-  const res1 = await getCount()
-  console.log('1st:', res1)
-  await sleep(1000 * 60)
-  const res2 = await getCount()
-  console.log('2nd:', res2)
-  await sleep(1000 * 60)
-  const res3 = await getCount()
-  console.log('3rd:', res3)
-  console.log(average([res2 - res1, res3 - res2]))
+  const res = await Promise.map(R.range(0, 10), getCount)
+  console.log('Avg:', averageDelta(res))
 }
 
 main()
