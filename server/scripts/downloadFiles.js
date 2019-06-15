@@ -68,11 +68,12 @@ const main = async() => {
   )
 
   logger.info(`
+  Beginning download.
   Total days to download: ${totalUrls.length}
   Days already downloaded: ${downloadedUrls.length}
   Days to download right now: ${urlsToDownload.length}`)
 
-  Promise.map(urlsToDownload, downloadFile, {concurrency: 20})
+  Promise.map(urlsToDownload, downloadFile)
 }
 
 if (require.main === module) main()
