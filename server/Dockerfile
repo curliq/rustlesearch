@@ -7,7 +7,7 @@ RUN yarn build:api
 FROM node:12-alpine
 WORKDIR /app
 COPY --from=builder /build/api-dist ./api-dist
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock channels.txt ./
 RUN yarn install --frozen-lockfile --production && \
         chown -R node:node /app
 
