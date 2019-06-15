@@ -14,8 +14,8 @@
     "build:api": "babel -d ./api-dist ./api --copy-files --delete-dir-on-start",
     "run:download": "node -r @babel/register -r dotenv/config ./scripts/downloadFiles.js",
     "run:index": "node -r @babel/register -r dotenv/config ./scripts/indexToElasticsearch.js",
-    "run:esinit": "node -r dotenv/config ./scripts/initElasticsearch.js",
-    "benchmark:index": "node -r dotenv/config ./scripts/benchmarkIngest.js"
+    "run:esinit": "node -r @babel/register -r dotenv/config ./scripts/initElasticsearch.js",
+    "benchmark:index": "node -r @babel/register -r dotenv/config ./scripts/benchmarkIngest.js"
   },
   "husky": {
     "hooks": {

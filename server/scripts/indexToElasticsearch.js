@@ -8,7 +8,6 @@ const {promisify} = require('util')
 const {DateTime} = require('luxon')
 const logger = require('@lib/logger').default
 const {blacklistPath, indexCachePath, rustleDataPath} = require('./cache')
-const R = require('ramda')
 const pWriteFile = promisify(writeFile)
 
 const blacklist = new Set(
@@ -20,10 +19,7 @@ const blacklist = new Set(
     .split('\n')
     .map(name => name.toLowerCase()),
 )
-const getYearRange = R.pipe(
-  R.range(R.__, 2019),
-  R.reverse,
-)
+
 const messageRegex = /^\[(.*?)\]\s(.*?):\s(.*)$/
 
 const client = new Client({
@@ -58,11 +54,7 @@ const lineToMessage = (line, channel) => {
     })
   }
 }
-const getYearFromPath = filepath =>
-  path
-    .parse(filepath)
-    .name.split('::')[1]
-    .split('-')[0]
+
 const pathsToMessages = async paths => {
   for (const filePaths of _.chunk(paths, 10)) {
     for (const filePath of filePaths) {
@@ -98,6 +90,7 @@ logger.info({
   totalDaysIngested: ingestedPaths.length,
   totalDaysToIngest: pathsToIngest.length,
 })
+
 client
   .info()
   .then(() => pathsToMessages(pathsToIngest))
