@@ -79,22 +79,26 @@ const pathsToMessages = async paths => {
   }
 }
 
-const allPaths = fg.sync(`${rustleDataPath}/*.txt`)
-const ingestedPaths = readFileSync(indexCachePath, {
-  encoding: 'utf8',
-  flag: 'a+',
-}).split('\n')
-const pathsToIngest = allPaths.filter(x => !ingestedPaths.includes(x))
-logger.info({
-  totalDaysOfLogs: allPaths.length,
-  totalDaysIngested: ingestedPaths.length,
-  totalDaysToIngest: pathsToIngest.length,
-})
-
-client
-  .info()
-  .then(() => pathsToMessages(pathsToIngest))
-  .catch(err => {
-    logger.error(`Failed to connect to Elastic: ${err}`)
-    process.exit(1)
+const main = () => {
+  const allPaths = fg.sync(`${rustleDataPath}/*.txt`)
+  const ingestedPaths = readFileSync(indexCachePath, {
+    encoding: 'utf8',
+    flag: 'a+',
+  }).split('\n')
+  const pathsToIngest = allPaths.filter(x => !ingestedPaths.includes(x))
+  logger.info({
+    totalDaysOfLogs: allPaths.length,
+    totalDaysIngested: ingestedPaths.length,
+    totalDaysToIngest: pathsToIngest.length,
   })
+
+  client
+    .info()
+    .then(() => pathsToMessages(pathsToIngest))
+    .catch(err => {
+      logger.error(`Failed to connect to Elastic: ${err}`)
+      process.exit(1)
+    })
+}
+
+if (require.main === module) main()

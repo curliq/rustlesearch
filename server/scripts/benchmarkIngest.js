@@ -32,4 +32,4 @@ const main = () =>
     .then(averageDelta)
     .then(speed => logger.info({message: 'Benchmark Finished', speed}))
 
-main()
+if (require.main === module) main()

@@ -42,8 +42,8 @@ const getUrlList = (channels, daysBack) =>
     R.unnest,
   )(daysBack)
 
-const downloadFile = async([path, url], json = false) => {
-  const res = await rp({uri: url, json})
+const downloadFile = async([path, uri], json = false) => {
+  const res = await rp({uri, json})
   if (res.statusCode === 200) {
     await writeFile(path, res.body)
     logger.info(`Wrote ${path} to disk.`)
@@ -79,4 +79,4 @@ const main = async() => {
   Promise.map(urlsToDownload, downloadFile, {concurrency: 20})
 }
 
-main()
+if (require.main === module) main()
