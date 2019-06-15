@@ -39,7 +39,7 @@ const getUrlList = (channels, daysBack) =>
 const downloadFile = async([path, uri]) => {
   try {
     const res = await rp({uri})
-    await fs.writeFileAsync(path, res.body)
+    await fs.writeFileAsync(path, res)
     logger.info(`Wrote ${path} to disk.`)
   } catch {
     await fs.writeFileAsync(downloadCachePath, path + '\n', {
