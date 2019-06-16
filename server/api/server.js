@@ -2,6 +2,9 @@ import express from 'express'
 import helmet from 'helmet'
 import cors from 'cors'
 import grace from 'express-graceful-shutdown'
+import session from 'express-session'
+import RedisStore from 'connect-redis'
+import {redisSession} from '@lib/redis'
 import api from '@routes/api'
 import loggerMiddleware from '@middleware/express-logger'
 import logger from '@lib/logger'
@@ -16,6 +19,16 @@ const app = express()
 
 // behind nginx
 app.set('trust proxy', 1)
+
+const Store = RedisStore(session)
+app.use(
+  session({
+    store: new Store({client: redisSession}),
+    secret: process.env.KEY_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  }),
+)
 
 app.use(grace(graceOptions))
 app.use(

@@ -10,6 +10,7 @@ const ourEnv = [
   'WORKER_COUNT',
   'RATE_LIMIT',
   'RATE_LIMIT_TIMEOUT',
+  'KEY_SECRET',
 ]
 
 ourEnv.forEach(
