@@ -10,15 +10,34 @@ import loggerMiddleware from '@middleware/express-logger'
 import logger from '@lib/logger'
 import extendReq from '@middleware/request-extender'
 
+const app = express()
+
+// behind nginx
+app.set('trust proxy', 1)
+
 const graceOptions = {
   logger,
   forceTimeout: 10000,
 }
 
-const app = express()
+app.use(grace(graceOptions))
+app.use(
+  cors({
+    exposedHeaders: ['Retry-After', 'X-RateLimit-Reset'],
+  }),
+)
 
-// behind nginx
-app.set('trust proxy', 1)
+app.use(extendReq)
+
+app.use(
+  loggerMiddleware({
+    level: 'info',
+    ignore: [`/healthcheck`],
+    honorDNT: true,
+  }),
+)
+
+app.use(helmet())
 
 const Store = RedisStore(session)
 app.use(
@@ -30,21 +49,6 @@ app.use(
   }),
 )
 
-app.use(grace(graceOptions))
-app.use(
-  cors({
-    exposedHeaders: ['Retry-After', 'X-RateLimit-Reset'],
-  }),
-)
-app.use(extendReq)
-app.use(
-  loggerMiddleware({
-    level: 'info',
-    ignore: [`/healthcheck`],
-    honorDNT: true,
-  }),
-)
-app.use(helmet())
 app.use(api)
 
 export default app
