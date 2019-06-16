@@ -11,7 +11,7 @@
       <p class="text-h2">
         <span class="text-weight-bold">Rustle</span>Search
       </p>
-      <p class="text-h5">
+      <p class="text-h5 text-center">
         Advanced searching of
         <a
           class="link text-blue-5"
