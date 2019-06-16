@@ -5,11 +5,9 @@ const ourEnv = [
   'ELASTIC_LOCATION',
   'INDEX_NAME',
   'APP_NAME',
-  'ROUTE_PREFIX',
   'REDIS_HOST',
   'REDIS_PORT',
   'WORKER_COUNT',
-  'HOSTNAME',
   'RATE_LIMIT',
   'RATE_LIMIT_TIMEOUT',
 ]

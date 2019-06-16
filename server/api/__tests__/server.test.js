@@ -1,13 +1,11 @@
 import app from '@api/server'
 import request from 'supertest'
 
-const getApiURL = path => `${process.env.ROUTE_PREFIX}/${path}`
-
 const getManyRequests = (n, url, query) => {
   const requests = []
   for (let i = 0; i < n; i += 1) {
     const req = request(app)
-      .get(getApiURL(url))
+      .get(url)
       .query(query)
     requests.push(req)
   }
@@ -16,20 +14,20 @@ const getManyRequests = (n, url, query) => {
 
 describe('server test', () => {
   test('healthcheck passes', async() => {
-    const response = await request(app).get(getApiURL('healthcheck'))
+    const response = await request(app).get('/healthcheck')
     expect(response.statusCode).toBe(200)
   })
 
   test('we can query something', async() => {
     const response = await request(app)
-      .get(getApiURL('search'))
+      .get('/search')
       .query({channel: 'destinygg'})
 
     expect(response.statusCode).toBe(200)
   })
 
   test('the ratelimiter works', async done => {
-    const requests = getManyRequests(20, 'search', {
+    const requests = getManyRequests(20, '/search', {
       channel: 'destinygg',
     })
     // at least one should throw a 429

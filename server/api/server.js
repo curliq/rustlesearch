@@ -12,7 +12,6 @@ const graceOptions = {
   forceTimeout: 10000,
 }
 
-const prefix = process.env.ROUTE_PREFIX
 const app = express()
 
 // behind nginx
@@ -28,11 +27,11 @@ app.use(extendReq)
 app.use(
   loggerMiddleware({
     level: 'info',
-    ignore: [`${prefix}/healthcheck`],
+    ignore: [`/healthcheck`],
     honorDNT: true,
   }),
 )
 app.use(helmet())
-app.use(prefix, api)
+app.use(api)
 
 export default app
