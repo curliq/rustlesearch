@@ -78,7 +78,7 @@ export default {
     async getResults() {
       try {
         this.searchLoading = true
-        const {data} = await axios.get('api/search', {
+        const {data} = await axios.get('search', {
           params: evolve(
             {startingDate: dateToSeconds, endingDate: dateToSeconds},
             pickQuery(this.query),
@@ -92,7 +92,7 @@ export default {
           const retryAfter = parseInt(retryAfterString)
           setTimeout(() => this.getResults(), retryAfter + 500)
         } else {
-          this.notify(e.response.data)
+          this.notify(e.response.data.error)
           this.searchLoading = false
         }
       }
