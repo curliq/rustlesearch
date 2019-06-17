@@ -1,12 +1,22 @@
 import {Client} from '@elastic/elasticsearch'
 import {DateTime} from 'luxon'
-const elasticLocation = {node: process.env.ELASTIC_LOCATION}
-const capitalize = string => {
-  return string[0].toUpperCase() + string.slice(1).toLowerCase()
-}
-export const elasticClient = new Client(elasticLocation)
+import logger from '@lib/logger'
+import {co, capitalize} from '@lib/util'
 
-export const generateElasticQuery = ({
+const elasticLocation = {node: process.env.ELASTIC_LOCATION}
+
+const elasticClient = new Client(elasticLocation)
+
+// throws here if we can't connect
+elasticClient
+  .info()
+  .then()
+  .catch(e => {
+    logger.error(`Elastic failed: ${e.message}`)
+    process.exit(1)
+  })
+
+const generateElasticQuery = ({
   username,
   channel,
   text,
@@ -50,3 +60,23 @@ export const generateElasticQuery = ({
     sort: [{ts: {order: 'desc'}}],
   }
 }
+
+export const search = co(function* (query) {
+  try {
+    const result = yield elasticClient.search({
+      index: process.env.INDEX_NAME,
+      body: generateElasticQuery(query),
+    })
+    const logs = result.body.hits.hits.map(log => log['_source'])
+    return {
+      logs,
+      statusCode: 200,
+    }
+  } catch (e) {
+    logger.info(`ES query failed: ${e.message}`)
+    return {
+      logs: [],
+      statusCode: 404,
+    }
+  }
+})
