@@ -1,7 +1,7 @@
 import '@lib/config'
 import cluster from 'cluster'
 import logger from '@lib/logger'
-import {isProd} from '@lib/environment'
+import { isProd } from '@lib/environment'
 
 if (cluster.isMaster) {
   const workerCount = isProd() ? process.env.WORKER_COUNT : 1
@@ -11,15 +11,15 @@ if (cluster.isMaster) {
   logger.info(`Started ${workerCount} workers`)
   logger.info(`App listening at http://localhost:${process.env.APP_PORT}`)
 } else {
-  const app = require('./server').default
+  const app = require('./server').default // eslint-disable-line global-require
   app.listen(process.env.APP_PORT)
 }
 
-cluster.on('exit', worker => {
+cluster.on('exit', (worker) => {
   logger.error(`Worker ${worker.id} died...`)
   isProd() ? cluster.fork() : process.exit(1)
 })
 
-cluster.on('error', err => {
-  logger.error({error: err.message})
+cluster.on('error', (err) => {
+  logger.error({ error: err.message })
 })

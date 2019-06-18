@@ -18,7 +18,10 @@ module.exports = {
     // 'comma-dangle': ['error', 'always-multiline'],
     // 'curly': ['error', 'multi-or-nest'],
     // 'max-len': ['error', 80],
+    'import/no-unresolved': 'off',
+    'func-names': 'off',
     'generator-star-spacing': ['error', 'after'],
     'semi': ['error', 'never'],
+    'no-unused-expressions': ['error', {allowTernary: true}],
   },
 }

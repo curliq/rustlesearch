@@ -13,25 +13,24 @@ const getManyRequests = (n, url, query) => {
 }
 
 describe('server test', () => {
-  test('healthcheck passes', async() => {
+  test('healthcheck passes', async () => {
     const response = await request(app).get('/healthcheck')
     expect(response.statusCode).toBe(200)
   })
 
-  test('we can query something', async() => {
+  test('we can query something', async () => {
     const response = await request(app)
       .get('/search')
-      .query({channel: 'destinygg'})
+      .query({ channel: 'destinygg' })
 
     expect(response.statusCode).toBe(200)
   })
 
-  test('the ratelimiter works', async done => {
+  test('the ratelimiter works', async (done) => {
     const requests = getManyRequests(20, '/search', {
       channel: 'destinygg',
     })
     // at least one should throw a 429
-    for await (const response of requests)
-      if (response.statusCode === 429) done()
+    for await (const response of requests) if (response.statusCode === 429) done() // eslint-disable-line
   })
 })

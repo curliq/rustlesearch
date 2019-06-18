@@ -5,11 +5,12 @@ import grace from 'express-graceful-shutdown'
 import session from 'express-session'
 import RedisStore from 'connect-redis'
 import grant from 'grant-express'
-import {redisSession} from '@lib/redis'
+import { redisSession } from '@lib/redis'
 import api from '@routes/api'
 import loggerMiddleware from '@middleware/express-logger'
 import logger from '@lib/logger'
 import extendReq from '@middleware/request-extender'
+
 const app = express()
 
 // behind nginx
@@ -31,7 +32,7 @@ app.use(extendReq)
 app.use(
   loggerMiddleware({
     level: 'info',
-    ignore: [`/healthcheck`],
+    ignore: ['/healthcheck'],
     honorDNT: true,
   }),
 )
@@ -41,7 +42,7 @@ app.use(helmet())
 const Store = RedisStore(session)
 app.use(
   session({
-    store: new Store({client: redisSession}),
+    store: new Store({ client: redisSession }),
     secret: process.env.KEY_SECRET,
     resave: false,
     saveUninitialized: false,

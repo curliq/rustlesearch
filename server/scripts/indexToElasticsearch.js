@@ -1,13 +1,14 @@
-const {readFileSync, writeFile} = require('fs')
+const { readFileSync, writeFile } = require('fs')
 const path = require('path')
 const fg = require('fast-glob')
-const {Client} = require('@elastic/elasticsearch')
+const { Client } = require('@elastic/elasticsearch')
 const _ = require('lodash')
 const etl = require('etl')
-const {promisify} = require('util')
-const {DateTime} = require('luxon')
+const { promisify } = require('util')
+const { DateTime } = require('luxon')
 const logger = require('@lib/logger').default
-const {blacklistPath, indexCachePath, rustleDataPath} = require('./cache')
+const { blacklistPath, indexCachePath, rustleDataPath } = require('./cache')
+
 const pWriteFile = promisify(writeFile)
 
 const blacklist = new Set(
@@ -44,7 +45,8 @@ const lineToMessage = (line, channel) => {
         username,
         text,
       }
-    } else logger.debug(`${username} in blacklist, ignoring message...`)
+    }
+    logger.debug(`${username} in blacklist, ignoring message...`)
   } catch (e) {
     logger.warn({
       error: e.message,
@@ -55,7 +57,7 @@ const lineToMessage = (line, channel) => {
   }
 }
 
-const pathsToMessages = async paths => {
+const pathsToMessages = async (paths) => {
   for (const filePaths of _.chunk(paths, 10)) {
     for (const filePath of filePaths) {
       const channel = path.parse(filePath).name.split('::')[0]
@@ -72,7 +74,7 @@ const pathsToMessages = async paths => {
         )
         .promise()
     }
-    await pWriteFile(indexCachePath, filePaths.join('\n') + '\n', {
+    await pWriteFile(indexCachePath, `${filePaths.join('\n')}\n`, {
       encoding: 'utf8',
       flag: 'a+',
     })
@@ -95,7 +97,7 @@ const main = () => {
   client
     .info()
     .then(() => pathsToMessages(pathsToIngest))
-    .catch(err => {
+    .catch((err) => {
       logger.error(`Failed to connect to Elastic: ${err}`)
       process.exit(1)
     })

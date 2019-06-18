@@ -7,8 +7,9 @@ const options = {
   timeout: 3000,
 }
 
-const req = http.request(options, res => {
-  res.statusCode === 200 ? process.exit(0) : process.exit(1)
+const req = http.request(options, (res) => {
+  if (res.statusCode === 200) return process.exit(0)
+  return process.exit(1)
 })
 
 req.on('error', () => {

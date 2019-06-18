@@ -1,5 +1,5 @@
-const {join} = require('path')
-const {existsSync, mkdirSync} = require('fs')
+const { join } = require('path')
+const { existsSync, mkdirSync } = require('fs')
 
 const cachePath = './cache'
 const dataPath = './data'
@@ -11,8 +11,8 @@ const indexCachePath = join(cachePath, 'ingest_cache.txt')
 const blacklistPath = join(cachePath, 'blacklist.txt')
 
 if (!existsSync(cachePath)) mkdirSync(cachePath)
-if (!existsSync(rustleDataPath)) mkdirSync(rustleDataPath, {recursive: true})
-if (!existsSync(elasticPath)) mkdirSync(elasticPath, {recursive: true})
+if (!existsSync(rustleDataPath)) mkdirSync(rustleDataPath, { recursive: true })
+if (!existsSync(elasticPath)) mkdirSync(elasticPath, { recursive: true })
 
 module.exports = {
   blacklistPath,
