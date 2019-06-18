@@ -36,7 +36,7 @@ router.get(
   }),
 )
 
-router.get('/callback/patreon', async(req, res) => {
+router.get('/callback/patreon', (req, res) => {
   const resp = req.session.grant.response
   if (!resp.access_token) return res.json({error: 'Authentication failed'})
   return res.json({jwt: toJwt(resp.access_token)})

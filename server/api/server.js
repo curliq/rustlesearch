@@ -52,7 +52,7 @@ app.use(
   grant({
     defaults: {
       protocol: 'https',
-      host: `api.${process.env.DOMAIN}`,
+      host: `${process.env.SUBDOMAIN}.${process.env.DOMAIN}`,
       transport: 'session',
     },
     patreon: {

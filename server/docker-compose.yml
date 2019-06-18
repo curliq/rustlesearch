@@ -7,11 +7,10 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      - VIRTUAL_HOST=api.${DOMAIN}
+      - VIRTUAL_HOST=${SUBDOMAIN}.${DOMAIN}
       - VIRTUAL_PORT=${APP_PORT}
       - LETSENCRYPT_HOST=api.${DOMAIN}
       - RESOLVERS="1.1.1.1 1.0.0.1 valid=300s"
-      - SSL_POLICY=Mozilla-Modern
     expose:
       - ${APP_PORT}
     depends_on:
@@ -23,11 +22,10 @@ services:
     working_dir: /node_app
     command: echo 1
     environment:
-      - VIRTUAL_HOST=api.${DOMAIN}
+      - VIRTUAL_HOST=${SUBDOMAIN}.${DOMAIN}
       - VIRTUAL_PORT=${APP_PORT}
       - LETSENCRYPT_HOST=api.${DOMAIN}
       - RESOLVERS="1.1.1.1 1.0.0.1 valid=300s"
-      - SSL_POLICY=Mozilla-Modern
 
     expose:
       - ${APP_PORT}

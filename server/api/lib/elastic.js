@@ -1,5 +1,4 @@
 import {Client} from '@elastic/elasticsearch'
-import {DateTime} from 'luxon'
 import logger from '@lib/logger'
 import {co, capitalize} from '@lib/util'
 
@@ -16,17 +15,8 @@ elasticClient
     process.exit(1)
   })
 
-const generateElasticQuery = ({
-  username,
-  channel,
-  text,
-  startingDate,
-  endingDate,
-}) => {
-  const defaultStartingDate = DateTime.utc()
-    .minus({days: 30})
-    .toFormat('X')
-  const defaultEndingDate = DateTime.utc().toFormat('X')
+const generateElasticQuery = query => {
+  const {username, channel, text, startingDate, endingDate} = query
   const filter = []
   const must = []
 
@@ -46,8 +36,8 @@ const generateElasticQuery = ({
           {
             range: {
               ts: {
-                gte: startingDate || defaultStartingDate,
-                lte: endingDate || defaultEndingDate,
+                gte: startingDate,
+                lte: endingDate,
                 format: 'epoch_second',
               },
             },

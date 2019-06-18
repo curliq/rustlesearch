@@ -13,7 +13,7 @@ export const decodeJwt = token => {
     const decoded = jwt.verify(token, process.env.KEY_SECRET)
     return decoded
   } catch (e) {
-    logger.info('Invalid jwt token', e.message, token)
+    logger.debug('Invalid jwt token', e.message, token)
     return null
   }
 }
