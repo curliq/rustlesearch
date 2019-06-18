@@ -12,9 +12,10 @@ module.exports = {
     SharedArrayBuffer: 'readonly',
   },
   rules: {
-    // 'object-curly-spacing': ['error', 'never'],
     'import/no-unresolved': 'off',
     'func-names': 'off',
+    'no-await-in-loop': 'off',
+    'no-restricted-syntax': 'off',
     'generator-star-spacing': ['error', 'after'],
     'semi': ['error', 'never'],
     'no-unused-expressions': ['error', {allowTernary: true}],

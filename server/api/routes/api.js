@@ -2,7 +2,6 @@ import search from '@lib/elastic'
 import { co, fs } from '@lib/util'
 import express from 'express'
 import ratelimit from '@middleware/rate-limiter'
-// import popupTools from 'popup-tools'
 
 const router = express.Router()
 

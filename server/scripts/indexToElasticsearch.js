@@ -1,21 +1,18 @@
-import { readFileSync, writeFile } from 'fs'
 import path from 'path'
-import fg from 'fg'
-import { Client } from '@elastic/elasticsearch'
 import _ from 'lodash'
 import etl from 'etl'
-import { promisify } from 'util'
 import { DateTime } from 'luxon'
+import { Client } from '@elastic/elasticsearch'
 import logger from '@lib/logger'
+import { fs } from '@lib/util'
 import { blacklistPath, indexCachePath, rustleDataPath } from './cache'
 
-const pWriteFile = promisify(writeFile)
-
 const blacklist = new Set(
-  readFileSync(blacklistPath, {
-    encoding: 'utf8',
-    flag: 'a+',
-  })
+  fs
+    .readFileSync(blacklistPath, {
+      encoding: 'utf8',
+      flag: 'a+',
+    })
     .trim()
     .split('\n')
     .map(name => name.toLowerCase()),
@@ -60,13 +57,10 @@ const lineToMessage = (line, channel) => {
 }
 
 const pathsToMessages = async (paths) => {
-  // eslint-disable-next-line no-restricted-syntax
   for (const filePaths of _.chunk(paths, 10)) {
-    // eslint-disable-next-line no-restricted-syntax
     for (const filePath of filePaths) {
       const channel = path.parse(filePath).name.split('::')[0]
 
-      // eslint-disable-next-line no-await-in-loop
       await etl
         .file(filePath)
         .pipe(etl.split())
@@ -79,21 +73,23 @@ const pathsToMessages = async (paths) => {
         )
         .promise()
     }
-    // eslint-disable-next-line no-await-in-loop
-    await pWriteFile(indexCachePath, `${filePaths.join('\n')}\n`, {
+    await fs.writeFileAsync(indexCachePath, `${filePaths.join('\n')}\n`, {
       encoding: 'utf8',
       flag: 'a+',
     })
   }
 }
 
-const main = () => {
-  const allPaths = fg.sync(`${rustleDataPath}/*.txt`)
-  const ingestedPaths = readFileSync(indexCachePath, {
-    encoding: 'utf8',
-    flag: 'a+',
-  }).split('\n')
-  const pathsToIngest = allPaths.filter(x => !ingestedPaths.includes(x))
+const main = async () => {
+  const allPathsNames = await fs.readdirAsync(rustleDataPath)
+  const allPaths = allPathsNames.map(file => `${rustleDataPath}/${file}`)
+  const ingestedPaths = await fs
+    .readFileAsync(indexCachePath, {
+      encoding: 'utf8',
+      flag: 'a+',
+    })
+    .split('\n')
+  const pathsToIngest = allPaths.filter(file => !ingestedPaths.includes(file))
   logger.info({
     totalDaysOfLogs: allPaths.length,
     totalDaysIngested: ingestedPaths.length,

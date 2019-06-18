@@ -31,6 +31,6 @@ describe('server test', () => {
       channel: 'destinygg',
     })
     // at least one should throw a 429
-    for await (const response of requests) if (response.statusCode === 429) done() // eslint-disable-line
+    for await (const response of requests) if (response.statusCode === 429) done()
   })
 })
