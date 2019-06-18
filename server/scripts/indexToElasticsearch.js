@@ -56,7 +56,7 @@ const lineToMessage = (line, channel) => {
   }
 }
 
-const pathsToMessages = async (paths) => {
+const pathsToMessages = async paths => {
   for (const filePaths of _.chunk(paths, 10)) {
     for (const filePath of filePaths) {
       const channel = path.parse(filePath).name.split('::')[0]
@@ -99,7 +99,7 @@ const main = async () => {
   client
     .info()
     .then(() => pathsToMessages(pathsToIngest))
-    .catch((err) => {
+    .catch(err => {
       logger.error(`Failed to connect to Elastic: ${err}`)
       process.exit(1)
     })

@@ -3,7 +3,7 @@ import { isProd } from '@lib/environment'
 
 const name = process.env.APP_NAME
 
-const getLoggerInfo = (req) => {
+const getLoggerInfo = req => {
   const ip = req.realIp
   const {
     channel, username, text, startingDate, endingDate,

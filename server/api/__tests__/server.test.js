@@ -26,7 +26,7 @@ describe('server test', () => {
     expect(response.statusCode).toBe(200)
   })
 
-  test('the ratelimiter works', async (done) => {
+  test('the ratelimiter works', async done => {
     const requests = getManyRequests(20, '/search', {
       channel: 'destinygg',
     })

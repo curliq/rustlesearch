@@ -15,11 +15,11 @@ if (cluster.isMaster) {
   app.listen(process.env.APP_PORT)
 }
 
-cluster.on('exit', (worker) => {
+cluster.on('exit', worker => {
   logger.error(`Worker ${worker.id} died...`)
   isProd() ? cluster.fork() : process.exit(1)
 })
 
-cluster.on('error', (err) => {
+cluster.on('error', err => {
   logger.error({ error: err.message })
 })

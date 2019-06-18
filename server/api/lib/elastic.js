@@ -10,12 +10,12 @@ const elasticClient = new Client(elasticLocation)
 elasticClient
   .info()
   .then()
-  .catch((e) => {
+  .catch(e => {
     logger.error(`Elastic failed: ${e.message}`)
     process.exit(1)
   })
 
-const generateElasticQuery = (query) => {
+const generateElasticQuery = query => {
   const {
     username, channel, text, startingDate, endingDate,
   } = query

@@ -1,9 +1,9 @@
 module.exports = {
   parser: 'babel-eslint',
   env: {
-    'es6': true,
+    es6: true,
     'jest/globals': true,
-    'node': true,
+    node: true,
   },
   extends: ['plugin:jest/recommended', 'airbnb-base'],
   plugins: ['jest'],
@@ -17,7 +17,8 @@ module.exports = {
     'no-await-in-loop': 'off',
     'no-restricted-syntax': 'off',
     'generator-star-spacing': ['error', 'after'],
-    'semi': ['error', 'never'],
-    'no-unused-expressions': ['error', {allowTernary: true}],
+    semi: ['error', 'never'],
+    'no-unused-expressions': ['error', { allowTernary: true }],
+    'arrow-parens': ['error', 'as-needed'],
   },
 }
