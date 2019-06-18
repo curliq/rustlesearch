@@ -10,7 +10,7 @@ const client = new Client({
 
 const averageDelta = ([x, ...xs]) => {
   if (x === undefined) return NaN
-  return xs.reduce(([acc, last], x) => [acc + (x - last), x], [0, x])[0] / xs.length
+  return xs.reduce(([acc, last], y) => [acc + (y - last), y], [0, x])[0] / xs.length
 }
 
 const getCount = co(function* (timeout) {

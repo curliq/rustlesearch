@@ -1,13 +1,13 @@
-const { readFileSync, writeFile } = require('fs')
-const path = require('path')
-const fg = require('fast-glob')
-const { Client } = require('@elastic/elasticsearch')
-const _ = require('lodash')
-const etl = require('etl')
-const { promisify } = require('util')
-const { DateTime } = require('luxon')
-const logger = require('@lib/logger').default
-const { blacklistPath, indexCachePath, rustleDataPath } = require('./cache')
+import { readFileSync, writeFile } from 'fs'
+import path from 'path'
+import fg from 'fg'
+import { Client } from '@elastic/elasticsearch'
+import _ from 'lodash'
+import etl from 'etl'
+import { promisify } from 'util'
+import { DateTime } from 'luxon'
+import logger from '@lib/logger'
+import { blacklistPath, indexCachePath, rustleDataPath } from './cache'
 
 const pWriteFile = promisify(writeFile)
 
@@ -28,7 +28,7 @@ const client = new Client({
 })
 
 const lineToMessage = (line, channel) => {
-  if (line.length <= 0) return
+  if (line.length <= 0) return undefined
   try {
     const replacedLine = line.replace('\r', '')
     const matched = replacedLine.match(messageRegex)
@@ -47,6 +47,7 @@ const lineToMessage = (line, channel) => {
       }
     }
     logger.debug(`${username} in blacklist, ignoring message...`)
+    return undefined
   } catch (e) {
     logger.warn({
       error: e.message,
@@ -54,14 +55,18 @@ const lineToMessage = (line, channel) => {
       message: line,
       messageLength: line.length,
     })
+    return undefined
   }
 }
 
 const pathsToMessages = async (paths) => {
+  // eslint-disable-next-line no-restricted-syntax
   for (const filePaths of _.chunk(paths, 10)) {
+    // eslint-disable-next-line no-restricted-syntax
     for (const filePath of filePaths) {
       const channel = path.parse(filePath).name.split('::')[0]
 
+      // eslint-disable-next-line no-await-in-loop
       await etl
         .file(filePath)
         .pipe(etl.split())
@@ -74,6 +79,7 @@ const pathsToMessages = async (paths) => {
         )
         .promise()
     }
+    // eslint-disable-next-line no-await-in-loop
     await pWriteFile(indexCachePath, `${filePaths.join('\n')}\n`, {
       encoding: 'utf8',
       flag: 'a+',

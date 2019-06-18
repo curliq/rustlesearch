@@ -1,11 +1,11 @@
-const rp = require('request-promise')
-const fg = require('fast-glob')
-const { DateTime } = require('luxon')
-const Promise = require('bluebird')
-const R = require('ramda')
-const logger = require('@lib/logger').default
-const { rustleDataPath, downloadCachePath, channelFilePath } = require('./cache')
-const { fs } = require('@lib/util')
+import rp from 'request-promise'
+import fg from 'fast-glob'
+import { DateTime } from 'luxon'
+import Promise from 'bluebird'
+import R from 'ramda'
+import logger from '@lib/logger'
+import { fs } from '@lib/util'
+import { rustleDataPath, downloadCachePath, channelFilePath } from './cache'
 
 // "Constants"
 const baseUrl = 'https://overrustlelogs.net'
