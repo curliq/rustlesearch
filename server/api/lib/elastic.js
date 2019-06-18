@@ -63,7 +63,7 @@ export const search = co(function* (query) {
       statusCode: 200,
     }
   } catch (e) {
-    logger.info(`ES query failed: ${e.message}`)
+    logger.error(`ES query failed: ${e.message}`)
     return {
       logs: [],
       statusCode: 404,

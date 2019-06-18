@@ -14,7 +14,7 @@ export default co(function* (req, res, next) {
     req.patreon = body
     return next()
   } catch (e) {
-    logger.debug(e)
+    logger.warn('Patreon fetch failed', e)
     return res
       .status(400)
       .json({error: 'Patreon fetch info failed', revalidate: false})
