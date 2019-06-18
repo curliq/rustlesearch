@@ -37,12 +37,10 @@
   "dependencies": {
     "@elastic/elasticsearch": "7.1.0",
     "bluebird": "3.5.5",
-    "connect-redis": "3.4.1",
     "cors": "2.8.5",
     "etl": "0.6.3",
     "express": "4.17.1",
     "express-graceful-shutdown": "1.0.0",
-    "express-session": "1.16.2",
     "fast-glob": "2.2.7",
     "helmet": "3.18.0",
     "ioredis": "4.10.0",

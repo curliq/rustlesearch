@@ -18,11 +18,4 @@ const redisLimiterOptions = {
   keyPrefix: 'ratelimit',
 }
 
-const redisSessionOptions = {
-  ...redisOptions,
-  db: 1,
-  keyPrefix: 'express',
-}
-
-export const redisLimiter = getRedis(redisLimiterOptions)
-export const redisSession = getRedis(redisSessionOptions)
+export default getRedis(redisLimiterOptions)

@@ -1,5 +1,5 @@
 import { RateLimiterRedis } from 'rate-limiter-flexible'
-import { redisLimiter } from '@lib/redis'
+import redisLimiter from '@lib/redis'
 import { co } from '@lib/util'
 import { DateTime } from 'luxon'
 

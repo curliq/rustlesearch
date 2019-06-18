@@ -2,9 +2,6 @@ import express from 'express'
 import helmet from 'helmet'
 import cors from 'cors'
 import grace from 'express-graceful-shutdown'
-import session from 'express-session'
-import RedisStore from 'connect-redis'
-import { redisSession } from '@lib/redis'
 import api from '@routes/api'
 import loggerMiddleware from '@middleware/express-logger'
 import logger from '@lib/logger'
@@ -37,16 +34,6 @@ app.use(
 )
 
 app.use(helmet())
-
-const Store = RedisStore(session)
-app.use(
-  session({
-    store: new Store({ client: redisSession }),
-    secret: process.env.KEY_SECRET,
-    resave: false,
-    saveUninitialized: false,
-  }),
-)
 
 app.use(express.json())
 app.use(api)
