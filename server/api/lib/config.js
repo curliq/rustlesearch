@@ -11,6 +11,10 @@ const ourEnv = [
   'RATE_LIMIT',
   'RATE_LIMIT_TIMEOUT',
   'KEY_SECRET',
+  'PATREON_CLIENT_ID',
+  'PATREON_CLIENT_SECRET',
+  'DOMAIN',
+  'SUBDOMAIN',
 ]
 
 ourEnv.forEach(
