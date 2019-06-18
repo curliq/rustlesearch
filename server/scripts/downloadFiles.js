@@ -60,7 +60,9 @@ const main = async () => {
 
   const totalUrls = getUrlList(channels, parseInt(process.argv[2], 10) || 10)
   const downloadedUrlFiles = await fs.readdirAsync(rustleDataPath)
-  const downloadedUrls = downloadedUrlFiles.map(file => `${rustleDataPath}/${file}`)
+  const downloadedUrls = downloadedUrlFiles.map(
+    file => `${rustleDataPath}/${file}`,
+  )
   const urlsToDownload = totalUrls.filter(
     x => !(downloadedUrls.includes(x[0]) || downloadCache.includes(x[0])),
   )

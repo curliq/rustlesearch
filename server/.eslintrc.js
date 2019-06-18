@@ -12,6 +12,7 @@ module.exports = {
     SharedArrayBuffer: 'readonly',
   },
   rules: {
+    'max-len': ['error', 80],
     'import/no-unresolved': 'off',
     'func-names': 'off',
     'no-await-in-loop': 'off',
@@ -20,5 +21,6 @@ module.exports = {
     semi: ['error', 'never'],
     'no-unused-expressions': ['error', { allowTernary: true }],
     'arrow-parens': ['error', 'as-needed'],
+    'arrow-body-style': 'off',
   },
 }
