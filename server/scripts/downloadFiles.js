@@ -1,4 +1,4 @@
-import rp from 'request-promise'
+import request from 'superagent'
 import fg from 'fast-glob'
 import { DateTime } from 'luxon'
 import Promise from 'bluebird'
@@ -36,7 +36,7 @@ const getUrlList = (channels, daysBack) => R.pipe(
 
 const downloadFile = async ([path, uri]) => {
   try {
-    const res = await rp({ uri })
+    const { text: res } = await request.get(uri)
     await fs.writeFileAsync(path, res)
     logger.info(`Wrote ${path} to disk.`)
   } catch {
