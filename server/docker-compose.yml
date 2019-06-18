@@ -10,7 +10,6 @@ services:
       - VIRTUAL_HOST=${SUBDOMAIN}.${DOMAIN}
       - VIRTUAL_PORT=${APP_PORT}
       - LETSENCRYPT_HOST=api.${DOMAIN}
-      - RESOLVERS="1.1.1.1 1.0.0.1 valid=300s"
     expose:
       - ${APP_PORT}
     depends_on:
@@ -25,7 +24,6 @@ services:
       - VIRTUAL_HOST=${SUBDOMAIN}.${DOMAIN}
       - VIRTUAL_PORT=${APP_PORT}
       - LETSENCRYPT_HOST=api.${DOMAIN}
-      - RESOLVERS="1.1.1.1 1.0.0.1 valid=300s"
 
     expose:
       - ${APP_PORT}
