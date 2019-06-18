@@ -4,17 +4,16 @@ import cors from 'cors'
 import grace from 'express-graceful-shutdown'
 import session from 'express-session'
 import RedisStore from 'connect-redis'
+import grant from 'grant-express'
 import {redisSession} from '@lib/redis'
 import api from '@routes/api'
 import loggerMiddleware from '@middleware/express-logger'
 import logger from '@lib/logger'
 import extendReq from '@middleware/request-extender'
-
 const app = express()
 
 // behind nginx
 app.set('trust proxy', 1)
-
 const graceOptions = {
   logger,
   forceTimeout: 10000,
@@ -49,6 +48,22 @@ app.use(
   }),
 )
 
+app.use(
+  grant({
+    defaults: {
+      protocol: 'https',
+      host: `api.${process.env.DOMAIN}`,
+      transport: 'session',
+    },
+    patreon: {
+      key: process.env.PATREON_CLIENT_ID,
+      secret: process.env.PATREON_CLIENT_SECRET,
+      // scope: ['pledges-to-me'],
+      callback: '/callback/patreon',
+    },
+  }),
+)
+app.use(express.json())
 app.use(api)
 
 export default app

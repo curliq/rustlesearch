@@ -2,7 +2,8 @@ import {search} from '@lib/elastic'
 import {co, fs} from '@lib/util'
 import express from 'express'
 import ratelimit from '@middleware/rate-limiter'
-
+// import popupTools from 'popup-tools'
+import {toJwt, jwtToPatreonMiddleware} from '@lib/auth'
 const router = express.Router()
 
 router.get(
@@ -34,4 +35,17 @@ router.get(
   }),
 )
 
+router.get('/callback/patreon', async(req, res) => {
+  const resp = req.session.grant.response
+  if (!resp.access_token) return res.json({error: 'Authentication failed'})
+  return res.json({jwt: toJwt(resp.access_token)})
+  // res.end(popupTools.popupResponse(profile))
+})
+router.post(
+  '/auth/validate/patreon',
+  jwtToPatreonMiddleware,
+  async(req, res) => {
+    return res.json(req.patreon?.included?.[0]?.attributes)
+  },
+)
 export default router

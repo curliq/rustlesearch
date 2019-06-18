@@ -10,14 +10,41 @@
       <p>
         contact me at rustlesearch@gmail.com for inquiry
       </p>
+      <q-btn
+        color="primary"
+        @click="signUp"
+      >
+        Signup with google
+      </q-btn>
+      {{ resp }}
     </div>
   </q-page>
 </template>
 
 <script>
+import popupTools from 'popup-tools'
 export default {
   data() {
-    return {}
+    return {
+      resp: null,
+    }
+  },
+  methods: {
+    signUp() {
+      popupTools
+        .popup(
+          'https://api.johnpyp.tk/connect/patreon',
+          'Patreon Connect', {}, (err, jwt) => {
+            if (err) {
+              this.$q.notify({
+                text: 'Authentication Failed',
+                position: 'bottom-right',
+                timeout: 1000,
+              })
+            } else
+              this.resp = jwt
+          })
+    },
   },
 }
 </script>

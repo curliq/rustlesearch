@@ -16,7 +16,23 @@ services:
       - ${APP_PORT}
     depends_on:
       - redis
+  rustlesearch_dev:
+    image: node:12
+    volumes:
+      - .:/node_app
+    working_dir: /node_app
+    command: echo 1
+    environment:
+      - VIRTUAL_HOST=api.${DOMAIN}
+      - VIRTUAL_PORT=${APP_PORT}
+      - LETSENCRYPT_HOST=api.${DOMAIN}
+      - RESOLVERS="1.1.1.1 1.0.0.1 valid=300s"
+      - SSL_POLICY=Mozilla-Modern
 
+    expose:
+      - ${APP_PORT}
+    depends_on:
+      - redis
   redis:
     image: redis:5-alpine
     command: ['redis-server', '/usr/local/etc/redis/redis.conf']
