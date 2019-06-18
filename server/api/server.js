@@ -4,7 +4,6 @@ import cors from 'cors'
 import grace from 'express-graceful-shutdown'
 import session from 'express-session'
 import RedisStore from 'connect-redis'
-import grant from 'grant-express'
 import { redisSession } from '@lib/redis'
 import api from '@routes/api'
 import loggerMiddleware from '@middleware/express-logger'
@@ -49,21 +48,6 @@ app.use(
   }),
 )
 
-app.use(
-  grant({
-    defaults: {
-      protocol: 'https',
-      host: `${process.env.SUBDOMAIN}.${process.env.DOMAIN}`,
-      transport: 'session',
-    },
-    patreon: {
-      key: process.env.PATREON_CLIENT_ID,
-      secret: process.env.PATREON_CLIENT_SECRET,
-      // scope: ['pledges-to-me'],
-      callback: '/callback/patreon',
-    },
-  }),
-)
 app.use(express.json())
 app.use(api)
 
