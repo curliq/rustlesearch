@@ -12,7 +12,6 @@ const ourEnv = [
   'RATE_LIMIT_TIMEOUT',
   'KEY_SECRET',
   'DOMAIN',
-  'SUBDOMAIN',
 ]
 
 ourEnv.forEach(

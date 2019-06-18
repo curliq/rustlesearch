@@ -1,5 +1,4 @@
 import request from 'superagent'
-import fg from 'fast-glob'
 import { DateTime } from 'luxon'
 import Promise from 'bluebird'
 import R from 'ramda'
@@ -60,7 +59,8 @@ const main = async () => {
   const downloadCache = parseByLine(downloadCacheFile.toString())
 
   const totalUrls = getUrlList(channels, parseInt(process.argv[2], 10) || 10)
-  const downloadedUrls = await fg.async(`${rustleDataPath}/*.txt`)
+  const downloadedUrlFiles = await fs.readdirAsync(rustleDataPath)
+  const downloadedUrls = downloadedUrlFiles.map(file => `${rustleDataPath}/${file}`)
   const urlsToDownload = totalUrls.filter(
     x => !(downloadedUrls.includes(x[0]) || downloadCache.includes(x[0])),
   )

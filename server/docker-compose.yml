@@ -7,9 +7,9 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      - VIRTUAL_HOST=${SUBDOMAIN}.${DOMAIN}
+      - VIRTUAL_HOST=${DOMAIN}
       - VIRTUAL_PORT=${APP_PORT}
-      - LETSENCRYPT_HOST=api.${DOMAIN}
+      - LETSENCRYPT_HOST=${DOMAIN}
     expose:
       - ${APP_PORT}
     depends_on:
@@ -21,9 +21,9 @@ services:
     working_dir: /node_app
     command: echo 1
     environment:
-      - VIRTUAL_HOST=${SUBDOMAIN}.${DOMAIN}
+      - VIRTUAL_HOST=${DOMAIN}
       - VIRTUAL_PORT=${APP_PORT}
-      - LETSENCRYPT_HOST=api.${DOMAIN}
+      - LETSENCRYPT_HOST=${DOMAIN}
 
     expose:
       - ${APP_PORT}
