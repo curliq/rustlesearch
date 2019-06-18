@@ -3,7 +3,8 @@ import {co, fs} from '@lib/util'
 import express from 'express'
 import ratelimit from '@middleware/rate-limiter'
 // import popupTools from 'popup-tools'
-import {toJwt, jwtToPatreonMiddleware} from '@lib/auth'
+import {toJwt} from '@lib/auth'
+import jwtToPatreonMiddleware from '@middleware/jwt-patreon'
 const router = express.Router()
 
 router.get(

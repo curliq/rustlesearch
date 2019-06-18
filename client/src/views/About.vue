@@ -14,7 +14,7 @@
         color="primary"
         @click="signUp"
       >
-        Signup with google
+        Signup with Patreon
       </q-btn>
       {{ resp }}
     </div>
@@ -33,7 +33,7 @@ export default {
     signUp() {
       popupTools
         .popup(
-          'https://api.johnpyp.tk/connect/patreon',
+          `${process.env.VUE_APP_API}/connect/patreon`,
           'Patreon Connect', {}, (err, jwt) => {
             if (err) {
               this.$q.notify({
