@@ -1,10 +1,10 @@
 import path from 'path'
-import _ from 'lodash'
 import etl from 'etl'
+import Promise from 'bluebird'
 import { DateTime } from 'luxon'
 import { Client } from '@elastic/elasticsearch'
 import logger from '@lib/logger'
-import { fs } from '@lib/util'
+import { fs, co } from '@lib/util'
 import { blacklistPath, indexCachePath, rustleDataPath } from './cache'
 
 const blacklist = new Set(
@@ -56,39 +56,33 @@ const lineToMessage = (line, channel) => {
   }
 }
 
-const pathsToMessages = async paths => {
-  for (const filePaths of _.chunk(paths, 10)) {
-    for (const filePath of filePaths) {
-      const channel = path.parse(filePath).name.split('::')[0]
-
-      await etl
-        .file(filePath)
-        .pipe(etl.split())
-        .pipe(etl.map(line => lineToMessage(line.text, channel)))
-        .pipe(etl.collect(2000))
-        .pipe(
-          etl.elastic.index(client, process.env.INDEX_NAME, null, {
-            concurrency: 10,
-          }),
-        )
-        .promise()
-    }
-    await fs.writeFileAsync(indexCachePath, `${filePaths.join('\n')}\n`, {
-      encoding: 'utf8',
-      flag: 'a+',
-    })
-  }
-}
+const pathsToMessages = co(function* (filePath) {
+  const channel = path.parse(filePath).name.split('::')[0]
+  yield etl
+    .file(filePath)
+    .pipe(etl.split())
+    .pipe(etl.map(line => lineToMessage(line.text, channel)))
+    .pipe(etl.collect(2000))
+    .pipe(
+      etl.elastic.index(client, process.env.INDEX_NAME, null, {
+        concurrency: 10,
+      }),
+    )
+    .promise()
+  yield fs.writeFileAsync(indexCachePath, `${path}\n`, {
+    encoding: 'utf8',
+    flag: 'a+',
+  })
+})
 
 const main = async () => {
   const allPathsNames = await fs.readdirAsync(rustleDataPath)
   const allPaths = allPathsNames.map(file => `${rustleDataPath}/${file}`)
-  const ingestedPaths = await fs
-    .readFileAsync(indexCachePath, {
-      encoding: 'utf8',
-      flag: 'a+',
-    })
-    .split('\n')
+  const ingestedPathsFile = await fs.readFileAsync(indexCachePath, {
+    encoding: 'utf8',
+    flag: 'a+',
+  })
+  const ingestedPaths = ingestedPathsFile.split('\n')
   const pathsToIngest = allPaths.filter(file => !ingestedPaths.includes(file))
   logger.info({
     totalDaysOfLogs: allPaths.length,
@@ -98,7 +92,7 @@ const main = async () => {
 
   client
     .info()
-    .then(() => pathsToMessages(pathsToIngest))
+    .then(() => Promise.each(pathsToIngest, pathsToMessages))
     .catch(err => {
       logger.error(`Failed to connect to Elastic: ${err}`)
       process.exit(1)
