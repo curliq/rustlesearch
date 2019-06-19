@@ -10,19 +10,11 @@
       <p>
         contact me at rustlesearch@gmail.com for inquiry
       </p>
-      <q-btn
-        color="primary"
-        @click="signUp"
-      >
-        Signup with Patreon
-      </q-btn>
-      {{ resp }}
     </div>
   </q-page>
 </template>
 
 <script>
-import popupTools from 'popup-tools'
 export default {
   data() {
     return {
@@ -30,21 +22,6 @@ export default {
     }
   },
   methods: {
-    signUp() {
-      popupTools
-        .popup(
-          `${process.env.VUE_APP_API}/connect/patreon`,
-          'Patreon Connect', {}, (err, jwt) => {
-            if (err) {
-              this.$q.notify({
-                text: 'Authentication Failed',
-                position: 'bottom-right',
-                timeout: 1000,
-              })
-            } else
-              this.resp = jwt
-          })
-    },
   },
 }
 </script>
