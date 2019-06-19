@@ -16,7 +16,7 @@
           class="col-2"
         >
           <q-item-label
-            class="q-mt-sm"
+            class="q-mt-sm nice-font"
             :lines="1"
           >
             {{ result.channel }}
@@ -27,10 +27,10 @@
           class
         >
           <q-item-label style="wrap: break-word;">
-            <span class="text-body2 text-blue-8 text-weight-medium">{{
+            <span class="text-body2 text-red-8 text-weight-medium nice-font">{{
               result.username
             }}</span>
-            <span class="text-caption text-weight-light text-grey-8 q-ml-xs">
+            <span class="text-caption text-weight-light text-grey-8 q-ml-xs nice-font">
               {{
                 DateTime.fromISO(result.ts)
                   .toUTC()
@@ -38,7 +38,7 @@
               }}
             </span>
           </q-item-label>
-          <q-item-label class="text-grey-10">
+          <q-item-label class="nice-font text-grey-10">
             {{ result.text }}
           </q-item-label>
         </q-item-section>
@@ -66,4 +66,10 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped lang="scss">
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+.nice-font {
+    font-family: 'Muli', sans-serif;
+
+}
+</style>
