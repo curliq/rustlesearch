@@ -69,7 +69,7 @@ const pathsToMessages = co(function* (filePath) {
       }),
     )
     .promise()
-  yield fs.writeFileAsync(indexCachePath, `${path}\n`, {
+  yield fs.writeFileAsync(indexCachePath, `${filePath}\n`, {
     encoding: 'utf8',
     flag: 'a+',
   })
