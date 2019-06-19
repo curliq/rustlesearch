@@ -21,8 +21,7 @@ export default {
       resp: null,
     }
   },
-  methods: {
-  },
+  methods: {},
 }
 </script>
 

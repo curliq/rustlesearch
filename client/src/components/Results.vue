@@ -24,15 +24,19 @@
         </q-item-section>
         <q-item-section
           top
-          class=""
+          class
         >
           <q-item-label style="wrap: break-word;">
-            <span class="text-body2 text-blue-8 text-weight-medium">{{ result.username }}</span>
-            <span class="text-caption text-weight-light text-grey-8 q-ml-xs"> {{
-              DateTime.fromISO(result.ts)
-                .toUTC()
-                .toFormat('HH:mm:ss MMM dd, yyyy')
+            <span class="text-body2 text-blue-8 text-weight-medium">{{
+              result.username
             }}</span>
+            <span class="text-caption text-weight-light text-grey-8 q-ml-xs">
+              {{
+                DateTime.fromISO(result.ts)
+                  .toUTC()
+                  .toFormat('HH:mm:ss MMM dd, yyyy')
+              }}
+            </span>
           </q-item-label>
           <q-item-label class="text-grey-10">
             {{ result.text }}
