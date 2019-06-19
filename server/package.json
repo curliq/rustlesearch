@@ -7,7 +7,7 @@
     "node": "12"
   },
   "scripts": {
-    "pretty": "eslint --ext .js --fix ./",
+    "lint": "eslint --ext .js --fix ./",
     "test": "jest --forceExit",
     "start:api": "node -r @babel/register -r dotenv/config api/start.js",
     "start:api:production": "node api-dist/start.js",
@@ -19,7 +19,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn pretty"
+      "pre-commit": "yarn lint"
     }
   },
   "contributors": [

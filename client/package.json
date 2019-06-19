@@ -6,8 +6,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "prettier --loglevel warn --write '**/*.{js,yml,json,vue}' && vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+    "lint": "prettier --loglevel warn --write '**/*.{js,yml,json,vue}' && vue-cli-service lint"
   },
   "dependencies": {
     "@quasar/extras": "1.1.2",
@@ -49,6 +48,11 @@
     "*.{js,vue}": [
       "vue-cli-service lint",
       "git add"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "@vue/app"
     ]
   }
 }
