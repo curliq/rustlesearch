@@ -30,7 +30,9 @@
             <span class="text-body2 text-red-8 text-weight-medium nice-font">{{
               result.username
             }}</span>
-            <span class="text-caption text-weight-light text-grey-8 q-ml-xs nice-font">
+            <span
+              class="text-caption text-weight-light text-grey-8 q-ml-xs nice-font"
+            >
               {{
                 DateTime.fromISO(result.ts)
                   .toUTC()
@@ -69,7 +71,6 @@ export default {
 <style scoped lang="scss">
 @import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
 .nice-font {
-    font-family: 'Muli', sans-serif;
-
+  font-family: 'Muli', sans-serif;
 }
 </style>
