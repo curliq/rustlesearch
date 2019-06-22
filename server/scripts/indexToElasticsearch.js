@@ -4,7 +4,7 @@ import Promise from 'bluebird'
 import { DateTime } from 'luxon'
 import { Client } from '@elastic/elasticsearch'
 import logger from '@lib/logger'
-import { fs, co } from '@lib/util'
+import { fs, co, capitalize } from '@lib/util'
 import { blacklistPath, indexCachePath, rustleDataPath } from './cache'
 
 const blacklist = new Set(
@@ -38,8 +38,8 @@ const lineToMessage = (line, channel) => {
       return {
         _id: `${username}-${seconds}`,
         ts,
-        channel,
-        username,
+        channel: capitalize(channel),
+        username: username.toLowerCase(),
         text,
       }
     }
