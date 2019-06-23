@@ -44,26 +44,13 @@
         label="Username"
         dense
       />
-      <q-select
+      <q-input
         v-model="query.channel"
-        outlined
-        use-input
-        hide-selected
-        dense
-        input-debounce="0"
-        @filter="filterFn"
-        :options="channels"
         class="col-md-2 col-6"
+        outlined
         label="Channel"
-      >
-        <template v-slot:no-option>
-          <q-item>
-            <q-item-section class="text-grey">
-              No results
-            </q-item-section>
-          </q-item>
-        </template>
-      </q-select>
+        dense
+      />
       <q-input
         v-model="query.text"
         class="col-md-7 col-12"
@@ -102,14 +89,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    channels: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  data() {
-    return {
-    }
   },
   computed: {
     shareUrl() {
@@ -122,9 +101,6 @@ export default {
         }).href
       )
     },
-    filteredChannels() {
-      return this.channels.filter(v => v.toLowerCase().includes(this.filteredValue))
-    }
   },
   methods: {
     setAllTime() {
@@ -141,14 +117,6 @@ export default {
         message: 'Copied!',
         position: 'bottom-right',
         timeout: 1000,
-      })
-    },
-    filterFn(val, update, abort) {
-      update(() => {
-        const needle = val.toLowerCase()
-        this.filteredChannels = this.channels.filter(
-          v => v.toLowerCase().indexOf(needle) > -1,
-        )
       })
     },
   },

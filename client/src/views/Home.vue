@@ -24,7 +24,6 @@
     <search-form
       :query.sync="query"
       :search-loading="searchLoading"
-      :channels="channels"
       @search="getResults"
     />
     <results
@@ -36,7 +35,7 @@
 </template>
 
 <script>
-import agent from '@/superagent'
+import axios from '@/axios'
 import Results from '@/components/Results.vue'
 import {DateTime} from 'luxon'
 import SearchForm from '@/components/SearchForm.vue'
@@ -69,39 +68,31 @@ export default {
       results: null,
     }
   },
-  computed: {
-    channels() {
-      return this.$store.state.channels
-    },
-  },
   mounted() {
     if (Object.entries(this.$route.query).length > 0) {
       this.query = mergeRight(this.query, pickQuery(this.$route.query))
       this.getResults()
     }
-    this.$store.dispatch('getChannels')
   },
   methods: {
     async getResults() {
       try {
         this.searchLoading = true
-        const {body} = await agent
-          .get('/search')
-          .query(
-            evolve(
-              {startingDate: dateToSeconds, endingDate: dateToSeconds},
-              pickQuery(this.query),
-            ),
-          )
+        const {data} = await axios.get('search', {
+          params: evolve(
+            {startingDate: dateToSeconds, endingDate: dateToSeconds},
+            pickQuery(this.query),
+          ),
+        })
         this.searchLoading = false
-        this.results = body
+        this.results = data
       } catch (e) {
         if (e.response.status === 429) {
           const retryAfterString = e.response.headers['retry-after']
           const retryAfter = parseInt(retryAfterString)
-          setTimeout(() => this.getResults(), retryAfter + 100)
+          setTimeout(() => this.getResults(), retryAfter + 500)
         } else {
-          this.notify(e.response.body.error)
+          this.notify(e.response.data.error)
           this.searchLoading = false
         }
       }
