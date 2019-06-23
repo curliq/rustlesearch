@@ -1,3 +1,5 @@
+/* eslint-disable no-process-env */
+
 const ourEnv = [
   'LOG_LEVEL',
   'APP_PORT',
@@ -10,11 +12,16 @@ const ourEnv = [
   'WORKER_COUNT',
   'RATE_LIMIT',
   'RATE_LIMIT_TIMEOUT',
-  'KEY_SECRET',
   'DOMAIN',
 ]
 
-ourEnv.forEach(
-  val => process.env[val]
-    || throw new Error(`${val} not found in configuration file`),
-)
+const getConfig = () =>
+  ourEnv.reduce((config, varName) => {
+    const envVar = process.env[varName]
+    if (!envVar) throw new Error(`${varName} not found in configuration file`)
+    config[varName] = envVar
+
+    return config
+  }, {})
+
+module.exports = getConfig()

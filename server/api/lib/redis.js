@@ -1,15 +1,16 @@
-import Redis from 'ioredis'
-import mockRedis from 'redis-mock'
-import { isTest } from '@lib/environment'
+const Redis = require('ioredis')
+const mockRedis = require('redis-mock')
+const {isTest} = require('./environment')
+const config = require('./config')
 
 const getRedis = opts => (isTest() ? mockRedis.createClient() : new Redis(opts))
 
 const redisOptions = {
-  host: process.env.REDIS_HOST,
-  port: process.env.REDIS_PORT,
   enableOfflineQueue: false,
   family: 4,
-  retry_strategy: ({ attempt }) => Math.min(attempt * 500, 3000),
+  host: config.REDIS_HOST,
+  port: config.REDIS_PORT,
+  retryStrategy: ({attempt}) => Math.min(attempt * 500, 3000),
 }
 
 const redisLimiterOptions = {
@@ -18,4 +19,4 @@ const redisLimiterOptions = {
   keyPrefix: 'ratelimit',
 }
 
-export default getRedis(redisLimiterOptions)
+module.exports = getRedis(redisLimiterOptions)
