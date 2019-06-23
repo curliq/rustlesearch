@@ -3,7 +3,7 @@ const config = require('./lib/config')
 
 const options = {
   host: 'localhost',
-  path: `${config.ROUTE_PREFIX}/healthcheck`,
+  path: '/healthcheck',
   port: config.APP_PORT,
   timeout: 3000,
 }
