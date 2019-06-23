@@ -1,19 +1,19 @@
-import http from 'http'
+const {request} = require('http')
+const config = require('./lib/config')
 
 const options = {
   host: 'localhost',
-  path: `${process.env.ROUTE_PREFIX}/healthcheck`,
-  port: process.env.APP_PORT,
+  path: `${config.ROUTE_PREFIX}/healthcheck`,
+  port: config.APP_PORT,
   timeout: 3000,
 }
 
-const req = http.request(options, res => {
-  if (res.statusCode === 200) return process.exit(0)
-  return process.exit(1)
+const req = request(options, res => {
+  if (!res.statusCode === 200) throw new Error('Wrong statuscode')
 })
 
 req.on('error', () => {
-  process.exit(1)
+  throw new Error('Healthcheck timed out')
 })
 
 req.end()

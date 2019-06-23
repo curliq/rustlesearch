@@ -7,15 +7,14 @@
     "node": "12"
   },
   "scripts": {
-    "lint": "eslint --ext .js --fix ./",
+    "lint": "prettier-eslint --write '**/*.js'",
     "test": "jest --forceExit",
-    "start:api": "node -r @babel/register -r dotenv/config api/start.js",
-    "start:api:production": "node api-dist/start.js",
-    "build:api": "babel -d ./api-dist ./api --copy-files --delete-dir-on-start",
-    "run:download": "node -r @babel/register -r dotenv/config ./scripts/downloadFiles.js",
-    "run:index": "node -r @babel/register -r dotenv/config ./scripts/indexToElasticsearch.js",
-    "run:esinit": "node -r @babel/register -r dotenv/config ./scripts/initElasticsearch.js",
-    "benchmark:index": "node -r @babel/register -r dotenv/config ./scripts/benchmarkIngest.js"
+    "start:api": "node -r dotenv/config api/start.js",
+    "start:api:production": "node api/start.js",
+    "run:download": "node -r dotenv/config ./scripts/download-files.js",
+    "run:index": "node -r dotenv/config ./scripts/index-to-elastic.js",
+    "run:esinit": "node -r dotenv/config ./scripts/init-elastic.js",
+    "benchmark:index": "node -r dotenv/config ./scripts/benchmark-ingest.js"
   },
   "husky": {
     "hooks": {
@@ -53,33 +52,23 @@
     "superagent": "5.1.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.4.4",
-    "@babel/core": "7.4.5",
-    "@babel/parser": "7.4.5",
-    "@babel/plugin-proposal-export-default-from": "7.2.0",
-    "@babel/plugin-proposal-export-namespace-from": "7.2.0",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "7.4.4",
-    "@babel/plugin-proposal-optional-chaining": "7.2.0",
-    "@babel/plugin-proposal-throw-expressions": "7.2.0",
-    "@babel/preset-env": "7.4.5",
-    "@babel/register": "7.4.4",
-    "babel-eslint": "10.0.1",
-    "babel-jest": "24.8.0",
-    "babel-plugin-module-resolver": "3.2.0",
     "dotenv": "8.0.0",
-    "eslint": "5.16.0",
-    "eslint-config-airbnb-base": "13.1.0",
+    "eslint": "6.0.0",
+    "eslint-config-emerald": "0.1.1",
+    "eslint-config-prettier": "5.0.0",
     "eslint-plugin-import": "2.17.3",
-    "eslint-plugin-jest": "22.6.4",
+    "eslint-plugin-jest": "22.7.1",
+    "eslint-plugin-no-loops": "0.3.0",
     "eslint-plugin-node": "9.1.0",
+    "eslint-plugin-prettier": "3.1.0",
     "eslint-plugin-promise": "4.1.1",
+    "eslint-plugin-unicorn": "9.1.1",
     "husky": "2.4.1",
     "jest": "24.8.0",
     "jest-cli": "24.8.0",
-    "jest-raw-loader": "1.0.1",
-    "pino-pretty": "3.1.0",
-    "supertest": "4.0.2",
-    "yaml": "1.6.0",
-    "yaml-unist-parser": "1.0.0"
+    "pino-pretty": "3.2.0",
+    "prettier-eslint": "9.0.0",
+    "prettier-eslint-cli": "5.0.0",
+    "supertest": "4.0.2"
   }
 }

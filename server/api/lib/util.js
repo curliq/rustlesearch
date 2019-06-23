@@ -1,9 +1,11 @@
-import Promise from 'bluebird'
-import fsBasic from 'fs'
+const Promise = require('bluebird')
 
-export const co = fn => Promise.coroutine(fn)
-export const fs = Promise.promisifyAll(fsBasic)
+const co = fn => Promise.coroutine(fn)
 
-export const capitalize = string => {
-  return string[0].toUpperCase() + string.slice(1).toLowerCase()
+const capitalise = string =>
+  string[0].toUpperCase() + string.slice(1).toLowerCase()
+
+module.exports = {
+  capitalise,
+  co,
 }

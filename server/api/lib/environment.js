@@ -1,3 +1,11 @@
-export const isProd = () => process.env.NODE_ENV === 'production'
-export const isTest = () => process.env.NODE_ENV === 'test'
-export const isDev = () => process.env.NODE_ENV === 'development'
+const config = require('./config')
+
+const isProd = () => config.NODE_ENV === 'production'
+const isTest = () => config.NODE_ENV === 'test'
+const isDev = () => config.NODE_ENV === 'development'
+
+module.exports = {
+  isDev,
+  isProd,
+  isTest,
+}

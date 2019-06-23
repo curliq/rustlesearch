@@ -1,16 +1,14 @@
-import app from '@api/server'
-import request from 'supertest'
+const {range} = require('ramda')
+const request = require('supertest')
+const Promise = require('bluebird')
+const app = require('../server')
 
-const getManyRequests = (n, url, query) => {
-  const requests = []
-  for (let i = 0; i < n; i += 1) {
-    const req = request(app)
+const getManyRequests = (count, url, query) =>
+  range(1, count).map(() =>
+    request(app)
       .get(url)
-      .query(query)
-    requests.push(req)
-  }
-  return requests
-}
+      .query(query),
+  )
 
 describe('server test', () => {
   test('healthcheck passes', async () => {
@@ -21,7 +19,7 @@ describe('server test', () => {
   test('we can query something', async () => {
     const response = await request(app)
       .get('/search')
-      .query({ channel: 'destinygg' })
+      .query({channel: 'destinygg'})
 
     expect(response.statusCode).toBe(200)
   })
@@ -30,9 +28,12 @@ describe('server test', () => {
     const requests = getManyRequests(20, '/search', {
       channel: 'destinygg',
     })
+
+    const isTimedOut = response =>
+      response.statusCode === 429 ? done() : response
+
     // at least one should throw a 429
-    for await (const response of requests) {
-      if (response.statusCode === 429) done()
-    }
+    const results = await Promise.all(requests)
+    results.forEach(response => isTimedOut(response))
   })
 })

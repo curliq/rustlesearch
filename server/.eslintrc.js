@@ -1,26 +1,29 @@
 module.exports = {
-  parser: 'babel-eslint',
   env: {
-    es6: true,
+    'es6': true,
     'jest/globals': true,
-    node: true,
+    'node': true,
   },
-  extends: ['plugin:jest/recommended', 'airbnb-base'],
-  plugins: ['jest'],
+  extends: [
+    'plugin:jest/recommended',
+    'emerald',
+    'plugin:prettier/recommended',
+  ],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
   },
+  parserOptions: {
+    ecmaVersion: 2019,
+    sourceType: 'script',
+    ecmaFeatures: {
+      impliedStrict: true,
+    },
+  },
+  plugins: ['jest', 'prettier'],
   rules: {
-    'max-len': ['error', 80],
-    'import/no-unresolved': 'off',
-    'func-names': 'off',
-    'no-await-in-loop': 'off',
-    'no-restricted-syntax': 'off',
-    'generator-star-spacing': ['error', 'after'],
-    semi: ['error', 'never'],
-    'no-unused-expressions': ['error', { allowTernary: true }],
-    'arrow-parens': ['error', 'as-needed'],
-    'arrow-body-style': 'off',
+    // this only works with import
+    'import/order': 'off',
+    'prettier/prettier': 'error',
   },
 }
