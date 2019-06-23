@@ -1,7 +1,7 @@
 const {range} = require('ramda')
 const request = require('supertest')
 const Promise = require('bluebird')
-const app = require('../server')
+const app = require('../api')
 
 const getManyRequests = (count, url, query) =>
   range(1, count).map(() =>
