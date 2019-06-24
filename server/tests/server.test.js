@@ -16,6 +16,11 @@ describe('server test', () => {
     expect(response.statusCode).toBe(200)
   })
 
+  test('empty queries get rejected', async () => {
+    const response = await request(app).get('/search')
+    expect(response.statusCode).toBe(422)
+  })
+
   test('we can query something', async () => {
     const response = await request(app)
       .get('/search')
