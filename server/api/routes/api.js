@@ -1,8 +1,8 @@
-const {promises: fs} = require('fs')
 const express = require('express')
 const search = require('../lib/elastic')
 const {co} = require('../lib/util')
 const ratelimit = require('../middleware/rate-limiter')
+const channels = require('../lib/channels')
 
 const router = express.Router()
 
@@ -25,9 +25,7 @@ router.get(
 router.get(
   '/channels',
   co(function* getChannels(req, res) {
-    const channelsFile = yield fs.readFile('./channels.txt', 'utf8')
-    const channels = channelsFile.trim().split('\n')
-    res.json(channels)
+    res.json({channels})
   }),
 )
 

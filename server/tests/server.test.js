@@ -36,4 +36,11 @@ describe('server test', () => {
     const results = await Promise.all(requests)
     results.forEach(response => isTimedOut(response))
   })
+
+  test('we can get the channels', async done => {
+    const {body} = await request(app).get('/channels')
+
+    if (Array.isArray(body.channels)) return done()
+    throw new Error('/channels does not return an array')
+  })
 })

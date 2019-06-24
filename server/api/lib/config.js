@@ -1,18 +1,19 @@
 /* eslint-disable no-process-env */
 
 const ourEnv = [
-  'LOG_LEVEL',
+  'APP_NAME',
   'APP_PORT',
-  'NODE_ENV',
+  'CHANNEL_LOCATION',
+  'DOMAIN',
   'ELASTIC_LOCATION',
   'INDEX_NAME',
-  'APP_NAME',
+  'LOG_LEVEL',
+  'NODE_ENV',
   'REDIS_HOST',
   'REDIS_PORT',
-  'WORKER_COUNT',
   'RATE_LIMIT',
   'RATE_LIMIT_TIMEOUT',
-  'DOMAIN',
+  'WORKER_COUNT',
 ]
 
 const getConfig = () =>
