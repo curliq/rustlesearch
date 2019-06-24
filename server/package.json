@@ -18,11 +18,6 @@
     "run:discard": "node -r dotenv/config ./scripts/discard-downloads.js",
     "benchmark:index": "node -r dotenv/config ./scripts/benchmark-ingest.js"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn lint && yarn check-lint"
-    }
-  },
   "contributors": [
     {
       "email": "johnpaulpenaloza@gmail.com",
@@ -35,6 +30,17 @@
       "url": "https://ayaya.dev"
     }
   ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json}": [
+      "yarn lint",
+      "git add"
+    ]
+  },
   "dependencies": {
     "@elastic/elasticsearch": "7.1.0",
     "bluebird": "3.5.5",
@@ -64,9 +70,10 @@
     "eslint-plugin-prettier": "3.1.0",
     "eslint-plugin-promise": "4.2.1",
     "eslint-plugin-unicorn": "9.1.1",
-    "husky": "2.7.0",
+    "husky": "2.5.0",
     "jest": "24.8.0",
     "jest-cli": "24.8.0",
+    "lint-staged": "8.2.1",
     "pino-pretty": "3.2.0",
     "prettier-eslint": "9.0.0",
     "prettier-eslint-cli": "5.0.0",
