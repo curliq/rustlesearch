@@ -8,6 +8,7 @@
   },
   "scripts": {
     "lint": "prettier-eslint --write '**/*.js'",
+    "check-lint": "eslint --ext .js ./",
     "test": "jest --forceExit",
     "start:api": "node -r dotenv/config api/start.js",
     "start:api:production": "node api/start.js",
@@ -18,7 +19,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint"
+      "pre-commit": "yarn lint && yarn check-lint"
     }
   },
   "contributors": [

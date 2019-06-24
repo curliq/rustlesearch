@@ -29,7 +29,6 @@ const messageRegex = new RegExp(
 )
 
 const lineToMessage = (line, channel) => {
-  if (line.text === '') return null
   const replacedLine = line.text.replace('\r', '')
   const matched = replacedLine.match(messageRegex)
 
@@ -37,7 +36,8 @@ const lineToMessage = (line, channel) => {
   if (!matched) {
     logger.warn({line, message: 'Cannot be parsed'})
 
-    return null
+    // eslint-disable-next-line no-undefined
+    return undefined
   }
 
   const {tsStr, username, text} = matched.groups
@@ -48,7 +48,8 @@ const lineToMessage = (line, channel) => {
   if (blacklist.has(username.toLowerCase())) {
     logger.debug(`${username} in blacklist, ignoring message...`)
 
-    return null
+    // eslint-disable-next-line no-undefined
+    return undefined
   }
 
   return {
