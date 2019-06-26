@@ -1,4 +1,5 @@
 version: '3.7'
+
 services:
   rustlesearch_api:
     image: rustlesearch_api:latest
@@ -14,21 +15,7 @@ services:
       - ${APP_PORT}
     depends_on:
       - redis
-  rustlesearch_dev:
-    image: node:12
-    volumes:
-      - .:/node_app
-    working_dir: /node_app
-    command: echo 1
-    environment:
-      - VIRTUAL_HOST=${DOMAIN}
-      - VIRTUAL_PORT=${APP_PORT}
-      - LETSENCRYPT_HOST=${DOMAIN}
 
-    expose:
-      - ${APP_PORT}
-    depends_on:
-      - redis
   redis:
     image: redis:5-alpine
     command: ['redis-server', '/usr/local/etc/redis/redis.conf']
@@ -43,7 +30,7 @@ services:
     volumes:
       - ./config/redis/redis.conf:/usr/local/etc/redis/redis.conf
     expose:
-      - $REDIS_PORT
+      - ${REDIS_PORT}
 
   nginx-proxy:
     image: nginx:1.17-alpine
@@ -58,6 +45,7 @@ services:
       - ./config/nginx/html:/usr/share/nginx/html
       - ./config/nginx/dhparam:/etc/nginx/dhparam
       - ./config/nginx/certs:/etc/nginx/certs:ro
+
   docker-gen:
     image: jwilder/docker-gen:latest
     command: -notify-sighup rustlesearch-server-nginx-proxy -watch /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
@@ -71,6 +59,7 @@ services:
       - ./config/nginx/certs:/etc/nginx/certs:ro
       - ./config/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
+
   letsencrypt:
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: rustlesearch-server-letsencrypt
@@ -88,3 +77,4 @@ services:
       - DEFAULT_EMAIL=${EMAIL}
       - NGINX_PROXY_CONTAINER=rustlesearch-server-nginx-proxy
       - NGINX_DOCKER_GEN_CONTAINER=rustlesearch-server-nginx-proxy-gen
+
