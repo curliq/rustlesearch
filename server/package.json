@@ -10,8 +10,8 @@
     "lint": "prettier-eslint --write '**/*.js'",
     "check-lint": "eslint --ext .js ./",
     "test": "jest --forceExit",
+    "test:integration": "node -r dotenv/config integration/run-tests.js",
     "start:api": "node -r dotenv/config api/start.js",
-    "start:api:production": "node api/start.js",
     "run:download": "node -r dotenv/config ./scripts/download-files.js",
     "run:index": "node -r dotenv/config ./scripts/index-to-elastic.js",
     "run:esinit": "node -r dotenv/config ./scripts/init-elastic.js",
@@ -36,7 +36,12 @@
     }
   },
   "lint-staged": {
-    "*.{js,json}": [
+    "*.js": [
+      "yarn lint",
+      "yarn check-lint",
+      "git add"
+    ],
+    "*.json": [
       "yarn lint",
       "git add"
     ]
@@ -75,6 +80,7 @@
     "jest-cli": "24.8.0",
     "lint-staged": "8.2.1",
     "pino-pretty": "3.2.0",
+    "prettier": "1.18.2",
     "prettier-eslint": "9.0.0",
     "prettier-eslint-cli": "5.0.0",
     "supertest": "4.0.2"
