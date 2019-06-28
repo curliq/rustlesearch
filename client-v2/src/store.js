@@ -1,14 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import superagent from 'superagent'
-import { last, evolve } from 'ramda'
-import { dateToSeconds } from '@/utils'
-
+import { last } from 'ramda'
 const baseUrl = process.env.VUE_APP_API
-const transformQuery = evolve({
-  startingDate: dateToSeconds,
-  endingDate: dateToSeconds
-})
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -37,9 +31,7 @@ export default new Vuex.Store({
       commit('setLoading', true)
       console.log(query.startingDate, query.endingDate)
       try {
-        const { body } = await superagent
-          .get(`${baseUrl}/search`)
-          .query(transformQuery(query))
+        const { body } = await superagent.get(`${baseUrl}/search`).query(query)
         commit('setResults', body)
         commit('setLoading', false)
       } catch (e) {
@@ -60,7 +52,7 @@ export default new Vuex.Store({
       try {
         const { body } = await superagent
           .get(`${baseUrl}/search`)
-          .query(transformQuery(state.currentQuery))
+          .query(state.currentQuery)
           .query({ searchAfter: searchAfterVal })
 
         commit('appendResults', body)

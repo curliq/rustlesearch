@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { DateTime } from 'luxon'
+import dayjs from '@/dayjs'
 import TinyDatePicker from 'tiny-date-picker'
 export default {
   props: {
@@ -44,8 +44,11 @@ export default {
     createDp () {
       this.dp = TinyDatePicker(this.$refs.datepicker, {
         mode: 'dp-below',
+        parse (date) {
+          return dayjs(date).toDate()
+        },
         format (date) {
-          return DateTime.fromJSDate(date).toISODate()
+          return dayjs(date).format('YYYY-MM-DD')
         },
         ...this.options
       })

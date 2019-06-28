@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { DateTime } from 'luxon'
+import dayjs from '@/dayjs'
 import { keys, mergeRight } from 'ramda'
 export default {
   props: {
@@ -67,17 +67,10 @@ export default {
         username: null,
         channel: null,
         text: null,
-        startingDate: DateTime.utc()
-          .minus({ days: 30 })
-          .toISODate(),
-        endingDate: DateTime.utc().toISODate()
+        startingDate: dayjs().utc().subtract(30, 'day').format('YYYY-MM-DD'),
+        endingDate: dayjs().utc().format('YYYY-MM-DD')
       },
-      today: new Date(),
-      dateMasks: {
-        input: ['YYYY-MM-DD'],
-
-        data: ['YYYY-MM-DD']
-      }
+      today: new Date()
     }
   },
   mounted () {

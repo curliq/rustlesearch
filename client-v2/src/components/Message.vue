@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { DateTime } from 'luxon'
+import dayjs from '@/dayjs'
 import { displayFormat } from '@/utils'
 export default {
   props: {
@@ -46,7 +46,7 @@ export default {
   },
   computed: {
     formattedDate () {
-      return DateTime.fromISO(this.ts).toFormat(displayFormat)
+      return dayjs(this.ts).utc().format(displayFormat)
     }
   }
 }

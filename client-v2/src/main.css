@@ -1,3 +1,4 @@
+@import './custom-datepicker.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
