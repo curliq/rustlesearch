@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-sop-base shadow">
+  <div class="bg-purple-500 shadow">
     <div class="px-8">
       <div class="flex items-center justify-between py-3">
         <router-link
