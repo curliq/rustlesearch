@@ -26,14 +26,12 @@ const generateElasticQuery = query => {
   }
 
   return {
-    from: 0,
     query: {
       bool: {
         filter: [
           {
             range: {
               ts: {
-                format: 'epoch_second',
                 gte: startingDate,
                 lte: endingDate,
               },
