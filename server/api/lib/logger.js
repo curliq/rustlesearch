@@ -1,32 +1,32 @@
-import pino from 'pino'
-import { isProd } from '@lib/environment'
+const pino = require('pino')
+const {isProd} = require('./environment')
+const config = require('./config')
 
-const name = process.env.APP_NAME
+const name = config.APP_NAME
 
 const getLoggerInfo = req => {
   const ip = req.realIp
-  const {
-    channel, username, text, startingDate, endingDate,
-  } = req.query
+  const {channel, username, text, startingDate, endingDate} = req.query
+
   return {
-    ip,
     channel,
-    username,
-    text,
-    startingDate,
     endingDate,
+    ip,
+    startingDate,
+    text,
+    username,
   }
 }
 
 const pinoOptions = {
+  base: {name},
+  level: config.LOG_LEVEL,
   name,
-  base: { name },
-  level: process.env.LOG_LEVEL,
   prettyPrint: !isProd(),
-  timestamp: () => `,"time":"${new Date(Date.now()).toISOString()}"`,
   serializers: {
     req: req => getLoggerInfo(req.raw),
   },
+  timestamp: () => `,"time":"${new Date(Date.now()).toISOString()}"`,
 }
 
-export default pino(pinoOptions)
+module.exports = pino(pinoOptions)

@@ -1,21 +1,24 @@
-import { RateLimiterRedis } from 'rate-limiter-flexible'
-import redisLimiter from '@lib/redis'
-import { co } from '@lib/util'
-import { DateTime } from 'luxon'
+const {RateLimiterRedis} = require('rate-limiter-flexible')
+const {DateTime} = require('luxon')
+const redisLimiter = require('../lib/redis')
+const {co} = require('../lib/util')
+const config = require('../lib/config')
 
 const rateLimiter = new RateLimiterRedis({
-  redis: redisLimiter,
+  duration: config.RATE_LIMIT_TIMEOUT,
   keyPrefix: 'ratelimiter',
-  points: process.env.RATE_LIMIT,
-  duration: process.env.RATE_LIMIT_TIMEOUT,
+  points: config.RATE_LIMIT,
+  redis: redisLimiter,
 })
 
-export default co(function* (req, res, next) {
+module.exports = co(function* rateLimit(req, res, next) {
   try {
     yield rateLimiter.consume(req.realIp)
+
     return next()
-  } catch (rateLimiterResponse) {
-    const retryAfter = rateLimiterResponse.msBeforeNext
+  } catch (error) {
+    const retryAfter = error.msBeforeNext
+
     const resetAfter = DateTime.utc()
       .plus(retryAfter)
       .toMillis()
@@ -25,6 +28,6 @@ export default co(function* (req, res, next) {
       'X-RateLimit-Reset': resetAfter,
     })
 
-    return res.status(429).json({ error: 'Too Many Requests' })
+    return res.status(429).json({error: 'Too Many Requests'})
   }
 })

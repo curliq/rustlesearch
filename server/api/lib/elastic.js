@@ -1,36 +1,31 @@
-import { Client } from '@elastic/elasticsearch'
-import logger from '@lib/logger'
-import { co, capitalize } from '@lib/util'
+const {Client} = require('@elastic/elasticsearch')
+const config = require('./config')
+const logger = require('./logger')
+const {co, capitalise} = require('./util')
 
-const elasticLocation = { node: process.env.ELASTIC_LOCATION }
-
+const elasticLocation = {node: config.ELASTIC_LOCATION}
 const elasticClient = new Client(elasticLocation)
 
 // throws here if we can't connect
-elasticClient
-  .info()
-  .then()
-  .catch(e => {
-    logger.error(`Elastic failed: ${e.message}`)
-    process.exit(1)
-  })
+elasticClient.info().catch(error => {
+  logger.error(`Elastic failed: ${error.message}`)
+  throw error
+})
 
 const generateElasticQuery = query => {
-  const {
-    username, channel, text, startingDate, endingDate,
-  } = query
+  const {username, channel, text, startingDate, endingDate} = query
   const filter = []
   const must = []
 
-  if (channel) filter.push({ term: { channel: capitalize(channel) } })
-  if (username) filter.push({ term: { username: username.toLowerCase() } })
+  if (channel) filter.push({term: {channel: capitalise(channel)}})
+  if (username) filter.push({term: {username: username.toLowerCase()}})
   if (text) {
     must.push({
-      match: { text: { query: text, operator: 'AND' } },
+      match: {text: {operator: 'AND', query: text}},
     })
   }
+
   return {
-    size: 100,
     from: 0,
     query: {
       bool: {
@@ -38,6 +33,7 @@ const generateElasticQuery = query => {
           {
             range: {
               ts: {
+                format: 'epoch_second',
                 gte: startingDate,
                 lte: endingDate,
               },
@@ -48,24 +44,27 @@ const generateElasticQuery = query => {
         must,
       },
     },
-    sort: [{ ts: { order: 'desc' } }],
+    size: 100,
+    sort: [{ts: {order: 'desc'}}],
   }
 }
 
-export default co(function* (query) {
+module.exports = co(function* searchElastic(query) {
   try {
     const result = yield elasticClient.search({
-      index: process.env.INDEX_NAME,
       body: generateElasticQuery(query),
+      index: config.INDEX_NAME,
     })
-    // eslint-disable-next-line no-underscore-dangle
+
     const logs = result.body.hits.hits.map(log => log._source)
+
     return {
       logs,
       statusCode: 200,
     }
-  } catch (e) {
-    logger.error(`ES query failed: ${e.message}`)
+  } catch (error) {
+    logger.error(`ES query failed: ${error.message}`)
+
     return {
       logs: [],
       statusCode: 404,

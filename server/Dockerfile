@@ -1,18 +1,12 @@
-FROM node:12-alpine AS builder
-WORKDIR /build
-COPY . .
-RUN yarn install --frozen-lockfile
-RUN yarn build:api
-
 FROM node:12-alpine
 WORKDIR /app
-COPY --from=builder /build/api-dist ./api-dist
 COPY package.json yarn.lock channels.txt ./
+COPY api ./api
 RUN yarn install --frozen-lockfile --production && \
         chown -R node:node /app
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
-        CMD node api-dist/healthcheck.js
+        CMD node api/healthcheck.js
 
 USER node
 EXPOSE $APP_PORT
