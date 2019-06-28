@@ -9,9 +9,12 @@
   },
   "dependencies": {
     "core-js": "^2.6.5",
+    "dayjs": "^1.8.14",
     "luxon": "^1.16.0",
     "ramda": "^0.26.1",
     "superagent": "^5.1.0",
+    "tiny-date-picker": "^3.2.8",
+    "v-mask": "^1.3.3",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
     "vuex": "^3.0.1"

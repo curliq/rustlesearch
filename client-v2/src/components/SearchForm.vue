@@ -27,9 +27,20 @@
       <base-dark-label class="mb-1">
         Start Date
       </base-dark-label>
+      <base-datepicker
+        v-model="query.startingDate"
+        class="mb-3"
+        :options="{max: query.endingDate}"
+      />
       <base-dark-label class="mb-1">
         End Date
       </base-dark-label>
+
+      <base-datepicker
+        v-model="query.endingDate"
+        class="mb-3"
+        :options="{min: query.startingDate, max: today}"
+      />
       <button
         type="submit"
         class="bg-purple-600 hover:bg-purple-700 w-full px-10 text-center py-3 rounded text-white focus:outline-none my-1"
@@ -58,8 +69,8 @@ export default {
         text: null,
         startingDate: DateTime.utc()
           .minus({ days: 30 })
-          .toJSDate(),
-        endingDate: DateTime.utc().toJSDate()
+          .toISODate(),
+        endingDate: DateTime.utc().toISODate()
       },
       today: new Date(),
       dateMasks: {
