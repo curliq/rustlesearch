@@ -40,7 +40,6 @@ const generateElasticQuery = query => {
               ts: {
                 gte: startingDate,
                 lte: endingDate,
-                format: 'epoch_second',
               },
             },
           },
