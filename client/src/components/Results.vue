@@ -3,7 +3,10 @@
     v-if="results.length > 0"
     class="bg-gray-850 rounded"
   >
-    <toggle-mode-bar v-model="mode" />
+    <toggle-mode-bar
+      :mode.sync="mode"
+      :is-utc.sync="isUtc"
+    />
     <component
       :is="mode"
       v-for="(message, i) in results"
@@ -12,6 +15,7 @@
       :channel="message.channel"
       :username="message.username"
       :text="message.text"
+      :is-utc="isUtc"
     />
   </div>
 </template>
@@ -34,7 +38,8 @@ export default {
   },
   data () {
     return {
-      mode: 'message'
+      mode: 'message',
+      isUtc: true
     }
   }
 }

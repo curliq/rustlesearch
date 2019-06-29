@@ -43,11 +43,21 @@ export default {
     ts: {
       type: String,
       default: null
+    },
+    isUtc: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
+    date () {
+      return dayjs(this.ts)
+    },
     formattedDate () {
-      return dayjs(this.ts).utc().format(displayFormat)
+      if (this.isUtc) {
+        return this.date.utc().format(displayFormat)
+      }
+      return this.date.format(displayFormat)
     }
   }
 }
