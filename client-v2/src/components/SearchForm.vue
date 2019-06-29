@@ -2,7 +2,7 @@
   <div class="bg-gray-850 shadow flex flex-col rounded py-4 px-3">
     <form @submit.prevent="$emit('submit', query)">
       <div class="flex lg:flex-row flex-col lg:items-center mb-5">
-        <base-dark-label class="text-lg mr-1 flex-1">
+        <base-dark-label class="text-lg mr-2 flex-initial">
           Search Options
         </base-dark-label>
         <div class="text-gray-500 flex-1 text-sm">

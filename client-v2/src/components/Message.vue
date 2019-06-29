@@ -5,7 +5,7 @@
     </div>
     <div class="xl:w-11/12 md:w-4/5 w-3/4">
       <div class="flex flex-col md:flex-row md:items-center">
-        <p class="text-gray-300 font-semibold mr-2">
+        <p class="text-gray-200 font-semibold mr-2">
           {{ username }}
         </p>
         <p class="text-gray-400 text-sm">
