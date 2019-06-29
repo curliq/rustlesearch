@@ -2,8 +2,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Roboto', 'Helvetica', 'Arial', 'sans-serif'],
-        nunito: 'Nunito'
+        sans: ['Roboto', 'Helvetica', 'Arial', 'sans-serif']
       },
       colors: {
         gray: {
