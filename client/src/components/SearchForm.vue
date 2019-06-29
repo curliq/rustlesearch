@@ -51,12 +51,14 @@
           :options="{min: query.startingDate, max: today}"
         />
       </div>
-
       <button
         type="submit"
         class="bg-purple-600 hover:bg-purple-700 w-full px-10 text-center py-3 rounded text-white focus:outline-none my-1"
       >
-        Submit
+        <span v-if="!loading">Submit</span>
+        <base-loader
+          v-else
+        />
       </button>
     </form>
   </div>

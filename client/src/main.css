@@ -1,7 +1,4 @@
 @import './custom-datepicker.css';
-/* html {
-  @apply font-sans;
-} */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
