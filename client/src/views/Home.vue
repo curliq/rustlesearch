@@ -8,7 +8,11 @@
       />
     </div>
     <div class="xl:4/5 lg:w-3/4 md:w-2/3 w-full">
-      <results :results="results" />
+      <results
+        :results="results"
+        :current-query="currentQuery"
+        :loading="loading"
+      />
     </div>
   </div>
 </template>
@@ -30,6 +34,9 @@ export default {
     },
     loading () {
       return this.$store.state.loading
+    },
+    currentQuery () {
+      return this.$store.state.currentQuery
     }
   },
   methods: {
