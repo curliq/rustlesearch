@@ -3,7 +3,8 @@ const purgecss = require('@fullhuman/postcss-purgecss')({
     './src/**/*.html',
     './public/**/*.html',
     './src/**/*.vue',
-    './src/**/*.css'
+    './src/**/*.css',
+    './src/**/*.js'
   ],
   defaultExtractor: content => content.match(/[A-Za-z0-9-_:/]+/g) || []
 })

@@ -4,7 +4,12 @@ import superagent from 'superagent'
 import { last } from 'ramda'
 const baseUrl = process.env.VUE_APP_API
 Vue.use(Vuex)
-
+const buildNotify = msg => ({
+  group: 'vuex',
+  title: 'Error',
+  text: msg,
+  duration: 2000
+})
 export default new Vuex.Store({
   state: {
     currentQuery: null,
@@ -35,12 +40,12 @@ export default new Vuex.Store({
         commit('setResults', body)
         commit('setLoading', false)
       } catch (e) {
-        console.log(e)
         if (e.response.status === 429) {
           const retryAfterString = e.response.headers['retry-after']
           const retryAfter = parseInt(retryAfterString)
           setTimeout(() => dispatch('getResults', query), retryAfter + 100)
         } else {
+          Vue.notify(buildNotify(e.response.body.error))
           commit('setLoading', false)
         }
       }
