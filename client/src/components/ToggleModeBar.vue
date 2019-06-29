@@ -14,9 +14,9 @@
       :class="[sharedWordClass, !isUtc ? activeClass : nonActiveClass]"
       @click="$emit('update:isUtc', false)"
     >
-      Local Time
+      Local
     </div>
-    <div class="mx-4" />
+    <div class="border-l self-stretch border-gray-400" />
     <span
       :class="[sharedClasses, 'mdi-view-stream', !isCompact ? activeClass : nonActiveClass]"
       @click="$emit('update:mode', 'message')"
