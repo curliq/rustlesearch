@@ -10,11 +10,13 @@ const buildNotify = msg => ({
   text: msg,
   duration: 2000
 })
+
 export default new Vuex.Store({
   state: {
     currentQuery: null,
     results: [],
-    loading: false
+    loading: false,
+    channels: ['Destinygg']
   },
   mutations: {
     setResults (state, data) {
@@ -28,6 +30,9 @@ export default new Vuex.Store({
     },
     setLoading (state, data) {
       state.loading = data
+    },
+    setChannels (state, data) {
+      state.channels = data
     }
   },
   actions: {
@@ -67,6 +72,14 @@ export default new Vuex.Store({
           const retryAfter = parseInt(retryAfterString)
           setTimeout(() => dispatch('scrollResults'), retryAfter + 100)
         }
+      }
+    },
+    async getChannels ({ commit }) {
+      try {
+        const { body } = await superagent.get(`${baseUrl}/channels`)
+        commit('setChannels', body)
+      } catch (e) {
+        console.log(e)
       }
     }
   }

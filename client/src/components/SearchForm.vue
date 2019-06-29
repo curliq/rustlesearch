@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-850 shadow flex flex-col rounded py-4 px-3">
-    <form @submit.prevent="$emit('submit', query)">
+    <div>
       <div class="flex lg:flex-row flex-col lg:items-center mb-5">
         <base-dark-label class="text-lg mr-2 flex-initial">
           Search Options
@@ -16,18 +16,21 @@
         placeholder="Username"
         type="text"
         class="mb-3"
+        @keydown.enter="$emit('submit', query)"
       />
       <base-dark-input
         v-model="query.channel"
         placeholder="Channel"
         label="Channel"
-        type="text"
+        :items="channels"
+        type="select"
         class="mb-3"
       />
       <base-dark-input
         v-model="query.text"
         label="Text"
         placeholder="Message content"
+        @keydown.enter="$emit('submit', query)"
       />
       <div class="border-b border-gray-800 my-4 h-px" />
       <div class="mb-3 flex flex-col md:flex-row md:items-center">
@@ -52,15 +55,15 @@
         />
       </div>
       <button
-        type="submit"
         class="bg-purple-600 hover:bg-purple-700 w-full px-10 text-center py-3 rounded text-white focus:outline-none my-1"
+        @click="$emit('submit', query)"
       >
         <span v-if="!loading">Submit</span>
         <base-loader
           v-else
         />
       </button>
-    </form>
+    </div>
   </div>
 </template>
 
@@ -86,7 +89,13 @@ export default {
       today: new Date()
     }
   },
+  computed: {
+    channels () {
+      return this.$store.state.channels
+    }
+  },
   mounted () {
+    this.$store.dispatch('getChannels')
     if (keys(this.$route.query).length > 0) {
       this.query = mergeRight(this.query, this.$route.query)
       this.$emit('submit', this.query)

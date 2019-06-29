@@ -15,6 +15,7 @@
 <script>
 import Results from '@/components/Results'
 import SearchForm from '@/components/SearchForm'
+import throttle from 'lodash/debounce'
 export default {
   components: {
     Results,
@@ -33,9 +34,9 @@ export default {
     }
   },
   methods: {
-    submitQuery (query) {
+    submitQuery: throttle(function (query) {
       this.$store.dispatch('getResults', query)
-    }
+    }, 500)
   }
 }
 </script>
