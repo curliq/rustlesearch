@@ -12,10 +12,9 @@
 
       <base-dark-input
         v-model="query.username"
-        label="Username"
-        placeholder="Username"
         type="text"
-        class="mb-3"
+        placeholder="Username"
+        styles="mb-3"
         @keydown.enter="$emit('submit', query)"
       />
       <base-dark-input
@@ -28,29 +27,31 @@
       />
       <base-dark-input
         v-model="query.text"
-        label="Text"
-        placeholder="Message content"
+        placeholder="Text"
         @keydown.enter="$emit('submit', query)"
       />
       <div class="border-b border-gray-800 my-4 h-px" />
-      <div class="mb-3 flex flex-col md:flex-row md:items-center">
-        <base-dark-label class="mb-1 md:mr-2 md:w-1/3">
-          Start Date
-        </base-dark-label>
+      <div
+        class="mb-3 field"
+        :class="query.startingDate && 'field--not-empty'"
+      >
+        <label class="field__label">Start Date</label>
         <base-datepicker
           v-model="query.startingDate"
-          class="flex-1 min-w-0"
+          class="field__input"
+          placeholder="Start Date"
           :options="{max: query.endingDate}"
         />
       </div>
-      <div class="mb-3 flex flex-col md:flex-row md:items-center">
-        <base-dark-label class="mb-1 md:mr-2 md:w-1/3">
-          End Date
-        </base-dark-label>
-
+      <div
+        class="mb-3 field"
+        :class="query.startingDate && 'field--not-empty'"
+      >
+        <label class="field__label">End Date</label>
         <base-datepicker
           v-model="query.endingDate"
-          class="flex-1 min-w-0"
+          class="field__input"
+          placeholder="End Date"
           :options="{min: query.startingDate, max: today}"
         />
       </div>
