@@ -1,9 +1,13 @@
 <template>
-  <div>
-    <message
+  <div
+    v-if="results.length > 0"
+    class="bg-gray-850 rounded"
+  >
+    <toggle-mode-bar v-model="mode" />
+    <component
+      :is="mode"
       v-for="(message, i) in results"
       :key="i"
-      class="mb-4"
       :ts="message.ts"
       :channel="message.channel"
       :username="message.username"
@@ -13,15 +17,24 @@
 </template>
 
 <script>
+import CompactMessage from './CompactMessage'
 import Message from './Message'
+import ToggleModeBar from './ToggleModeBar'
 export default {
   components: {
-    Message
+    Message,
+    CompactMessage,
+    ToggleModeBar
   },
   props: {
     results: {
       type: Array,
       default: () => []
+    }
+  },
+  data () {
+    return {
+      mode: 'message'
     }
   }
 }

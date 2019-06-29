@@ -1,6 +1,10 @@
 module.exports = {
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        nunito: 'Nunito'
+      },
       colors: {
         gray: {
           '100': '#f5f5f5',
@@ -11,9 +15,9 @@ module.exports = {
           '600': '#757575',
           '700': '#616161',
           '800': '#424242',
-          '850': '#3c3c3c',
+          '850': '#2c2c2c',
           '900': '#212121',
-          '950': '#1b1b1b'
+          '950': '#151515'
         }
       }
     }

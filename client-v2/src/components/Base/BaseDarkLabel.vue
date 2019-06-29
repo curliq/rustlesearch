@@ -1,9 +1,9 @@
 <template>
-  <label
-    class="block text-gray-300 text-sm font-bold"
+  <div
+    class="text-gray-300 text-sm font-bold"
   >
     <slot />
-  </label>
+  </div>
 </template>
 
 <script>

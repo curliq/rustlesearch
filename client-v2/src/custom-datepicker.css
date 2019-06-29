@@ -36,7 +36,7 @@
 .dp-modal .dp {
   position: absolute;
   top: 50%;
-  left: 50%;
+  /* left: 50%; */
   max-width: 600px;
   width: calc(100% - 4em);
   transform: translate(-50%, -50%);
@@ -270,6 +270,9 @@
 
 /* Responsive overrides */
 @media (max-width: 480px), (max-height: 480px) {
+  .dp-below {
+    left: 0 !important;
+  }
   .dp-modal .dp {
     font-size: 0.9em;
     width: auto;
@@ -278,7 +281,7 @@
 
   .dp-day-of-week,
   .dp-day {
-    padding: 8px;
+    @apply p-2;
   }
 }
 

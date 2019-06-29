@@ -1,23 +1,24 @@
 <template>
-  <div class="flex items-center border-b border-gray-800 py-1">
-    <div class="xl:w-1/12 md:w-1/5 w-1/4 text-gray-300 text-center truncate px-1">
-      {{ channel }}
-    </div>
-    <div class="xl:w-11/12 md:w-4/5 w-3/4">
-      <div class="flex flex-col md:flex-row md:items-center">
-        <p class="text-gray-300 font-semibold mr-2">
-          {{ username }}
-        </p>
-        <p class="text-gray-400 text-sm">
-          {{ formattedDate }}
-        </p>
+  <div class="flex items-center">
+    <div class="w-full max-w-full flex flex-col lg:flex-row">
+      <div class="text-gray-400 px-2 lg:border-r border-gray-700">
+        {{ channel }}
       </div>
-
       <p
-        class="text-gray-200 overflow-x-hidden mr-1"
+        class="inline-block text-gray-200 ml-2 overflow-x-hidden"
         style="overflow-wrap: anywhere;"
       >
+        <span class="font-bold mr-1">
+          {{ username }}
+        </span>
+
         {{ text }}
+      </p>
+
+      <p
+        class="text-gray-500 lg:ml-auto mr-2 pl-2 mb-2 lg:mb-0 text-sm whitespace-no-wrap"
+      >
+        {{ formattedDate }}
       </p>
     </div>
   </div>

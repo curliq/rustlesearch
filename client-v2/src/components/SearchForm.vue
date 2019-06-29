@@ -1,11 +1,18 @@
 <template>
   <div class="bg-gray-850 shadow flex flex-col rounded py-4 px-3">
     <form @submit.prevent="$emit('submit', query)">
-      <base-dark-label class="mb-4 text-lg">
-        Search Options
-      </base-dark-label>
+      <div class="flex lg:flex-row flex-col lg:items-center mb-5">
+        <base-dark-label class="text-lg mr-1 flex-1">
+          Search Options
+        </base-dark-label>
+        <div class="text-gray-500 flex-1 text-sm">
+          (one field required)
+        </div>
+      </div>
+
       <base-dark-input
         v-model="query.username"
+        label="Username"
         placeholder="Username"
         type="text"
         class="mb-3"
@@ -13,34 +20,38 @@
       <base-dark-input
         v-model="query.channel"
         placeholder="Channel"
+        label="Channel"
         type="text"
-        class="mb-10"
+        class="mb-3"
       />
       <base-dark-input
         v-model="query.text"
         label="Text"
         placeholder="Message content"
-        type="textarea"
-        class="mb-10"
-        rows="5"
       />
-      <base-dark-label class="mb-1">
-        Start Date
-      </base-dark-label>
-      <base-datepicker
-        v-model="query.startingDate"
-        class="mb-3"
-        :options="{max: query.endingDate}"
-      />
-      <base-dark-label class="mb-1">
-        End Date
-      </base-dark-label>
+      <div class="border-b border-gray-800 my-4 h-px" />
+      <div class="mb-3 flex flex-col md:flex-row md:items-center">
+        <base-dark-label class="mb-1 md:mr-2 md:w-1/3">
+          Start Date
+        </base-dark-label>
+        <base-datepicker
+          v-model="query.startingDate"
+          class="flex-1 min-w-0"
+          :options="{max: query.endingDate}"
+        />
+      </div>
+      <div class="mb-3 flex flex-col md:flex-row md:items-center">
+        <base-dark-label class="mb-1 md:mr-2 md:w-1/3">
+          End Date
+        </base-dark-label>
 
-      <base-datepicker
-        v-model="query.endingDate"
-        class="mb-3"
-        :options="{min: query.startingDate, max: today}"
-      />
+        <base-datepicker
+          v-model="query.endingDate"
+          class="flex-1 min-w-0"
+          :options="{min: query.startingDate, max: today}"
+        />
+      </div>
+
       <button
         type="submit"
         class="bg-purple-600 hover:bg-purple-700 w-full px-10 text-center py-3 rounded text-white focus:outline-none my-1"
