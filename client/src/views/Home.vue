@@ -19,6 +19,7 @@
 <script>
 import Results from '@/components/Results'
 import SearchForm from '@/components/SearchForm'
+import { reject, isNil, equals, anyPass } from 'ramda'
 export default {
   components: {
     Results,
@@ -40,9 +41,11 @@ export default {
     }
   },
   methods: {
-    submitQuery (query) {
+    async submitQuery (query) {
       if (!this.loading) {
-        this.$store.dispatch('getResults', query)
+        await this.$store.dispatch('getResults', query)
+        const isBad = anyPass([isNil, equals('')])
+        this.$router.push({ name: 'Home', query: reject(isBad)(this.currentQuery) })
       }
     }
   }
