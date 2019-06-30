@@ -34,7 +34,7 @@ const lineToMessage = (line, channel) => {
 
   // we cant parse that message yet
   if (!matched) {
-    logger.debug({line, message: 'Cannot be parsed'})
+    logger.debug({channel, line, message: 'Cannot be parsed'})
 
     // eslint-disable-next-line no-undefined
     return undefined
