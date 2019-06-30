@@ -2,25 +2,19 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import Notifications from 'vue-notification'
+import vSelect from 'vue-select'
+import 'vue-select/dist/vue-select.css'
 
-import './styles/quasar.styl'
-import '@quasar/extras/roboto-font/roboto-font.css'
-import '@quasar/extras/material-icons/material-icons.css'
-import '@quasar/extras/fontawesome-v5/fontawesome-v5.css'
-import Quasar from 'quasar'
-import VueClipboard from 'vue-clipboard2'
+import './global-base-components.js'
+import './main.css'
 
-Vue.use(Quasar, {
-  config: {},
-})
-
-VueClipboard.config.autoSetContainer = true // add this line
-Vue.use(VueClipboard)
-
+Vue.use(Notifications)
+Vue.component('v-select', vSelect)
 Vue.config.productionTip = false
 
 new Vue({
   router,
   store,
-  render: h => h(App),
+  render: h => h(App)
 }).$mount('#app')

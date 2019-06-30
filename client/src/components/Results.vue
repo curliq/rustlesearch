@@ -1,75 +1,72 @@
 <template>
-  <q-list
-    bordered
-    class="rounded-borders"
+  <div
+    class="bg-gray-850 rounded"
   >
-    <q-item-label header>
-      Results
-    </q-item-label>
-    <div
-      v-for="(result, i) in results"
-      :key="i"
-    >
-      <q-item dense>
-        <q-item-section
-          top
-          class="col-2"
-        >
-          <q-item-label
-            class="q-mt-sm nice-font"
-            :lines="1"
-          >
-            {{ result.channel }}
-          </q-item-label>
-        </q-item-section>
-        <q-item-section
-          top
-          class
-        >
-          <q-item-label style="wrap: break-word;">
-            <span class="text-body2 text-red-8 text-weight-medium nice-font">{{
-              result.username
-            }}</span>
-            <span class="text-caption text-weight-light text-grey-8 q-ml-xs nice-font">
-              {{
-                DateTime.fromISO(result.ts)
-                  .toUTC()
-                  .toFormat('HH:mm:ss MMM dd, yyyy')
-              }}
-            </span>
-          </q-item-label>
-          <q-item-label class="nice-font text-grey-10">
-            {{ result.text }}
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-
-      <q-separator spaced />
+    <toggle-mode-bar
+      :mode.sync="mode"
+      :is-utc.sync="isUtc"
+    />
+    <div v-if="results.length > 0">
+      <component
+        :is="mode"
+        v-for="(message, i) in results"
+        :key="i"
+        :ts="message.ts"
+        :channel="message.channel"
+        :username="message.username"
+        :text="message.text"
+        :is-utc="isUtc"
+      />
     </div>
-  </q-list>
+
+    <div
+      v-else-if="currentQuery && !loading"
+      class="py-4 text-center font-bold text-gray-100"
+    >
+      No results, try a different search
+    </div>
+    <div
+      v-else
+      class="py-4 text-center font-bold text-gray-100"
+    >
+      Submit a search to get started
+    </div>
+  </div>
 </template>
 
 <script>
-import {DateTime} from 'luxon'
+import CompactMessage from './CompactMessage'
+import Message from './Message'
+import ToggleModeBar from './ToggleModeBar'
 export default {
+  components: {
+    Message,
+    CompactMessage,
+    ToggleModeBar
+  },
   props: {
     results: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
-  },
-  computed: {
-    DateTime() {
-      return DateTime
+    currentQuery: {
+      type: Object,
+      default: null
     },
+    loading: {
+      type: Boolean,
+      default: false
+    }
   },
+  data () {
+    return {
+      mode: 'message',
+      isUtc: true
+    }
+  }
 }
 </script>
 
-<style scoped lang="scss">
-@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
-.nice-font {
-    font-family: 'Muli', sans-serif;
+<style>
 
-}
 </style>

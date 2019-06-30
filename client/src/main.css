@@ -1,0 +1,6 @@
+@import './styles/custom-datepicker.css';
+@import './styles/custom-v-select.css';
+@import './styles/float-label.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -1,126 +1,110 @@
 <template>
-  <form @submit.prevent="$emit('search')">
-    <div class="row q-col-gutter-sm q-mt-sm">
-      <date-input
-        v-model="query.startingDate"
-        class="col-md-2 col-6"
-      />
-      <date-input
-        v-model="query.endingDate"
-        class="col-md-2 col-6"
-      />
-      <div class="col-md-6 col-12">
-        <a
-          v-show="false"
-          :href="shareUrl"
-          target="_blank"
-        >Share URL</a>
-        <q-btn
-          color="indigo"
-          class="full-height"
-          no-caps
-          @click="setAllTime"
-        >
-          Select All Time
-        </q-btn>
-        <q-btn
-          v-clipboard:copy="shareUrl"
-          v-clipboard:success="copiedNotification"
-          class="q-mx-md full-height"
-          color="primary"
-          outline
-          no-caps
-        >
-          Copy Share URL
-        </q-btn>
+  <div class="bg-gray-850 shadow flex flex-col rounded py-4 px-3">
+    <div>
+      <div class="flex lg:flex-row flex-col lg:items-center mb-5">
+        <base-dark-label class="text-lg mr-2 flex-initial">
+          Search Options
+        </base-dark-label>
+        <div class="text-gray-500 flex-1 text-sm">
+          (one field required)
+        </div>
       </div>
-    </div>
 
-    <div class="row q-pt-md q-col-gutter-sm justify-center">
-      <q-input
+      <base-dark-input
         v-model="query.username"
-        class="col-md-2 col-6"
-        outlined
-        label="Username"
-        dense
+        type="text"
+        placeholder="Username"
+        styles="mb-3"
+        @keydown.enter="$emit('submit', query)"
       />
-      <q-input
+      <base-dark-input
         v-model="query.channel"
-        class="col-md-2 col-6"
-        outlined
+        placeholder="Channel"
         label="Channel"
-        dense
+        :items="channels"
+        type="select"
+        class="mb-3"
       />
-      <q-input
+      <base-dark-input
         v-model="query.text"
-        class="col-md-7 col-12"
-        outlined
-        label="Text"
-        dense
+        placeholder="Text"
+        @keydown.enter="$emit('submit', query)"
       />
-      <div class="col-md-1 col-4">
-        <q-btn
-          color="primary"
-          class="full-height full-width"
-          label="Search"
-          no-caps
-          type="submit"
-          :loading="searchLoading"
+      <div class="border-b border-gray-800 my-4 h-px" />
+      <div
+        class="mb-3 field"
+        :class="query.startingDate && 'field--not-empty'"
+      >
+        <label class="field__label">Start Date</label>
+        <base-datepicker
+          v-model="query.startingDate"
+          class="field__input"
+          placeholder="Start Date"
+          :options="{max: query.endingDate}"
         />
       </div>
+      <div
+        class="mb-3 field"
+        :class="query.startingDate && 'field--not-empty'"
+      >
+        <label class="field__label">End Date</label>
+        <base-datepicker
+          v-model="query.endingDate"
+          class="field__input"
+          placeholder="End Date"
+          :options="{min: query.startingDate, max: today}"
+        />
+      </div>
+      <button
+        class="bg-purple-600 hover:bg-purple-700 w-full px-10 text-center py-3 rounded text-white focus:outline-none my-1"
+        @click="$emit('submit', query)"
+      >
+        <span v-if="!loading">Submit</span>
+        <base-loader
+          v-else
+        />
+      </button>
     </div>
-  </form>
+  </div>
 </template>
 
 <script>
-import DateInput from './DateInput'
-import {mergeRight} from 'ramda'
-import {getToday} from '@/utils'
+import dayjs from '@/dayjs'
+import { keys, mergeRight } from 'ramda'
 export default {
-  components: {
-    DateInput,
-  },
   props: {
-    query: {
-      type: Object,
-      default: () => {},
-    },
-    searchLoading: {
+    loading: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
+  },
+  data () {
+    return {
+      query: {
+        username: null,
+        channel: null,
+        text: null,
+        startingDate: dayjs().utc().subtract(30, 'day').format('YYYY-MM-DD'),
+        endingDate: dayjs().utc().format('YYYY-MM-DD')
+      },
+      today: new Date()
+    }
   },
   computed: {
-    shareUrl() {
-      return (
-        window.location.origin
-        + '/'
-        + this.$router.resolve({
-          name: 'Home',
-          query: this.query,
-        }).href
-      )
-    },
+    channels () {
+      return this.$store.state.channels
+    }
   },
-  methods: {
-    setAllTime() {
-      this.$emit(
-        'update:query',
-        mergeRight(this.query, {
-          startingDate: '2010/01/01',
-          endingDate: getToday(),
-        }),
-      )
-    },
-    copiedNotification() {
-      this.$q.notify({
-        message: 'Copied!',
-        position: 'bottom-right',
-        timeout: 1000,
-      })
-    },
-  },
+  mounted () {
+    this.$store.dispatch('getChannels')
+    if (keys(this.$route.query).length > 0) {
+      this.query = mergeRight(this.query, this.$route.query)
+      this.$emit('submit', this.query)
+    }
+  }
 }
 </script>
 
-<style></style>
+<style>
+
+</style>

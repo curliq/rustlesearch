@@ -1,7 +1,5 @@
 module.exports = {
-  assetsDir: 'static',
-  pluginOptions: {
-    quasar: {},
-  },
-  transpileDependencies: [/[\\/]node_modules[\\/]quasar[\\/]/],
+  devServer: {
+    port: 4000
+  }
 }

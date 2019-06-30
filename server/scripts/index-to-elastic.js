@@ -29,12 +29,14 @@ const messageRegex = new RegExp(
 )
 
 const lineToMessage = (line, channel) => {
+  // eslint-disable-next-line no-undefined
+  if (line.text.length === 0) return undefined
   const replacedLine = line.text.replace('\r', '')
   const matched = replacedLine.match(messageRegex)
 
   // we cant parse that message yet
   if (!matched) {
-    logger.warn({line, message: 'Cannot be parsed'})
+    logger.debug({channel, line, message: 'Cannot be parsed'})
 
     // eslint-disable-next-line no-undefined
     return undefined

@@ -1,118 +1,53 @@
 <template>
-  <q-page
-    class="q-py-md q-mx-auto"
-    style="max-width: 1200px;"
-  >
-    <div class="flex flex-center column">
-      <img
-        alt="RustleMagnify"
-        src="../assets/rustle_magnify.png"
-      >
-      <p class="text-h2">
-        <span class="text-weight-bold">Rustle</span>Search
-      </p>
-      <p class="text-h5 text-center">
-        Advanced searching of
-        <a
-          class="link text-blue-5"
-          href="https://overrustlelogs.net/"
-          target="_blank"
-        >OverRustleLogs</a>
-        (twitch chat logs).
-      </p>
+  <div class="flex flex-wrap">
+    <div class="lg:mb-0 xl:1/5 lg:w-1/4 md:w-1/3 mb-4 w-full">
+      <search-form
+        class="md:mr-4 "
+        :loading="loading"
+        @submit="submitQuery"
+      />
     </div>
-    <search-form
-      :query.sync="query"
-      :search-loading="searchLoading"
-      @search="getResults"
-    />
-    <results
-      v-if="results"
-      :results="results"
-      class="q-mt-lg"
-    />
-  </q-page>
+    <div class="xl:4/5 lg:w-3/4 md:w-2/3 w-full">
+      <results
+        :results="results"
+        :current-query="currentQuery"
+        :loading="loading"
+      />
+    </div>
+  </div>
 </template>
-
 <script>
-import axios from '@/axios'
-import Results from '@/components/Results.vue'
-import {DateTime} from 'luxon'
-import SearchForm from '@/components/SearchForm.vue'
-import {getToday, dateToSeconds} from '@/utils'
-import {mergeRight, pick, evolve} from 'ramda'
-const pickQuery = pick([
-  'username',
-  'text',
-  'channel',
-  'startingDate',
-  'endingDate',
-])
+import Results from '@/components/Results'
+import SearchForm from '@/components/SearchForm'
+import { reject, isNil, equals, anyPass } from 'ramda'
 export default {
   components: {
     Results,
-    SearchForm,
+    SearchForm
   },
-  data() {
+  data () {
     return {
-      query: {
-        username: null,
-        text: null,
-        channel: null,
-        startingDate: DateTime.utc()
-          .minus({days: 30})
-          .toFormat('yyyy/MM/dd'),
-        endingDate: getToday(),
-      },
-      searchLoading: false,
-      results: null,
     }
   },
-  mounted() {
-    if (Object.entries(this.$route.query).length > 0) {
-      this.query = mergeRight(this.query, pickQuery(this.$route.query))
-      this.getResults()
+  computed: {
+    results () {
+      return this.$store.state.results
+    },
+    loading () {
+      return this.$store.state.loading
+    },
+    currentQuery () {
+      return this.$store.state.currentQuery
     }
   },
   methods: {
-    async getResults() {
-      try {
-        this.searchLoading = true
-        const {data} = await axios.get('search', {
-          params: evolve(
-            {startingDate: dateToSeconds, endingDate: dateToSeconds},
-            pickQuery(this.query),
-          ),
-        })
-        this.searchLoading = false
-        this.results = data
-      } catch (e) {
-        if (e.response.status === 429) {
-          const retryAfterString = e.response.headers['retry-after']
-          const retryAfter = parseInt(retryAfterString)
-          setTimeout(() => this.getResults(), retryAfter + 500)
-        } else {
-          this.notify(e.response.data.error)
-          this.searchLoading = false
-        }
+    async submitQuery (query) {
+      if (!this.loading) {
+        await this.$store.dispatch('getResults', query)
+        const isBad = anyPass([isNil, equals('')])
+        this.$router.push({ name: 'Home', query: reject(isBad)(this.currentQuery) })
       }
-    },
-    notify(text) {
-      this.$q.notify({
-        message: text,
-        position: 'bottom-right',
-        timeout: 1000,
-      })
-    },
-  },
-}
-</script>
-
-<style lang="scss" scoped>
-.link {
-  text-decoration: none;
-  &:hover {
-    text-decoration: underline;
+    }
   }
 }
-</style>
+</script>

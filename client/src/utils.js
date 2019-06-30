@@ -1,5 +1,2 @@
-import {DateTime} from 'luxon'
-
-export const getToday = () => DateTime.utc().toFormat('yyyy/MM/dd')
-export const dateToSeconds = d =>
-  DateTime.fromFormat(d, 'yyyy/MM/dd').toSeconds()
+export const displayFormat = 'HH:mm:ss, MMM DD, YYYY'
+export const pikrDisplayFormat = 'M d, Y at H:i'

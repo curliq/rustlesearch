@@ -1,0 +1,20 @@
+.style-chooser .vs__search::placeholder,
+.style-chooser .vs__dropdown-toggle,
+.style-chooser .vs__selected {
+  border: none;
+  @apply text-gray-100 bg-gray-700;
+}
+
+.style-chooser .vs__dropdown-menu {
+  @apply text-gray-100 bg-gray-800;
+}
+.style-chooser .vs__dropdown-option {
+  @apply text-gray-200;
+}
+.style-chooser .vs__dropdown-option--highlight {
+  @apply bg-indigo-500;
+}
+.style-chooser .vs__clear,
+.style-chooser .vs__open-indicator {
+  @apply fill-current text-gray-300 cursor-pointer;
+}

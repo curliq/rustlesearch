@@ -1,0 +1,42 @@
+.field {
+  position: relative;
+}
+
+.field__label {
+  box-sizing: border-box;
+  display: block;
+  line-height: 1;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0.5em 1em;
+  pointer-events: none;
+  position: absolute;
+  text-overflow: ellipsis;
+  top: 0;
+  text-align: left;
+  -webkit-transform: translateY(3px);
+  transform: translateY(3px);
+  transition: all 0.2s ease-out;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  white-space: nowrap;
+  width: 100%;
+  z-index: 1;
+
+  @apply text-xs text-gray-400;
+}
+.field--not-empty .field__label {
+  opacity: 1;
+  -webkit-transform: none;
+  transform: none;
+}
+
+.field__input {
+  transition: all 0.2s ease-out;
+}
+.field--not-empty .field__input {
+  padding-bottom: 5px;
+  padding-top: 18px;
+}
