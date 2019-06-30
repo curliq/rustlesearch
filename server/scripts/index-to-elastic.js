@@ -29,6 +29,8 @@ const messageRegex = new RegExp(
 )
 
 const lineToMessage = (line, channel) => {
+  // eslint-disable-next-line no-undefined
+  if (line.text.length === 0) return undefined
   const replacedLine = line.text.replace('\r', '')
   const matched = replacedLine.match(messageRegex)
 
