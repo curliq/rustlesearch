@@ -8,6 +8,9 @@ const {capitalise, co} = require('../api/lib/util')
 const logger = require('../api/lib/logger')
 const config = require('../api/lib/config')
 const {blacklistPath, indexCachePath, rustleDataPath} = require('./cache')
+const {performance} = require('perf_hooks')
+
+let SHOULD_EXIT = false
 
 const blacklist = new Set(
   readFileSync(blacklistPath, {
@@ -45,7 +48,6 @@ const lineToMessage = (line, channel) => {
   const {tsStr, username, text} = matched.groups
   const parsedDate = DateTime.fromSQL(tsStr)
   const ts = parsedDate.toISO()
-  const seconds = parsedDate.toSeconds()
 
   if (blacklist.has(username.toLowerCase())) {
     logger.debug(`${username} in blacklist, ignoring message...`)
@@ -55,7 +57,6 @@ const lineToMessage = (line, channel) => {
   }
 
   return {
-    _id: `${username}-${seconds}`,
     channel: capitalise(channel),
     text,
     ts,
@@ -68,6 +69,7 @@ const client = new Client({
 })
 
 const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
+  const startTime = performance.now()
   const [channel] = parse(filePath).name.split('::')
 
   yield etl
@@ -87,6 +89,11 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
     encoding: 'utf8',
     flag: 'a+',
   })
+  logger.debug(`Indexed ${filePath} in ${performance.now() - startTime}`)
+  if (SHOULD_EXIT) {
+    logger.info('Exiting gracefully...')
+    process.exit(0)
+  }
 })
 
 const main = async () => {
@@ -118,5 +125,10 @@ const main = async () => {
       throw error
     })
 }
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, starting graceful shutdown.')
+  SHOULD_EXIT = true
+})
 
 if (require.main === module) main()
