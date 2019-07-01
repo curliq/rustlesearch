@@ -27,6 +27,7 @@ const getCount = co(function* getCount(timeout) {
   logger.info({
     currentMessages: result.body.count,
     elapsedTime: `${timeout}m`,
+    formatted: result.body.count.toLocaleString('en-US'),
   })
 
   return result.body.count
