@@ -22,6 +22,8 @@ module.exports = {
   },
   plugins: ['jest', 'prettier'],
   rules: {
+    // doesnt work well with dynamic require()
+    'import/newline-after-import': 'off',
     // this only works with import
     'import/order': 'off',
     'prettier/prettier': 'error',

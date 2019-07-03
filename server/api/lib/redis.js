@@ -1,9 +1,13 @@
-const Redis = require('ioredis')
-const mockRedis = require('redis-mock')
+const Promise = require('bluebird')
 const {isTest} = require('./environment')
 const config = require('./config')
 
-const getRedis = opts => (isTest() ? mockRedis.createClient() : new Redis(opts))
+const Redis = isTest() ? require('ioredis-mock') : require('ioredis')
+
+// ioredis-mock doesn't use bluebird by default
+Redis.Promise = Promise
+
+const getRedis = opts => new Redis(opts)
 
 const redisOptions = {
   enableOfflineQueue: false,
