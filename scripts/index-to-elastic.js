@@ -1,13 +1,11 @@
 const {readFileSync, promises: fs} = require('fs')
+const {performance} = require('perf_hooks')
 const {parse} = require('path')
 const etl = require('etl')
 const Promise = require('bluebird')
 const {Client} = require('@elastic/elasticsearch')
-const {capitalise, co} = require('../api/lib/util')
-const logger = require('../api/lib/logger')
-const config = require('../api/lib/config')
 const {blacklistPath, indexCachePath, rustleDataPath} = require('./cache')
-const {performance} = require('perf_hooks')
+const {co, capitalise} = require('./util')
 
 let SHOULD_EXIT = false
 
@@ -49,7 +47,7 @@ const lineToMessage = (line, channel) => {
 
   // we cant parse that message yet
   if (!matched) {
-    logger.debug({channel, line, message: 'Cannot be parsed'})
+    console.debug({channel, line, message: 'Cannot be parsed'})
 
     // eslint-disable-next-line no-undefined
     return undefined
@@ -59,7 +57,7 @@ const lineToMessage = (line, channel) => {
   const ts = parseDateToISO(tsStr)
 
   if (blacklist.has(username.toLowerCase())) {
-    logger.debug(`${username} in blacklist, ignoring message...`)
+    console.debug(`${username} in blacklist, ignoring message...`)
 
     // eslint-disable-next-line no-undefined
     return undefined
@@ -74,7 +72,7 @@ const lineToMessage = (line, channel) => {
 }
 
 const client = new Client({
-  node: config.ELASTIC_LOCATION,
+  node: process.env.ELASTIC_LOCATION,
 })
 
 const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
@@ -87,20 +85,20 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
     .pipe(etl.map(line => lineToMessage(line, channel)))
     .pipe(etl.collect(2000))
     .pipe(
-      etl.elastic.index(client, config.INDEX_NAME, null, {
+      etl.elastic.index(client, process.env.INDEX_NAME, null, {
         concurrency: 10,
       }),
     )
     .promise()
-    .catch(error => logger.error({error, message: 'Elastic error'}))
+    .catch(error => console.error({error, message: 'Elastic error'}))
 
   yield fs.writeFile(indexCachePath, `${filePath}\n`, {
     encoding: 'utf8',
     flag: 'a+',
   })
-  logger.debug(`Indexed ${filePath} in ${performance.now() - startTime}`)
+  console.debug(`Indexed ${filePath} in ${performance.now() - startTime}`)
   if (SHOULD_EXIT) {
-    logger.info('Exiting gracefully...')
+    console.info('Exiting gracefully...')
     process.exit(0)
   }
 })
@@ -117,7 +115,7 @@ const main = async () => {
   const ingestedPathList = new Set(ingestedPaths.split('\n'))
   const pathsToIngest = allPaths.filter(file => !ingestedPathList.has(file))
 
-  logger.info({
+  console.info({
     totalDaysIngested: ingestedPathList.length,
     totalDaysOfLogs: allPaths.length,
     totalDaysToIngest: pathsToIngest.length,
@@ -127,7 +125,7 @@ const main = async () => {
     .info()
     .then(() => Promise.each(pathsToIngest, indexPathsToMessages))
     .catch(error => {
-      logger.error(`Failed to connect to Elastic: ${error}`)
+      console.error('Failed to connect to Elastic:', error)
       throw error
     })
 }

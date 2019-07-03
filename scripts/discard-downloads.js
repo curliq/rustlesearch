@@ -1,7 +1,6 @@
 const {promises: fs} = require('fs')
 const {discardCachePath, indexCachePath} = require('./cache')
-const logger = require('../api/lib/logger')
-const {co} = require('../api/lib/util')
+const {co} = require('./util')
 const Promise = require('bluebird')
 
 const deleteFile = co(function* deleteFile(filePath) {
@@ -11,9 +10,9 @@ const deleteFile = co(function* deleteFile(filePath) {
       encoding: 'utf8',
       flag: 'a+',
     })
-    logger.debug({filePath, message: 'Deleted & cached file'})
+    console.debug({filePath, message: 'Deleted & cached file'})
   } catch (error) {
-    logger.warn({
+    console.warn({
       error,
       filePath,
       message: 'File could either not be deleted or cached.',
@@ -39,11 +38,11 @@ const main = async () => {
     .filter(file => !discardedPathsSet.has(file))
     .filter(Boolean)
 
-  logger.info({
+  console.info({
     message: `Files to discard: ${pathsToDiscard.length}`,
   })
   await Promise.map(pathsToDiscard, deleteFile, {concurrency: 10})
-  logger.info({message: 'Finished discarding'})
+  console.info({message: 'Finished discarding'})
 }
 
 main()
