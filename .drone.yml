@@ -10,6 +10,7 @@ steps:
   - name: test-server
     image: node:12-alpine
     environment:
+      CHANNEL_LOCATION: 'channels.txt'
       ELASTIC_LOCATION: http://elastic:9200
       INDEX_NAME: drone-elastic
       LOG_LEVEL: debug
