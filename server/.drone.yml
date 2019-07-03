@@ -17,9 +17,11 @@ steps:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     commands:
+      - apk update
+      - apk add wait4ports
       - yarn install --frozen-lockfile
-      - sleep 20
       - yarn check-lint
+      - wait4ports tcp://elastic:9200 tcp://redis:6379
       - yarn test
 
 services:
