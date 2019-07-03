@@ -6,6 +6,14 @@ platform:
   os: linux
   arch: amd64
 
+trigger:
+  event:
+    - push
+    - pull_request
+    - tag
+    - promote
+    - rollback
+
 steps:
   - name: test-server
     image: node:12-alpine
