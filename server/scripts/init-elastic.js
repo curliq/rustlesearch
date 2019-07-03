@@ -18,6 +18,7 @@ const main = () =>
       },
       settings: {
         'number_of_replicas': 0,
+        'number_of_shards': 5,
         'refresh_interval': '60s',
         'sort.field': 'ts',
         'sort.order': 'desc',
