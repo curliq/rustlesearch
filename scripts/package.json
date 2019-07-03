@@ -7,11 +7,11 @@
     "node": "12"
   },
   "scripts": {
-    "run:download": "node -r dotenv/config download-files.js",
-    "run:index": "node -r dotenv/config index-to-elastic.js",
-    "run:esinit": "node -r dotenv/config init-elastic.js",
-    "run:discard": "node -r dotenv/config discard-downloads.js",
-    "benchmark:index": "node -r dotenv/config benchmark-ingest.js",
+    "run:download": "node -r dotenv/config ./src/download-files.js",
+    "run:index": "node -r dotenv/config ./src/index-to-elastic.js",
+    "run:esinit": "node -r dotenv/config ./src/init-elastic.js",
+    "run:discard": "node -r dotenv/config ./src/discard-downloads.js",
+    "benchmark:index": "node -r dotenv/config ./src/benchmark-ingest.js",
     "lint": "prettier-eslint --write '**/*.js'",
     "check-lint": "eslint --ext .js ./",
     "test": "jest --forceExit"
