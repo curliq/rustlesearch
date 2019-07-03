@@ -17,6 +17,7 @@ steps:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     commands:
+      - cd server
       - apk update
       - apk add wait4ports
       - yarn install --frozen-lockfile
