@@ -55,16 +55,16 @@ const main = async () => {
     flag: 'a+',
   })
 
-  const downloadCache = downloadCacheFile.trim().split('\n')
+  const downloadCache = new Set(downloadCacheFile.trim().split('\n'))
   const totalUrls = getUrlList(channels, parseInt(process.argv[2]) || 10)
   const downloadedUrlFiles = await fs.readdir(rustleDataPath)
 
-  const downloadedUrls = downloadedUrlFiles.map(
-    file => `${rustleDataPath}/${file}`,
+  const downloadedUrls = new Set(
+    downloadedUrlFiles.map(file => `${rustleDataPath}/${file}`),
   )
 
   const urlsToDownload = totalUrls.filter(
-    url => !(downloadedUrls.includes(url[0]) || downloadCache.includes(url[0])),
+    url => !(downloadedUrls.has(url[0]) || downloadCache.has(url[0])),
   )
 
   logger.info(`

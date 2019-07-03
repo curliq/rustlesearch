@@ -105,11 +105,8 @@ const main = async () => {
     flag: 'a+',
   })
 
-  const ingestedPathList = ingestedPaths.split('\n')
-
-  const pathsToIngest = allPaths.filter(
-    file => !ingestedPathList.includes(file),
-  )
+  const ingestedPathList = new Set(ingestedPaths.split('\n'))
+  const pathsToIngest = allPaths.filter(file => !ingestedPathList.has(file))
 
   logger.info({
     totalDaysIngested: ingestedPathList.length,
