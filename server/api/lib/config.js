@@ -1,5 +1,4 @@
 /* eslint-disable no-process-env */
-const {isProd} = require('./environment')
 
 const ourEnv = [
   'APP_NAME',
@@ -21,7 +20,7 @@ const getConfig = () =>
   ourEnv.reduce((config, varName) => {
     const envVar = process.env[varName]
     // allow missing in non prod
-    if (!envVar && isProd())
+    if (!envVar && process.env.NODE_ENV === 'production')
       throw new Error(`${varName} not found in configuration file`)
     config[varName] = envVar
 
