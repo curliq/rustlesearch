@@ -1,14 +1,15 @@
-const {promises: fs} = require('fs')
+const {existsSync, promises: fs} = require('fs')
 const request = require('superagent')
 const {DateTime} = require('luxon')
 const Promise = require('bluebird')
-const {inc, map, pipe, range, unnest} = require('ramda')
+const {inc, map, pipe, range, unnest, reject, isNil, last} = require('ramda')
 const logger = require('../api/lib/logger')
 const {
   channelFilePath,
   downloadCachePath,
   rustleDataPath,
   discardCachePath,
+  monthsPath,
 } = require('./cache')
 
 // "Constants"
@@ -17,11 +18,18 @@ const today = DateTime.utc()
 // smol Functions
 const fullDateFormat = date => date.toFormat('MMMM yyyy/yyyy-MM-dd')
 const fileDateFormat = date => date.toFormat('yyyy-MM-dd')
+const dateFromMonths = months => DateTime.fromFormat(last(months), 'LLLL yyyy')
 
-const toPathAndUrl = ({channel, date}) => [
-  `${rustleDataPath}/${channel}::${fileDateFormat(date)}.txt`,
-  `${baseUrl}/${channel} chatlog/${fullDateFormat(date)}.txt`,
-]
+const toPathAndUrl = ({channel: {channel, startDate}, date}) => {
+  if (startDate < date) {
+    return [
+      `${rustleDataPath}/${channel}::${fileDateFormat(date)}.txt`,
+      `${baseUrl}/${channel} chatlog/${fullDateFormat(date)}.txt`,
+    ]
+  }
+
+  return null
+}
 
 // swol Functions
 const getUrlList = (channels, daysBack) =>
@@ -31,7 +39,20 @@ const getUrlList = (channels, daysBack) =>
     map(day => today.minus({days: day})),
     map(date => channels.map(channel => toPathAndUrl({channel, date}))),
     unnest,
+    reject(isNil),
   )(daysBack)
+
+const listFromPath = async (filePath, isSet = false) => {
+  const file = await fs.readFile(filePath, {
+    encoding: 'utf8',
+    flag: 'a+',
+  })
+
+  const arr = file.trim().split('\n')
+  if (isSet) return new Set(arr)
+
+  return arr
+}
 
 const downloadFile = async ([path, uri]) => {
   try {
@@ -47,27 +68,52 @@ const downloadFile = async ([path, uri]) => {
   }
 }
 
+const cachedGet = async (path, uri) => {
+  // eslint-disable-next-line no-sync
+  if (!existsSync(path)) {
+    try {
+      const {text: res} = await request.get(uri)
+      await fs.writeFile(path, res)
+    } catch (error) {
+      logger.warn(error)
+
+      return null
+    }
+  }
+
+  return fs.readFile(path, {encoding: 'utf8'})
+}
+
+const getChannelStart = async channel => {
+  const months = await cachedGet(
+    `${monthsPath}/${channel}.json`,
+    `${baseUrl}/api/v1/${channel}/months.json`,
+  )
+
+  return {channel, startDate: dateFromMonths(JSON.parse(months))}
+}
+
 const main = async () => {
-  const channelsFile = await fs.readFile(channelFilePath, {
-    encoding: 'utf8',
-    flag: 'a+',
+  const channels = await listFromPath(channelFilePath)
+
+  const processedChannels = await Promise.map(channels, getChannelStart, {
+    concurrency: 20,
   })
 
-  const channels = channelsFile.trim().split('\n')
+  console.log(
+    processedChannels.map(channel => ({
+      ...channel,
+      startDate: channel.startDate.toISO(),
+    })),
+  )
 
-  const downloadCacheFile = await fs.readFile(downloadCachePath, {
-    encoding: 'utf8',
-    flag: 'a+',
-  })
+  const totalUrls = getUrlList(
+    processedChannels,
+    parseInt(process.argv[2]) || 10,
+  )
 
-  const discardCacheFile = await fs.readFile(discardCachePath, {
-    encoding: 'utf8',
-    flag: 'a+',
-  })
-
-  const discardCache = new Set(discardCacheFile.trim().split('\n'))
-  const downloadCache = new Set(downloadCacheFile.trim().split('\n'))
-  const totalUrls = getUrlList(channels, parseInt(process.argv[2]) || 10)
+  const discardCache = await listFromPath(discardCachePath, true)
+  const downloadCache = await listFromPath(downloadCachePath, true)
   const downloadedUrlFiles = await fs.readdir(rustleDataPath)
 
   const downloadedUrls = new Set(
