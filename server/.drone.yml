@@ -18,13 +18,17 @@ steps:
       REDIS_PORT: 6379
     commands:
       - yarn install --frozen-lockfile
-      - sleep 15
+      - sleep 20
       - yarn check-lint
       - yarn test
 
 services:
   - name: elastic
     image: elasticsearch:7.2.0
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: '-Xms2g -Xmx2g'
+      bootstrap.memory_lock: true
     ports:
       - 9200
   - name: redis
