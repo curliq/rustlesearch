@@ -23,4 +23,6 @@ const redisLimiterOptions = {
   keyPrefix: 'ratelimit',
 }
 
-module.exports = getRedis(redisLimiterOptions)
+const redisLimiter = getRedis(redisLimiterOptions)
+
+module.exports = {redisLimiter}

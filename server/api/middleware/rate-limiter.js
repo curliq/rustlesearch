@@ -1,6 +1,6 @@
 const {RateLimiterRedis} = require('rate-limiter-flexible')
 const {DateTime} = require('luxon')
-const redisLimiter = require('../lib/redis')
+const {redisLimiter} = require('../lib/redis')
 const {co} = require('../lib/util')
 const config = require('../lib/config')
 
