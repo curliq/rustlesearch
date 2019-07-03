@@ -3,7 +3,6 @@ const request = require('superagent')
 const {DateTime} = require('luxon')
 const Promise = require('bluebird')
 const {inc, map, pipe, range, unnest, reject, isNil, last} = require('ramda')
-const logger = require('../api/lib/logger')
 const {
   channelFilePath,
   downloadCachePath,
@@ -58,13 +57,13 @@ const downloadFile = async ([path, uri]) => {
   try {
     const {text: res} = await request.get(uri)
     await fs.writeFile(path, res)
-    logger.info(`Wrote ${path} to disk.`)
+    console.info(`Wrote ${path} to disk.`)
   } catch {
     await fs.writeFile(downloadCachePath, `${path}\n`, {
       encoding: 'utf8',
       flag: 'a+',
     })
-    logger.info(`${path} 404, wrote file to download cache.`)
+    console.info(`${path} 404, wrote file to download cache.`)
   }
 }
 
@@ -74,9 +73,9 @@ const cachedGet = async (path, uri) => {
     try {
       const {text: res} = await request.get(uri)
       await fs.writeFile(path, res)
-      logger.debug(`Wrote ${path} to disk.`)
+      console.debug(`Wrote ${path} to disk.`)
     } catch (error) {
-      logger.warn(error)
+      console.warn(error)
 
       return null
     }
@@ -123,10 +122,10 @@ const main = async () => {
       ),
   )
 
-  logger.info(`
+  console.info(`
   Beginning download.
   Total days to download: ${totalUrls.length}
-  Days already downloaded: ${downloadedUrls.length}
+  Days already downloaded: ${downloadedUrls.length || 0}
   Days to download right now: ${urlsToDownload.length}`)
 
   Promise.map(urlsToDownload, downloadFile, {concurrency: 20})

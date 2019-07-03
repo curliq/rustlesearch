@@ -9,5 +9,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
         CMD node api/healthcheck.js
 
 USER node
-EXPOSE $APP_PORT
-CMD yarn start:api:production
+CMD node api/start.js

@@ -1,17 +1,14 @@
 # RustleSearch
 
-TODO: all of this
+## testing
+Start a dev container: `docker-compose up -f docker-compose.yml docker-compose.test.yml`
 
-## Testing
-You need to have elasticsearch running and have it a little seeded for the tests to work
+## indexing
+Make sure to run `yarn run:esinit` before indexing
 
-## Production
+## production
 
 Make sure to:
-- set the hostname properly in .env, nginx.conf, nginx-tls.conf
-- fill in the elastic location in .env
-- allow 80 and 443 on your firewall
-- set port inside nginx to same as in .env
+- set the variables properly in .env for any overrides
+- allow 80 and 443 on your firewall for letsencrypt
 
-then, just run ./init-letsencrypt.sh and it should be fine.  
-try it out in staging mode first to not hit letsencrypt rate limits

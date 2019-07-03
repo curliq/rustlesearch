@@ -1,0 +1,90 @@
+---
+kind: pipeline
+name: server
+
+platform:
+  os: linux
+  arch: amd64
+
+trigger:
+  event:
+    - push
+    - pull_request
+    - tag
+    - promote
+    - rollback
+
+steps:
+  - name: test-server
+    image: node:12-alpine
+    environment:
+      CHANNEL_LOCATION: "channels.txt"
+      ELASTIC_LOCATION: http://elastic-server:9200
+      INDEX_NAME: drone-server-elastic
+      LOG_LEVEL: debug
+      NODE_ENV: development
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    commands:
+      - cd server
+      - apk update
+      - apk add wait4ports
+      - yarn install --frozen-lockfile
+      - yarn check-lint
+      - wait4ports tcp://elastic-server:9200 tcp://redis:6379
+      - yarn test
+
+services:
+  - name: elastic-server
+    image: elasticsearch:7.2.0
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+      bootstrap.memory_lock: true
+    ports:
+      - 9200
+  - name: redis
+    image: redis:5-alpine
+    ports:
+      - 6379
+
+---
+kind: pipeline
+name: scripts
+
+platform:
+  os: linux
+  arch: amd64
+
+trigger:
+  event:
+    - push
+    - pull_request
+    - tag
+    - promote
+    - rollback
+
+steps:
+  - name: test-scripts
+    image: node:12-alpine
+    environment:
+      ELASTIC_LOCATION: http://elastic-scripts:9200
+      INDEX_NAME: drone-scripts-elastic
+    commands:
+      - cd scripts
+      - apk update
+      - apk add wait4ports
+      - yarn install --frozen-lockfile
+      - yarn check-lint
+      - wait4ports tcp://elastic-scripts:9200
+      - yarn test
+
+services:
+  - name: elastic-scripts
+    image: elasticsearch:7.2.0
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+      bootstrap.memory_lock: true
+    ports:
+      - 9200

@@ -1,8 +1,7 @@
 const {Client} = require('@elastic/elasticsearch')
-const config = require('../api/lib/config')
 
 const client = new Client({
-  node: config.ELASTIC_LOCATION,
+  node: process.env.ELASTIC_LOCATION,
 })
 
 const main = () =>
@@ -24,7 +23,7 @@ const main = () =>
         'sort.order': 'desc',
       },
     },
-    index: config.INDEX_NAME,
+    index: process.env.INDEX_NAME,
   })
 
 if (require.main === module) main()

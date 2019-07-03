@@ -1,16 +1,29 @@
-const Redis = require('ioredis')
-const mockRedis = require('redis-mock')
+const Promise = require('bluebird')
 const {isTest} = require('./environment')
 const config = require('./config')
+const logger = require('./logger')
 
-const getRedis = opts => (isTest() ? mockRedis.createClient() : new Redis(opts))
+const Redis = isTest() ? require('ioredis-mock') : require('ioredis')
+
+Redis.Promise = Promise
+
+const getRedis = opts => new Redis(opts)
 
 const redisOptions = {
   enableOfflineQueue: false,
   family: 4,
   host: config.REDIS_HOST,
+  maxRetriesPerRequest: 5,
   port: config.REDIS_PORT,
-  retryStrategy: ({attempt}) => Math.min(attempt * 500, 3000),
+  retryStrategy: attempts => {
+    if (attempts > 5) {
+      logger.error('Multiple redis connection failures, exiting...')
+      process.exit(1)
+    }
+
+    return Math.min(attempts * 500, 3000)
+  },
+  showFriendlyErrorStack: true,
 }
 
 const redisLimiterOptions = {
@@ -19,4 +32,6 @@ const redisLimiterOptions = {
   keyPrefix: 'ratelimit',
 }
 
-module.exports = getRedis(redisLimiterOptions)
+const redisLimiter = getRedis(redisLimiterOptions)
+
+module.exports = {redisLimiter}

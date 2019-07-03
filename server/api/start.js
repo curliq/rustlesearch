@@ -13,7 +13,7 @@ const initMaster = co(function* initMaster() {
 
   times(launch, workerCount)
 
-  logger.info(`Started ${workerCount} workers`)
+  logger.info(`Started ${workerCount} workers.`)
   logger.info(`App listening at http://localhost:${config.APP_PORT}`)
 })
 

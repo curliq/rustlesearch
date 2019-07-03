@@ -1,0 +1,15 @@
+# Environments
+.env
+
+# node 
+node_modules
+
+# logs
+*.log
+
+# data directory
+data/
+
+# cache path
+cache/
+config/nginx/

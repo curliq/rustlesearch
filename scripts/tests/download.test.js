@@ -1,0 +1,3 @@
+test(':)', async () => {
+  return true
+})

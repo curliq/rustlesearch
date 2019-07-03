@@ -26,6 +26,7 @@ module.exports = {
     'import/newline-after-import': 'off',
     // this only works with import
     'import/order': 'off',
+    'no-process-env': 'off',
     'prettier/prettier': 'error',
   },
 }
