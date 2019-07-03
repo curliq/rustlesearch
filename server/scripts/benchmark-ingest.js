@@ -33,8 +33,13 @@ const getCount = co(function* getCount(timeout) {
   return result.body.count
 })
 
-const main = () =>
-  Promise.map(range(0, 10), getCount)
+const main = () => {
+  console.log(process.argv[2])
+
+  return Promise.map(
+    range(0, process.argv[2] ? parseInt(process.argv[2]) : 10),
+    getCount,
+  )
 
     .then(averageDelta)
     .then(speed =>
@@ -43,5 +48,5 @@ const main = () =>
         speed: `${speed} / m`,
       }),
     )
-
+}
 if (require.main === module) main()

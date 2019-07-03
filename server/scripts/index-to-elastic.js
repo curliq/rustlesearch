@@ -2,7 +2,6 @@ const {readFileSync, promises: fs} = require('fs')
 const {parse} = require('path')
 const etl = require('etl')
 const Promise = require('bluebird')
-const {DateTime} = require('luxon')
 const {Client} = require('@elastic/elasticsearch')
 const {capitalise, co} = require('../api/lib/util')
 const logger = require('../api/lib/logger')
@@ -21,6 +20,17 @@ const blacklist = new Set(
     .split('\n')
     .map(name => name.toLowerCase()),
 )
+
+function parseDateToISO(date) {
+  const yyyy = date.slice(0, 4)
+  const MM = date.slice(5, 7)
+  const dd = date.slice(8, 10)
+  const hh = date.slice(11, 13)
+  const mm = date.slice(14, 16)
+  const ss = date.slice(17, 19)
+
+  return `${yyyy}-${MM}-${dd}T${hh}:${mm}:${ss}.000Z`
+}
 
 const timestampRegex = '\\[(?<tsStr>.{23})\\]'
 const usernameRegex = '(?<username>[a-z0-9_\\$]{3,25})'
@@ -46,8 +56,7 @@ const lineToMessage = (line, channel) => {
   }
 
   const {tsStr, username, text} = matched.groups
-  const parsedDate = DateTime.fromSQL(tsStr)
-  const ts = parsedDate.toISO()
+  const ts = parseDateToISO(tsStr)
 
   if (blacklist.has(username.toLowerCase())) {
     logger.debug(`${username} in blacklist, ignoring message...`)
