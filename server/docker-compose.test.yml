@@ -2,11 +2,11 @@ version: '3.7'
 
 services:
   rustlesearch_dev:
-    image: node:12
+    image: node:12-alpine
     volumes:
       - .:/node_app
     working_dir: /node_app
-    command: echo 1
+    command: yarn start:api
     environment:
       - VIRTUAL_HOST=${DOMAIN}
       - VIRTUAL_PORT=${APP_PORT}
@@ -15,4 +15,3 @@ services:
       - ${APP_PORT}
     depends_on:
       - redis
-
