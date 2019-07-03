@@ -15,6 +15,7 @@
     "run:download": "node -r dotenv/config ./scripts/download-files.js",
     "run:index": "node -r dotenv/config ./scripts/index-to-elastic.js",
     "run:esinit": "node -r dotenv/config ./scripts/init-elastic.js",
+    "run:discard": "node -r dotenv/config ./scripts/discard-downloads.js",
     "benchmark:index": "node -r dotenv/config ./scripts/benchmark-ingest.js"
   },
   "husky": {

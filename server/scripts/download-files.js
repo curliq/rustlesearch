@@ -4,7 +4,12 @@ const {DateTime} = require('luxon')
 const Promise = require('bluebird')
 const {inc, map, pipe, range, unnest} = require('ramda')
 const logger = require('../api/lib/logger')
-const {channelFilePath, downloadCachePath, rustleDataPath} = require('./cache')
+const {
+  channelFilePath,
+  downloadCachePath,
+  rustleDataPath,
+  discardCachePath,
+} = require('./cache')
 
 // "Constants"
 const baseUrl = 'https://overrustlelogs.net'
@@ -55,6 +60,12 @@ const main = async () => {
     flag: 'a+',
   })
 
+  const discardCacheFile = await fs.readFile(discardCachePath, {
+    encoding: 'utf8',
+    flag: 'a+',
+  })
+
+  const discardCache = new Set(discardCacheFile.trim().split('\n'))
   const downloadCache = new Set(downloadCacheFile.trim().split('\n'))
   const totalUrls = getUrlList(channels, parseInt(process.argv[2]) || 10)
   const downloadedUrlFiles = await fs.readdir(rustleDataPath)
@@ -64,7 +75,12 @@ const main = async () => {
   )
 
   const urlsToDownload = totalUrls.filter(
-    url => !(downloadedUrls.has(url[0]) || downloadCache.has(url[0])),
+    url =>
+      !(
+        downloadedUrls.has(url[0]) ||
+        downloadCache.has(url[0]) ||
+        discardCache.has(url[0])
+      ),
   )
 
   logger.info(`
