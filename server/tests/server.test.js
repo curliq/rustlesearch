@@ -4,7 +4,7 @@ const Promise = require('bluebird')
 const app = require('../api')
 
 const getManyRequests = (count, url, query) =>
-  range(1, count).map(() =>
+  range(0, count).map(() =>
     request(app)
       .get(url)
       .query(query),
