@@ -146,7 +146,7 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@elastic/elasticsearch@7@7.1.0":
+"@elastic/elasticsearch@7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@elastic/elasticsearch/-/elasticsearch-7.1.0.tgz#e6f940e634d034cc0613050a1b4232cd0b4d95cc"
   integrity sha512-evfs+W6hrC0wu11w/0xL1ZXADHiCbWnVBUbAhZe3xjaFKDfOGioHkPULaEE8uALe7PPPNAMuFErWzutAwwcU9g==

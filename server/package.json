@@ -10,7 +10,6 @@
     "lint": "prettier-eslint --write '**/*.js'",
     "check-lint": "eslint --ext .js ./",
     "test": "jest --forceExit",
-    "test:integration": "node -r dotenv/config integration/run-tests.js",
     "start:api": "node -r dotenv/config api/start.js",
     "run:download": "node -r dotenv/config ./scripts/download-files.js",
     "run:index": "node -r dotenv/config ./scripts/index-to-elastic.js",

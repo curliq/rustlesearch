@@ -1,0 +1,33 @@
+---
+kind: pipeline
+name: default
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: test-server
+    image: node:12-alpine
+    environment:
+      ELASTIC_LOCATION: http://elastic:9200
+      INDEX_NAME: drone-elastic
+      LOG_LEVEL: debug
+      NODE_ENV: development
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    commands:
+      - yarn install --frozen-lockfile
+      - sleep 15
+      - yarn check-lint
+      - yarn test
+
+services:
+  - name: elastic
+    image: elasticsearch:7.2.0
+    ports:
+      - 9200
+  - name: redis
+    image: redis:5-alpine
+    ports:
+      - 6379
