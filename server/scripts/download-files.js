@@ -74,6 +74,7 @@ const cachedGet = async (path, uri) => {
     try {
       const {text: res} = await request.get(uri)
       await fs.writeFile(path, res)
+      logger.debug(`Wrote ${path} to disk.`)
     } catch (error) {
       logger.warn(error)
 
@@ -99,13 +100,6 @@ const main = async () => {
   const processedChannels = await Promise.map(channels, getChannelStart, {
     concurrency: 20,
   })
-
-  console.log(
-    processedChannels.map(channel => ({
-      ...channel,
-      startDate: channel.startDate.toISO(),
-    })),
-  )
 
   const totalUrls = getUrlList(
     processedChannels,
