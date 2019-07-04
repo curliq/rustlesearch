@@ -51,10 +51,10 @@
   "dependencies": {
     "@elastic/elasticsearch": "7.1.0",
     "bluebird": "3.5.5",
-    "etl": "0.6.4",
-    "fs-extra": "^8.1.0",
-    "luxon": "1.16.0",
-    "nock": "^10.0.6",
+    "etl": "0.6.5",
+    "fs-extra": "8.1.0",
+    "luxon": "1.16.1",
+    "nock": "10.0.6",
     "ramda": "0.26.1",
     "superagent": "5.1.0"
   },
