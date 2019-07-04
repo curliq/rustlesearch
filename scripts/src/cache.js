@@ -1,9 +1,8 @@
 const {join} = require('path')
-const {existsSync, mkdirSync} = require('fs')
+const fs = require('fs-extra')
 
-const cachePath = './cache'
-const dataPath = './data'
-const elasticPath = join(dataPath, 'esdata')
+const dataPath = process.env.DATA_PATH || './data'
+const cachePath = join(dataPath, 'cache')
 const monthsPath = join(dataPath, 'months')
 const rustleDataPath = join(dataPath, 'rustle')
 const channelFilePath = join('.', 'channels.txt')
@@ -12,14 +11,15 @@ const indexCachePath = join(cachePath, 'ingest_cache.txt')
 const blacklistPath = join(cachePath, 'blacklist.txt')
 const discardCachePath = join(cachePath, 'discard_cache.txt')
 
-if (!existsSync(cachePath)) mkdirSync(cachePath)
-if (!existsSync(rustleDataPath)) mkdirSync(rustleDataPath, {recursive: true})
-if (!existsSync(elasticPath)) mkdirSync(elasticPath, {recursive: true})
-if (!existsSync(monthsPath)) mkdirSync(monthsPath, {recursive: true})
+fs.ensureDirSync(cachePath)
+fs.ensureDirSync(rustleDataPath)
+fs.ensureDirSync(monthsPath)
 
 module.exports = {
   blacklistPath,
+  cachePath,
   channelFilePath,
+  dataPath,
   discardCachePath,
   downloadCachePath,
   indexCachePath,

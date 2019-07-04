@@ -3,6 +3,7 @@ const request = require('superagent')
 const {DateTime} = require('luxon')
 const Promise = require('bluebird')
 const {inc, map, pipe, range, unnest, reject, isNil, last} = require('ramda')
+const {getFileByLine} = require('./util')
 const {
   channelFilePath,
   downloadCachePath,
@@ -40,18 +41,6 @@ const getUrlList = (channels, daysBack) =>
     unnest,
     reject(isNil),
   )(daysBack)
-
-const listFromPath = async (filePath, isSet = false) => {
-  const file = await fs.readFile(filePath, {
-    encoding: 'utf8',
-    flag: 'a+',
-  })
-
-  const arr = file.trim().split('\n')
-  if (isSet) return new Set(arr)
-
-  return arr
-}
 
 const downloadFile = async ([path, uri]) => {
   try {
@@ -93,20 +82,14 @@ const getChannelStart = async channel => {
   return {channel, startDate: dateFromMonths(JSON.parse(months))}
 }
 
-const main = async () => {
-  const channels = await listFromPath(channelFilePath)
-
+const downloadFiles = async (channels, daysBack) => {
   const processedChannels = await Promise.map(channels, getChannelStart, {
     concurrency: 20,
   })
 
-  const totalUrls = getUrlList(
-    processedChannels,
-    parseInt(process.argv[2]) || 10,
-  )
-
-  const discardCache = await listFromPath(discardCachePath, true)
-  const downloadCache = await listFromPath(downloadCachePath, true)
+  const totalUrls = getUrlList(processedChannels, daysBack)
+  const discardCache = await getFileByLine(discardCachePath, true)
+  const downloadCache = await getFileByLine(downloadCachePath, true)
   const downloadedUrlFiles = await fs.readdir(rustleDataPath)
 
   const downloadedUrls = new Set(
@@ -128,7 +111,16 @@ const main = async () => {
   Days already downloaded: ${downloadedUrls.length || 0}
   Days to download right now: ${urlsToDownload.length}`)
 
-  Promise.map(urlsToDownload, downloadFile, {concurrency: 20})
+  await Promise.map(urlsToDownload, downloadFile, {concurrency: 20})
 }
 
+const main = async () => {
+  const channels = await getFileByLine(channelFilePath)
+  const daysBack = parseInt(process.argv[2] || 10)
+  downloadFiles(channels, daysBack)
+}
 if (require.main === module) main()
+
+module.exports = {
+  downloadFiles,
+}
