@@ -103,7 +103,7 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
   }
 })
 
-const main = async () => {
+const indexToElastic = async () => {
   const allPathsNames = await fs.readdir(rustleDataPath)
   const allPaths = allPathsNames.map(file => `${rustleDataPath}/${file}`)
 
@@ -121,7 +121,7 @@ const main = async () => {
     totalDaysToIngest: pathsToIngest.length,
   })
 
-  client
+  await client
     .info()
     .then(() => Promise.each(pathsToIngest, indexPathsToMessages))
     .catch(error => {
@@ -130,9 +130,14 @@ const main = async () => {
     })
 }
 
-process.on('SIGINT', () => {
-  console.log('SIGINT received, starting graceful shutdown.')
-  SHOULD_EXIT = true
-})
+if (require.main === module) {
+  process.on('SIGINT', () => {
+    console.log('SIGINT received, starting graceful shutdown.')
+    SHOULD_EXIT = true
+  })
+  indexToElastic()
+}
 
-if (require.main === module) main()
+module.exports = {
+  indexToElastic,
+}

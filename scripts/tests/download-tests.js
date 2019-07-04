@@ -4,7 +4,7 @@ const {
   downloadCachePath,
   rustleDataPath,
   discardCachePath,
-  dataPath,
+  resetData,
 } = require('../src/cache')
 const nock = require('nock')
 const {DateTime} = require('luxon')
@@ -21,12 +21,6 @@ const getPathFromChannel = channel =>
 
 const mockData = `[${responseDateFormat(yesterday)}] johnpyp: wow cool bro
 [${responseDateFormat(yesterday.plus({minutes: 2}))}] alice: wow nice bro`
-
-const cleanup = async () => {
-  await fs.remove(dataPath)
-  nock.cleanAll()
-  nock.enableNetConnect()
-}
 
 module.exports = () => {
   nock('https://overrustlelogs.net')
@@ -45,7 +39,11 @@ module.exports = () => {
     .get('/api/v1/Katerino/months.json')
     .reply(200, ['June 2018'])
 
-  afterAll(cleanup)
+  afterAll(async () => {
+    nock.cleanAll()
+    nock.enableNetConnect()
+    await resetData()
+  })
 
   describe('downloads files', () => {
     test('downloads files', async () => {

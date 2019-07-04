@@ -15,6 +15,13 @@ fs.ensureDirSync(cachePath)
 fs.ensureDirSync(rustleDataPath)
 fs.ensureDirSync(monthsPath)
 
+const resetData = async () => {
+  await fs.remove(dataPath)
+  await fs.ensureDir(cachePath)
+  await fs.ensureDir(rustleDataPath)
+  await fs.ensureDir(monthsPath)
+}
+
 module.exports = {
   blacklistPath,
   cachePath,
@@ -24,5 +31,6 @@ module.exports = {
   downloadCachePath,
   indexCachePath,
   monthsPath,
+  resetData,
   rustleDataPath,
 }
