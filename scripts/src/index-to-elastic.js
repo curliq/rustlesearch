@@ -87,7 +87,10 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
       }),
     )
     .promise()
-    .catch(error => console.error({error, message: 'Elastic error'}))
+    .catch(error => {
+      console.error({error, message: 'Elastic error'})
+      process.exit(1)
+    })
   yield fs.outputFile(indexCachePath, `${filePath}\n`, {flag: 'a'})
   console.debug(`Indexed ${filePath} in ${performance.now() - startTime}`)
   if (SHOULD_EXIT) {
@@ -99,7 +102,7 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
 const indexToElastic = async () => {
   const allPathsNames = await fs.readdirSafe(rustlePath)
   const allPaths = allPathsNames.map(file => `${rustlePath}/${file}`)
-  const ingestedPaths = await getFileByLine(indexCachePath, true)
+  const ingestedPaths = await getFileByLine(indexCachePath, {set: true})
   const pathsToIngest = allPaths.filter(file => !ingestedPaths.has(file))
 
   console.info({

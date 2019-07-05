@@ -86,8 +86,8 @@ const downloadFiles = async (channels, daysBack) => {
   })
 
   const totalUrls = getUrlList(processedChannels, daysBack)
-  const discardCache = await getFileByLine(discardCachePath, true)
-  const downloadCache = await getFileByLine(downloadCachePath, true)
+  const discardCache = await getFileByLine(discardCachePath, {set: true})
+  const downloadCache = await getFileByLine(downloadCachePath, {set: true})
   const downloadedLogFiles = await fs.readdirSafe(rustlePath)
 
   const downloadedLogs = new Set(

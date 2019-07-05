@@ -8,33 +8,60 @@ const capitalise = string =>
   string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
 
 fs.inputFile = async (path, ...args) => {
-  await fs.ensureFile(path)
+  try {
+    const contents = await fs.readFile(path, ...args)
 
-  return fs.readFile(path, ...args)
+    return contents
+  } catch (error) {
+    console.debug(error)
+    await fs.ensureFile(path)
+
+    return fs.readFile(path, ...args)
+  }
 }
 
 fs.inputFileSync = (path, ...args) => {
-  fs.ensureFileSync(path)
+  try {
+    const contents = fs.readFileSync(path, ...args)
 
-  return fs.readFileSync(path, ...args)
+    return contents
+  } catch (error) {
+    console.debug(error)
+    fs.ensureFileSync(path)
+
+    return fs.readFileSync(path, ...args)
+  }
 }
 
 fs.readdirSafe = async (path, ...args) => {
-  await fs.ensureDir(path)
+  try {
+    const contents = await fs.readdir(path, ...args)
 
-  return fs.readdir(path, ...args)
+    return contents
+  } catch (error) {
+    console.debug(error)
+    await fs.ensureDir(path)
+
+    return fs.readdir(path, ...args)
+  }
 }
 
 fs.readdirSafeSync = async (path, ...args) => {
-  fs.ensureDirSync(path)
+  try {
+    const contents = fs.readdirSync(path, ...args)
 
-  return fs.readdirSync(path, ...args)
+    return contents
+  } catch (error) {
+    fs.ensureDirSync(path)
+
+    return fs.readdirSync(path, ...args)
+  }
 }
 
-const getFileByLine = async (filePath, isSet = false) => {
+const getFileByLine = async (filePath, {set} = {set: false}) => {
   const file = await fs.inputFile(filePath, 'utf8')
   const arr = file.trim().split('\n')
-  if (isSet) return new Set(arr)
+  if (set) return new Set(arr)
 
   return arr
 }

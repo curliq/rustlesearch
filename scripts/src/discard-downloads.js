@@ -18,7 +18,7 @@ const deleteFile = co(function* deleteFile(filePath) {
 
 const discardDownloads = async () => {
   const ingestedPaths = await getFileByLine(indexCachePath)
-  const discardedPaths = await getFileByLine(discardCachePath, true)
+  const discardedPaths = await getFileByLine(discardCachePath, {set: true})
 
   const pathsToDiscard = ingestedPaths
     .filter(file => !discardedPaths.has(file))
