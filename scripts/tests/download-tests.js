@@ -4,6 +4,7 @@ const {
   downloadCachePath,
   rustlePath,
   discardCachePath,
+  dataPath,
 } = require('../src/cache')
 const nock = require('nock')
 const {DateTime} = require('luxon')
@@ -41,11 +42,11 @@ module.exports = () => {
   afterAll(async () => {
     nock.cleanAll()
     nock.enableNetConnect()
-    await fs.remove(rustlePath)
+    await fs.remove(dataPath)
   })
 
   describe('downloads files', () => {
-    test('downloads files', async () => {
+    test('', async () => {
       await downloadFiles(['Destiny', 'Destinygg', 'Katerino'], 1)
       expect(fs.pathExistsSync(getPathFromChannel('Destiny'))).toBe(true)
       expect(fs.pathExistsSync(getPathFromChannel('Destinygg'))).toBe(true)
@@ -53,7 +54,7 @@ module.exports = () => {
   })
 
   describe('contains correct contents', () => {
-    test('contains correct contents', async () => {
+    test('', async () => {
       const downloadedFilePath = getPathFromChannel('Destiny')
       const downloadedContents = await fs.inputFile(downloadedFilePath, 'utf8')
       expect(downloadedContents).toBe(mockData)
@@ -61,20 +62,20 @@ module.exports = () => {
   })
 
   describe('fails to download 404', () => {
-    test('fails to download 404', async () => {
+    test('', async () => {
       expect(fs.pathExistsSync(getPathFromChannel('Katerino'))).toBe(false)
     })
   })
 
   describe('writes 404 to download cache', () => {
-    test('writes 404 to download cache', async () => {
+    test('', async () => {
       const downloadCacheContents = await getFileByLine(downloadCachePath)
       expect(downloadCacheContents[0]).toBe(getPathFromChannel('Katerino'))
     })
   })
 
   describe('respects download cache', () => {
-    test('respects download cache', async () => {
+    test('', async () => {
       const downloadedFilePath = getPathFromChannel('Destiny')
 
       await fs.remove(downloadedFilePath)
@@ -85,7 +86,7 @@ module.exports = () => {
   })
 
   describe('respects discard cache', () => {
-    test('respects discard cache', async () => {
+    test('', async () => {
       const downloadedFilePath = getPathFromChannel('Destiny')
       await fs.remove(downloadedFilePath)
       await fs.remove(downloadCachePath)

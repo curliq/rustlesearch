@@ -1,15 +1,11 @@
-const {promises: fs} = require('fs')
 const {discardCachePath, indexCachePath} = require('./cache')
-const {co} = require('../util')
+const {co, fs, getFileByLine} = require('../util')
 const Promise = require('bluebird')
 
 const deleteFile = co(function* deleteFile(filePath) {
   try {
-    yield fs.unlink(filePath)
-    yield fs.writeFile(discardCachePath, `${filePath}\n`, {
-      encoding: 'utf8',
-      flag: 'a+',
-    })
+    yield fs.remove(filePath)
+    yield fs.outputFile(discardCachePath, `${filePath}\n`, {flag: 'a'})
     console.debug({filePath, message: 'Deleted & cached file'})
   } catch (error) {
     console.warn({
@@ -20,22 +16,12 @@ const deleteFile = co(function* deleteFile(filePath) {
   }
 })
 
-const main = async () => {
-  const ingestedPaths = await fs.readFile(indexCachePath, {
-    encoding: 'utf8',
-    flag: 'a+',
-  })
+const discardDownloads = async () => {
+  const ingestedPaths = await getFileByLine(indexCachePath)
+  const discardedPaths = await getFileByLine(discardCachePath, true)
 
-  const discardedPaths = await fs.readFile(discardCachePath, {
-    encoding: 'utf8',
-    flag: 'a+',
-  })
-
-  const ingestedPathsList = ingestedPaths.trim().split('\n')
-  const discardedPathsSet = new Set(discardedPaths.trim().split('\n'))
-
-  const pathsToDiscard = ingestedPathsList
-    .filter(file => !discardedPathsSet.has(file))
+  const pathsToDiscard = ingestedPaths
+    .filter(file => !discardedPaths.has(file))
     .filter(Boolean)
 
   console.info({
@@ -44,5 +30,8 @@ const main = async () => {
   await Promise.map(pathsToDiscard, deleteFile, {concurrency: 10})
   console.info({message: 'Finished discarding'})
 }
+if (require.main === module) discardDownloads()
 
-main()
+module.exports = {
+  discardDownloads,
+}

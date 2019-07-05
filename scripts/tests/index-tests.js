@@ -1,4 +1,4 @@
-const {rustlePath, indexCachePath} = require('../src/cache')
+const {rustlePath, indexCachePath, dataPath} = require('../src/cache')
 const {DateTime} = require('luxon')
 const {Client} = require('@elastic/elasticsearch')
 const {initElastic} = require('../src/init-elastic')
@@ -73,11 +73,11 @@ module.exports = () => {
   })
 
   afterAll(async () => {
-    await fs.remove(rustlePath)
+    await fs.remove(dataPath)
   })
 
   describe('indexes expected amount of documents', () => {
-    test('indexes expected amount of documents', async () => {
+    test('', async () => {
       await indexToElastic()
       await sleep(1000)
       const result = await client.count({index: process.env.INDEX_NAME})
@@ -86,7 +86,7 @@ module.exports = () => {
   })
 
   describe('indexes correct documents', () => {
-    test('indexes correct documents', async () => {
+    test('', async () => {
       const result = await client.search({index: process.env.INDEX_NAME})
       const messages = result.body.hits.hits.map(log => log._source)
       expect(messages).toEqual(expect.arrayContaining(expectedSearchResult))
@@ -94,7 +94,7 @@ module.exports = () => {
   })
 
   describe('respects ingest cache', () => {
-    test('respects ingest cache', async () => {
+    test('', async () => {
       await resetIndex()
       await fs.remove(indexCachePath)
       await fs.outputFile(indexCachePath, getPathFromChannel('Destiny'), {
@@ -108,7 +108,7 @@ module.exports = () => {
   })
 
   describe('rejects bad data', () => {
-    test('rejects bad data', async () => {
+    test('', async () => {
       await resetIndex()
       await fs.remove(rustlePath)
       await fs.outputFile(
