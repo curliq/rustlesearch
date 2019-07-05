@@ -18,7 +18,7 @@ steps:
   - name: test-server
     image: node:12-alpine
     environment:
-      CHANNEL_LOCATION: "channels.txt"
+      CHANNEL_LOCATION: 'channels.txt'
       ELASTIC_LOCATION: http://elastic-server:9200
       INDEX_NAME: drone-server-elastic
       LOG_LEVEL: debug
@@ -39,7 +39,7 @@ services:
     image: elasticsearch:7.2.0
     environment:
       discovery.type: single-node
-      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+      ES_JAVA_OPTS: '-Xms2g -Xmx2g'
       bootstrap.memory_lock: true
     ports:
       - 9200
@@ -70,6 +70,7 @@ steps:
     environment:
       ELASTIC_LOCATION: http://elastic-scripts:9200
       INDEX_NAME: drone-scripts-elastic
+      DATA_PATH: './test-data'
     commands:
       - cd scripts
       - apk update
@@ -84,7 +85,7 @@ services:
     image: elasticsearch:7.2.0
     environment:
       discovery.type: single-node
-      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+      ES_JAVA_OPTS: '-Xms2g -Xmx2g'
       bootstrap.memory_lock: true
     ports:
       - 9200

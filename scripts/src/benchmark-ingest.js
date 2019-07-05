@@ -1,7 +1,7 @@
 const Promise = require('bluebird')
 const {range} = require('ramda')
 const {Client} = require('@elastic/elasticsearch')
-const {co} = require('./util')
+const {co} = require('../util')
 
 const client = new Client({
   node: process.env.ELASTIC_LOCATION,

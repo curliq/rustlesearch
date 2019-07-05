@@ -14,7 +14,7 @@
     "benchmark:index": "node -r dotenv/config ./src/benchmark-ingest.js",
     "lint": "prettier-eslint --write '**/*.js'",
     "check-lint": "eslint --ext .js ./",
-    "test": "jest --forceExit"
+    "test": "DATA_PATH=test-data jest --forceExit"
   },
   "contributors": [
     {
@@ -51,8 +51,10 @@
   "dependencies": {
     "@elastic/elasticsearch": "7.1.0",
     "bluebird": "3.5.5",
-    "etl": "0.6.4",
-    "luxon": "1.16.0",
+    "etl": "0.6.5",
+    "fs-extra": "8.1.0",
+    "luxon": "1.16.1",
+    "nock": "10.0.6",
     "ramda": "0.26.1",
     "superagent": "5.1.0"
   },

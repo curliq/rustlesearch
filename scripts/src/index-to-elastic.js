@@ -1,19 +1,16 @@
-const {readFileSync, promises: fs} = require('fs')
 const {performance} = require('perf_hooks')
 const {parse} = require('path')
 const etl = require('etl')
 const Promise = require('bluebird')
 const {Client} = require('@elastic/elasticsearch')
-const {blacklistPath, indexCachePath, rustleDataPath} = require('./cache')
-const {co, capitalise} = require('./util')
+const {blacklistPath, indexCachePath, rustlePath} = require('./cache')
+const {co, capitalise, fs, getFileByLine} = require('../util')
 
 let SHOULD_EXIT = false
 
 const blacklist = new Set(
-  readFileSync(blacklistPath, {
-    encoding: 'utf8',
-    flag: 'a+',
-  })
+  fs
+    .inputFileSync(blacklistPath, 'utf8')
     .trim()
     .split('\n')
     .map(name => name.toLowerCase()),
@@ -90,12 +87,11 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
       }),
     )
     .promise()
-    .catch(error => console.error({error, message: 'Elastic error'}))
-
-  yield fs.writeFile(indexCachePath, `${filePath}\n`, {
-    encoding: 'utf8',
-    flag: 'a+',
-  })
+    .catch(error => {
+      console.error({error, message: 'Elastic error'})
+      process.exit(1)
+    })
+  yield fs.outputFile(indexCachePath, `${filePath}\n`, {flag: 'a'})
   console.debug(`Indexed ${filePath} in ${performance.now() - startTime}`)
   if (SHOULD_EXIT) {
     console.info('Exiting gracefully...')
@@ -103,25 +99,19 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
   }
 })
 
-const main = async () => {
-  const allPathsNames = await fs.readdir(rustleDataPath)
-  const allPaths = allPathsNames.map(file => `${rustleDataPath}/${file}`)
-
-  const ingestedPaths = await fs.readFile(indexCachePath, {
-    encoding: 'utf8',
-    flag: 'a+',
-  })
-
-  const ingestedPathList = new Set(ingestedPaths.split('\n'))
-  const pathsToIngest = allPaths.filter(file => !ingestedPathList.has(file))
+const indexToElastic = async () => {
+  const allPathsNames = await fs.readdirSafe(rustlePath)
+  const allPaths = allPathsNames.map(file => `${rustlePath}/${file}`)
+  const ingestedPaths = await getFileByLine(indexCachePath, {set: true})
+  const pathsToIngest = allPaths.filter(file => !ingestedPaths.has(file))
 
   console.info({
-    totalDaysIngested: ingestedPathList.length,
+    totalDaysIngested: ingestedPaths.size,
     totalDaysOfLogs: allPaths.length,
     totalDaysToIngest: pathsToIngest.length,
   })
 
-  client
+  await client
     .info()
     .then(() => Promise.each(pathsToIngest, indexPathsToMessages))
     .catch(error => {
@@ -130,9 +120,14 @@ const main = async () => {
     })
 }
 
-process.on('SIGINT', () => {
-  console.log('SIGINT received, starting graceful shutdown.')
-  SHOULD_EXIT = true
-})
+if (require.main === module) {
+  process.on('SIGINT', () => {
+    console.log('SIGINT received, starting graceful shutdown.')
+    SHOULD_EXIT = true
+  })
+  indexToElastic()
+}
 
-if (require.main === module) main()
+module.exports = {
+  indexToElastic,
+}

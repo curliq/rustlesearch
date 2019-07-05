@@ -4,7 +4,7 @@ const client = new Client({
   node: process.env.ELASTIC_LOCATION,
 })
 
-const main = () =>
+const initElastic = (refreshInterval = '60s') =>
   client.indices.create({
     body: {
       mappings: {
@@ -18,12 +18,18 @@ const main = () =>
       settings: {
         'number_of_replicas': 0,
         'number_of_shards': 5,
-        'refresh_interval': '60s',
+
+        'refresh_interval': refreshInterval,
         'sort.field': 'ts',
+
         'sort.order': 'desc',
       },
     },
     index: process.env.INDEX_NAME,
   })
 
-if (require.main === module) main()
+if (require.main === module) initElastic()
+
+module.exports = {
+  initElastic,
+}
