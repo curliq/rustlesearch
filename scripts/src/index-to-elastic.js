@@ -5,7 +5,7 @@ const {splitEvery} = require('ramda')
 // eslint-disable-next-line node/no-missing-require
 const {Worker} = require('worker_threads')
 
-const THREADS = 4
+const THREADS = parseInt(process.argv[2]) || 6
 
 const indexToElastic = async () => {
   const allPathsNames = await fs.readdirSafe(rustlePath)
