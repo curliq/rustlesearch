@@ -2,13 +2,12 @@
 const {downloadFiles} = require('../src/download-files')
 const {
   downloadCachePath,
-  rustleDataPath,
+  rustlePath,
   discardCachePath,
-  resetData,
 } = require('../src/cache')
 const nock = require('nock')
 const {DateTime} = require('luxon')
-const fs = require('fs-extra')
+const {fs, getFileByLine} = require('../util')
 
 const yesterday = DateTime.utc().minus({days: 1})
 const fullDateFormat = date => date.toFormat('MMMM yyyy/yyyy-MM-dd')
@@ -17,7 +16,7 @@ const fileDateFormat = date => date.toFormat('yyyy-MM-dd')
 const fileDate = fileDateFormat(yesterday)
 
 const getPathFromChannel = channel =>
-  `${rustleDataPath}/${channel}::${fileDate}.txt`
+  `${rustlePath}/${channel}::${fileDate}.txt`
 
 const mockData = `[${responseDateFormat(yesterday)}] johnpyp: wow cool bro
 [${responseDateFormat(yesterday.plus({minutes: 2}))}] alice: wow nice bro`
@@ -42,7 +41,7 @@ module.exports = () => {
   afterAll(async () => {
     nock.cleanAll()
     nock.enableNetConnect()
-    await resetData()
+    await fs.remove(rustlePath)
   })
 
   describe('downloads files', () => {
@@ -56,10 +55,7 @@ module.exports = () => {
   describe('contains correct contents', () => {
     test('contains correct contents', async () => {
       const downloadedFilePath = getPathFromChannel('Destiny')
-
-      const downloadedContents = await fs.readFile(downloadedFilePath, {
-        encoding: 'utf8',
-      })
+      const downloadedContents = await fs.inputFile(downloadedFilePath, 'utf8')
       expect(downloadedContents).toBe(mockData)
     })
   })
@@ -72,11 +68,7 @@ module.exports = () => {
 
   describe('writes 404 to download cache', () => {
     test('writes 404 to download cache', async () => {
-      const downloadCacheContents = (await fs.readFile(downloadCachePath, {
-        encoding: 'utf8',
-      }))
-        .trim()
-        .split('\n')
+      const downloadCacheContents = await getFileByLine(downloadCachePath)
       expect(downloadCacheContents[0]).toBe(getPathFromChannel('Katerino'))
     })
   })
@@ -86,10 +78,7 @@ module.exports = () => {
       const downloadedFilePath = getPathFromChannel('Destiny')
 
       await fs.remove(downloadedFilePath)
-      await fs.writeFile(downloadCachePath, `${downloadedFilePath}\n`, {
-        encoding: 'utf8',
-        flag: 'a+',
-      })
+      await fs.outputFile(downloadCachePath, `${downloadedFilePath}\n`)
       await downloadFiles(['Destiny'], 1)
       expect(fs.pathExistsSync(downloadedFilePath)).toBe(false)
     })
@@ -100,10 +89,7 @@ module.exports = () => {
       const downloadedFilePath = getPathFromChannel('Destiny')
       await fs.remove(downloadedFilePath)
       await fs.remove(downloadCachePath)
-      await fs.writeFile(discardCachePath, `${downloadedFilePath}\n`, {
-        encoding: 'utf8',
-        flag: 'a+',
-      })
+      await fs.outputFile(discardCachePath, `${downloadedFilePath}\n`)
       await downloadFiles(['Destiny'], 1)
       expect(fs.pathExistsSync(downloadedFilePath)).toBe(false)
     })

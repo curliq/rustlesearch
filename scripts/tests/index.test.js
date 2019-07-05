@@ -1,6 +1,6 @@
 const downloadTests = require('./download-tests.js')
 const indexTests = require('./index-tests.js')
-const fs = require('fs-extra')
+const {fs} = require('../util')
 const {dataPath} = require('../src/cache')
 
 afterAll(async () => {

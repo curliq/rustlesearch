@@ -1,9 +1,9 @@
-const {resetData, rustleDataPath, indexCachePath} = require('../src/cache')
+const {rustlePath, indexCachePath} = require('../src/cache')
 const {DateTime} = require('luxon')
 const {Client} = require('@elastic/elasticsearch')
-const fs = require('fs-extra')
 const {initElastic} = require('../src/init-elastic')
 const {indexToElastic} = require('../src/index-to-elastic')
+const {fs} = require('../util')
 
 const yesterday = DateTime.utc()
   .minus({days: 1})
@@ -19,7 +19,12 @@ const mockData = `[${responseDateFormat(yesterday)}] johnpyp: wow cool bro
 
 const partialBadMockData = `
 [${responseDateFormat(yesterday)}] johnpyp: wow cool bro
-[${responseDateFormat(yesterday.plus({minutes: 2}))}] alice: `
+[${responseDateFormat(yesterday.plus({minutes: 2}))}] aliceasdfasdfsdfasdfsfas: 
+[${responseDateFormat(yesterday.plus({minutes: 4}))}] alice: 
+[${responseDateFormat(yesterday.plus({minutes: 6}))}] ce:
+df
+
+`
 
 const expectedSearchResult = [
   {
@@ -49,7 +54,7 @@ const expectedSearchResult = [
 ]
 
 const getPathFromChannel = channel =>
-  `${rustleDataPath}/${channel}::${fileDate}.txt`
+  `${rustlePath}/${channel}::${fileDate}.txt`
 
 const client = new Client({
   node: process.env.ELASTIC_LOCATION,
@@ -62,13 +67,13 @@ const resetIndex = async () => {
 
 module.exports = () => {
   beforeAll(async () => {
-    await fs.writeFile(getPathFromChannel('Destiny'), mockData)
-    await fs.writeFile(getPathFromChannel('Destinygg'), mockData)
-    initElastic('1s')
+    await fs.outputFile(getPathFromChannel('Destiny'), mockData)
+    await fs.outputFile(getPathFromChannel('Destinygg'), mockData)
+    await initElastic('1s')
   })
 
   afterAll(async () => {
-    await resetData()
+    await fs.remove(rustlePath)
   })
 
   describe('indexes expected amount of documents', () => {
@@ -92,9 +97,8 @@ module.exports = () => {
     test('respects ingest cache', async () => {
       await resetIndex()
       await fs.remove(indexCachePath)
-      await fs.writeFile(indexCachePath, getPathFromChannel('Destiny'), {
-        encoding: 'utf8',
-        flag: 'a+',
+      await fs.outputFile(indexCachePath, getPathFromChannel('Destiny'), {
+        flag: 'a',
       })
       await indexToElastic()
       await sleep(1000)
@@ -106,8 +110,8 @@ module.exports = () => {
   describe('rejects bad data', () => {
     test('rejects bad data', async () => {
       await resetIndex()
-      await resetData()
-      await fs.writeFile(
+      await fs.remove(rustlePath)
+      await fs.outputFile(
         getPathFromChannel('Destinygg'),
         partialBadMockData.trim(),
       )
