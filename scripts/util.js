@@ -13,7 +13,6 @@ fs.inputFile = async (path, ...args) => {
 
     return contents
   } catch (error) {
-    console.debug(error)
     await fs.ensureFile(path)
 
     return fs.readFile(path, ...args)
@@ -26,7 +25,6 @@ fs.inputFileSync = (path, ...args) => {
 
     return contents
   } catch (error) {
-    console.debug(error)
     fs.ensureFileSync(path)
 
     return fs.readFileSync(path, ...args)
@@ -39,7 +37,6 @@ fs.readdirSafe = async (path, ...args) => {
 
     return contents
   } catch (error) {
-    console.debug(error)
     await fs.ensureDir(path)
 
     return fs.readdir(path, ...args)
