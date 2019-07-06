@@ -19,6 +19,8 @@ const blacklist = new Set(
     .map(name => name.toLowerCase()),
 )
 
+const indexCacheStream = fs.createWriteStream(indexCachePath, {flags: 'a'})
+
 function parseDateToISO(date) {
   const yyyy = date.slice(0, 4)
   const MM = date.slice(5, 7)
@@ -94,7 +96,7 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
       console.error({error, message: 'Elastic error'})
       process.exit(1)
     })
-  yield fs.outputFile(indexCachePath, `${filePath}\n`, {flag: 'a'})
+  indexCacheStream.write(`${filePath}\n`)
   console.debug(`Indexed ${filePath} in ${performance.now() - startTime}`)
   if (SHOULD_EXIT) {
     console.info('Exiting gracefully...')
