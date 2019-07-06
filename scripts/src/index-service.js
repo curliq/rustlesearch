@@ -85,7 +85,7 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
     .file(filePath)
     .pipe(etl.split())
     .pipe(etl.map(line => lineToMessage(line, channel)))
-    .pipe(etl.collect(2000))
+    .pipe(etl.collect(4000))
     .pipe(
       etl.elastic.index(client, process.env.INDEX_NAME, null, {
         concurrency: 10,
