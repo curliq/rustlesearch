@@ -11,8 +11,8 @@
     "run:index": "node -r dotenv/config ./src/index-to-elastic.js",
     "run:esinit": "node -r dotenv/config ./src/init-elastic.js",
     "run:discard": "node -r dotenv/config ./src/discard-downloads.js",
-    "benchmark:index": "node -r dotenv/config ./src/benchmark-ingest.js",
-    "lint": "prettier-eslint --write '**/*.js'",
+    "lint": "yarn pretty && yarn check-lint",
+    "pretty": "prettier-eslint --write '**/*.js'",
     "check-lint": "eslint --ext .js ./",
     "test": "DATA_PATH=test-data jest --forceExit"
   },
