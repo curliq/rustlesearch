@@ -1,5 +1,4 @@
 /* eslint-disable node/no-unsupported-features/node-builtins */
-const {performance} = require('perf_hooks')
 const {parse} = require('path')
 const etl = require('etl')
 const Promise = require('bluebird')
@@ -78,7 +77,6 @@ const client = new Client({
 })
 
 const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
-  const startTime = performance.now()
   const [channel] = parse(filePath).name.split('::')
 
   yield etl
@@ -88,7 +86,7 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
     .pipe(etl.collect(4000))
     .pipe(
       etl.elastic.index(client, process.env.INDEX_NAME, null, {
-        concurrency: 10,
+        concurrency: 5,
       }),
     )
     .promise()
@@ -97,7 +95,7 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
       process.exit(1)
     })
   indexCacheStream.write(`${filePath}\n`)
-  console.debug(`Indexed ${filePath} in ${performance.now() - startTime}`)
+  console.debug(`Indexed ${filePath}`)
   if (SHOULD_EXIT) {
     console.info('Exiting gracefully...')
     process.exit(0)
