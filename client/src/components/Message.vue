@@ -1,6 +1,8 @@
 <template>
-  <div class="flex items-center border-b border-gray-800 py-1">
-    <div class="xl:w-1/12 lg:1/6 md:w-1/5 w-1/4 text-gray-300 text-center truncate px-1">
+  <div class="flex items-center border-b border-gray-800 py-2">
+    <div
+      class="lg:1/6 md:w-1/5 w-1/4 text-gray-300 text-center truncate px-1 font-bold"
+    >
       {{ channel }}
     </div>
     <div class="xl:w-11/12 lg:5/6 md:w-4/5 w-3/4">
@@ -64,5 +66,4 @@ export default {
 </script>
 
 <style>
-
 </style>
