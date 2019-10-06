@@ -25,8 +25,9 @@
 </template>
 
 <script>
-import dayjs from '@/dayjs'
-import { displayFormat } from '@/utils'
+import dayjs from "@/dayjs";
+import { displayFormat } from "@/utils";
+
 export default {
   props: {
     channel: {
@@ -51,19 +52,17 @@ export default {
     }
   },
   computed: {
-    date () {
-      return dayjs(this.ts)
+    date() {
+      return dayjs(this.ts);
     },
-    formattedDate () {
+    formattedDate() {
       if (this.isUtc) {
-        return this.date.utc().format(displayFormat)
+        return this.date.utc().format(displayFormat);
       }
-      return this.date.format(displayFormat)
+      return this.date.format(displayFormat);
     }
   }
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

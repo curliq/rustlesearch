@@ -1,23 +1,13 @@
 <template>
   <div class="mx-auto w-20 text-center spinner">
-    <div
-      class="bounce1"
-      :style="sizeClass"
-    />
-    <div
-      class="bounce2"
-      :style="sizeClass"
-    />
-    <div
-      class="bounce3"
-      :style="sizeClass"
-    />
+    <div class="bounce1" :style="sizeClass" />
+    <div class="bounce2" :style="sizeClass" />
+    <div class="bounce3" :style="sizeClass" />
   </div>
 </template>
 
 <script>
 export default {
-
   props: {
     size: {
       type: Number,
@@ -25,23 +15,22 @@ export default {
     },
     color: {
       type: String,
-      default: '#fff'
+      default: "#fff"
     }
   },
   computed: {
-    sizeClass () {
+    sizeClass() {
       return {
-        width: this.size + 'px',
-        height: this.size + 'px',
-        'background-color': this.color
-      }
+        width: `${this.size}px`,
+        height: `${this.size}px`,
+        "background-color": this.color
+      };
     }
   }
-}
+};
 </script>
 
 <style scoped>
-
 .spinner > div {
   margin: 0 1px;
   border-radius: 100%;
@@ -61,17 +50,26 @@ export default {
 }
 
 @-webkit-keyframes sk-bouncedelay {
-  0%, 80%, 100% { -webkit-transform: scale(0) }
-  40% { -webkit-transform: scale(1.0) }
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+  }
 }
 
 @keyframes sk-bouncedelay {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     -webkit-transform: scale(0);
     transform: scale(0);
-  } 40% {
-    -webkit-transform: scale(1.0);
-    transform: scale(1.0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
   }
 }
 </style>

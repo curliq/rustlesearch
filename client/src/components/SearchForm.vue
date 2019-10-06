@@ -2,12 +2,10 @@
   <div class="bg-gray-850 shadow flex flex-col rounded py-4 px-3">
     <div>
       <div class="flex lg:flex-row flex-col lg:items-center mb-5">
-        <base-dark-label class="text-lg mr-2 flex-initial">
-          Search Options
-        </base-dark-label>
-        <div class="text-gray-500 flex-1 text-sm">
-          (one field required)
-        </div>
+        <base-dark-label class="text-lg mr-2 flex-initial"
+          >Search Options</base-dark-label
+        >
+        <div class="text-gray-500 flex-1 text-sm">(one field required)</div>
       </div>
 
       <base-dark-input
@@ -31,28 +29,22 @@
         @keydown.enter="$emit('submit', query)"
       />
       <div class="border-b border-gray-800 my-4 h-px" />
-      <div
-        class="mb-3 field"
-        :class="query.startingDate && 'field--not-empty'"
-      >
+      <div class="mb-3 field" :class="query.startingDate && 'field--not-empty'">
         <label class="field__label">Start Date</label>
         <base-datepicker
           v-model="query.startingDate"
           class="field__input"
           placeholder="Start Date"
-          :options="{max: query.endingDate}"
+          :options="{ max: query.endingDate }"
         />
       </div>
-      <div
-        class="mb-3 field"
-        :class="query.startingDate && 'field--not-empty'"
-      >
+      <div class="mb-3 field" :class="query.startingDate && 'field--not-empty'">
         <label class="field__label">End Date</label>
         <base-datepicker
           v-model="query.endingDate"
+          :options="{ min: query.startingDate, max: today }"
           class="field__input"
           placeholder="End Date"
-          :options="{min: query.startingDate, max: today}"
         />
       </div>
       <button
@@ -60,17 +52,17 @@
         @click="$emit('submit', query)"
       >
         <span v-if="!loading">Submit</span>
-        <base-loader
-          v-else
-        />
+        <base-loader v-else />
       </button>
     </div>
   </div>
 </template>
 
 <script>
-import dayjs from '@/dayjs'
-import { keys, mergeRight } from 'ramda'
+import { keys, mergeRight } from "ramda";
+import { mapState } from "vuex";
+import dayjs from "@/dayjs";
+
 export default {
   props: {
     loading: {
@@ -78,33 +70,36 @@ export default {
       default: false
     }
   },
-  data () {
+  data() {
     return {
       query: {
         username: null,
         channel: null,
         text: null,
-        startingDate: dayjs().utc().subtract(30, 'day').format('YYYY-MM-DD'),
-        endingDate: dayjs().utc().format('YYYY-MM-DD')
+        startingDate: dayjs()
+          .utc()
+          .subtract(30, "day")
+          .format("YYYY-MM-DD"),
+        endingDate: dayjs()
+          .utc()
+          .format("YYYY-MM-DD")
       },
       today: new Date()
-    }
+    };
   },
   computed: {
-    channels () {
-      return this.$store.state.channels
-    }
+    ...mapState({
+      channels: state => state.channels
+    })
   },
-  mounted () {
-    this.$store.dispatch('getChannels')
+  mounted() {
+    this.$store.dispatch("getChannels");
     if (keys(this.$route.query).length > 0) {
-      this.query = mergeRight(this.query, this.$route.query)
-      this.$emit('submit', this.query)
+      this.query = mergeRight(this.query, this.$route.query);
+      this.$emit("submit", this.query);
     }
   }
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

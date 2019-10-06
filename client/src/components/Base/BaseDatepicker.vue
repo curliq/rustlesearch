@@ -5,13 +5,14 @@
     type="text"
     readonly
     :value="value"
-    @change="(e) => $emit('input', e.target.value)"
-  >
+    @change="e => $emit('input', e.target.value)"
+  />
 </template>
 
 <script>
-import dayjs from '@/dayjs'
-import TinyDatePicker from 'tiny-date-picker'
+import TinyDatePicker from "tiny-date-picker";
+import dayjs from "@/dayjs";
+
 export default {
   props: {
     value: {
@@ -23,40 +24,38 @@ export default {
       default: () => {}
     }
   },
-  data () {
+  data() {
     return {
       dp: null
-    }
+    };
   },
   watch: {
     options: {
-      handler () {
-        if (this.dp) this.dp.destroy()
-        this.dp = null
-        this.createDp()
+      handler() {
+        if (this.dp) this.dp.destroy();
+        this.dp = null;
+        this.createDp();
       }
     }
   },
-  mounted () {
-    this.createDp()
+  mounted() {
+    this.createDp();
   },
   methods: {
-    createDp () {
+    createDp() {
       this.dp = TinyDatePicker(this.$refs.datepicker, {
-        mode: 'dp-below',
-        parse (date) {
-          return dayjs(date).toDate()
+        mode: "dp-below",
+        parse(date) {
+          return dayjs(date).toDate();
         },
-        format (date) {
-          return dayjs(date).format('YYYY-MM-DD')
+        format(date) {
+          return dayjs(date).format("YYYY-MM-DD");
         },
         ...this.options
-      })
+      });
     }
   }
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

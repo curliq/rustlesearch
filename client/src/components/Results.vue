@@ -1,11 +1,6 @@
 <template>
-  <div
-    class="bg-gray-850 rounded"
-  >
-    <toggle-mode-bar
-      :mode.sync="mode"
-      :is-utc.sync="isUtc"
-    />
+  <div class="bg-gray-850 rounded">
+    <toggle-mode-bar :mode.sync="mode" :is-utc.sync="isUtc" />
     <div v-if="results.length > 0">
       <component
         :is="mode"
@@ -25,19 +20,17 @@
     >
       No results, try a different search
     </div>
-    <div
-      v-else
-      class="py-4 text-center font-bold text-gray-100"
-    >
+    <div v-else class="py-4 text-center font-bold text-gray-100">
       Submit a search to get started
     </div>
   </div>
 </template>
 
 <script>
-import CompactMessage from './CompactMessage'
-import Message from './Message'
-import ToggleModeBar from './ToggleModeBar'
+import CompactMessage from "./CompactMessage.vue";
+import Message from "./Message.vue";
+import ToggleModeBar from "./ToggleModeBar.vue";
+
 export default {
   components: {
     Message,
@@ -58,15 +51,13 @@ export default {
       default: false
     }
   },
-  data () {
+  data() {
     return {
-      mode: 'message',
+      mode: "message",
       isUtc: true
-    }
+    };
   }
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

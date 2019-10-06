@@ -1,86 +1,87 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import superagent from 'superagent'
-import { last } from 'ramda'
-const baseUrl = process.env.VUE_APP_API
-Vue.use(Vuex)
+import Vue from "vue";
+import Vuex from "vuex";
+import superagent from "superagent";
+import { last } from "ramda";
+
+const baseUrl = process.env.VUE_APP_API;
+Vue.use(Vuex);
 const buildNotify = msg => ({
-  group: 'vuex',
-  title: 'Error',
+  group: "vuex",
+  title: "Error",
   text: msg,
   duration: 2000
-})
+});
 
 export default new Vuex.Store({
   state: {
     currentQuery: null,
     results: [],
     loading: false,
-    channels: ['Destinygg']
+    channels: ["Destinygg"]
   },
   mutations: {
-    setResults (state, data) {
-      state.results = data
+    setResults(state, data) {
+      state.results = data;
     },
-    appendResults (state, data) {
-      state.results.push(data)
+    appendResults(state, data) {
+      state.results.push(data);
     },
-    setCurrentQuery (state, data) {
-      state.currentQuery = data
+    setCurrentQuery(state, data) {
+      state.currentQuery = data;
     },
-    setLoading (state, data) {
-      state.loading = data
+    setLoading(state, data) {
+      state.loading = data;
     },
-    setChannels (state, data) {
-      state.channels = data
+    setChannels(state, data) {
+      state.channels = data;
     }
   },
   actions: {
-    async getResults ({ commit, dispatch }, query) {
-      commit('setCurrentQuery', query)
-      commit('setLoading', true)
-      console.log(query.startingDate, query.endingDate)
+    async getResults({ commit, dispatch }, query) {
+      commit("setCurrentQuery", query);
+      commit("setLoading", true);
+      console.log(query.startingDate, query.endingDate);
       try {
-        const { body } = await superagent.get(`${baseUrl}/search`).query(query)
-        commit('setResults', body)
-        commit('setLoading', false)
+        const { body } = await superagent.get(`${baseUrl}/search`).query(query);
+        commit("setResults", body);
+        commit("setLoading", false);
       } catch (e) {
         if (e.response.status === 429) {
-          const retryAfterString = e.response.headers['retry-after']
-          const retryAfter = parseInt(retryAfterString)
-          setTimeout(() => dispatch('getResults', query), retryAfter + 100)
+          const retryAfterString = e.response.headers["retry-after"];
+          const retryAfter = parseInt(retryAfterString, 10);
+          setTimeout(() => dispatch("getResults", query), retryAfter + 100);
         } else {
-          Vue.notify(buildNotify(e.response.body.error))
-          commit('setLoading', false)
+          Vue.notify(buildNotify(e.response.body.error));
+          commit("setLoading", false);
         }
       }
     },
-    async scrollResults ({ commit, state, dispatch }) {
-      if (state.currentQuery === null || state.results.length === 0) return
-      const searchAfterVal = last(state.results).searchAfter
-      if (!searchAfterVal) return
+    async scrollResults({ commit, state, dispatch }) {
+      if (state.currentQuery === null || state.results.length === 0) return;
+      const searchAfterVal = last(state.results).searchAfter;
+      if (!searchAfterVal) return;
       try {
         const { body } = await superagent
           .get(`${baseUrl}/search`)
           .query(state.currentQuery)
-          .query({ searchAfter: searchAfterVal })
+          .query({ searchAfter: searchAfterVal });
 
-        commit('appendResults', body)
+        commit("appendResults", body);
       } catch (e) {
         if (e.response.status === 429) {
-          const retryAfterString = e.response.headers['retry-after']
-          const retryAfter = parseInt(retryAfterString)
-          setTimeout(() => dispatch('scrollResults'), retryAfter + 100)
+          const retryAfterString = e.response.headers["retry-after"];
+          const retryAfter = parseInt(retryAfterString, 10);
+          setTimeout(() => dispatch("scrollResults"), retryAfter + 100);
         }
       }
     },
-    async getChannels ({ commit }) {
+    async getChannels({ commit }) {
       try {
-        const { body } = await superagent.get(`${baseUrl}/channels`)
-        commit('setChannels', body)
+        const { body } = await superagent.get(`${baseUrl}/channels`);
+        commit("setChannels", body.channels);
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     }
   }
-})
+});

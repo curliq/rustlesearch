@@ -1,8 +1,6 @@
 <template>
   <div :class="['field', value && 'field--not-empty', styles]">
-    <label
-      class="field__label"
-    >
+    <label class="field__label">
       {{ placeholder }}
     </label>
     <v-select
@@ -22,12 +20,11 @@
       class="field__input bg-gray-700 rounded w-full py-2 px-3 text-gray-100 focus:outline-none"
       v-bind="$attrs"
       v-on="listeners"
-    >
+    />
   </div>
 </template>
 
 <script>
-
 export default {
   inheritAttrs: false,
   props: {
@@ -41,7 +38,7 @@ export default {
     },
     type: {
       type: String,
-      default: 'text'
+      default: "text"
     },
     items: {
       type: Array,
@@ -49,22 +46,20 @@ export default {
     },
     styles: {
       type: [String, Array],
-      default: ''
+      default: ""
     }
   },
   computed: {
-    listeners () {
+    listeners() {
       return {
         ...this.$listeners,
         input: e => {
-          this.$emit('input', e.target.value)
+          this.$emit("input", e.target.value);
         }
-      }
+      };
     }
   }
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

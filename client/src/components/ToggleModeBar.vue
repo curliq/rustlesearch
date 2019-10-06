@@ -18,11 +18,19 @@
     </div>
     <div class="border-l self-stretch border-gray-400" />
     <span
-      :class="[sharedClasses, 'fa-equals', !isCompact ? activeClass : nonActiveClass]"
+      :class="[
+        sharedClasses,
+        'fa-equals',
+        !isCompact ? activeClass : nonActiveClass
+      ]"
       @click="$emit('update:mode', 'message')"
     />
     <span
-      :class="[sharedClasses, 'fa-bars', isCompact ? activeClass : nonActiveClass]"
+      :class="[
+        sharedClasses,
+        'fa-bars',
+        isCompact ? activeClass : nonActiveClass
+      ]"
       @click="$emit('update:mode', 'compact-message')"
     />
   </div>
@@ -33,29 +41,27 @@ export default {
   props: {
     mode: {
       type: String,
-      default: 'message'
+      default: "message"
     },
     isUtc: {
       type: Boolean,
       default: true
     }
   },
-  data () {
+  data() {
     return {
-      sharedWordClass: 'px-3 self-stretch font-semibold flex items-center',
-      sharedClasses: 'self-stretch flex items-center text-2xl fas px-3',
-      activeClass: 'bg-gray-600 cursor-default',
-      nonActiveClass: 'hover:bg-gray-700 cursor-pointer'
-    }
+      sharedWordClass: "px-3 self-stretch font-semibold flex items-center",
+      sharedClasses: "self-stretch flex items-center text-2xl fas px-3",
+      activeClass: "bg-gray-600 cursor-default",
+      nonActiveClass: "hover:bg-gray-700 cursor-pointer"
+    };
   },
   computed: {
-    isCompact () {
-      return this.mode === 'compact-message'
+    isCompact() {
+      return this.mode === "compact-message";
     }
   }
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

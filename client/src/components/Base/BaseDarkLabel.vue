@@ -1,17 +1,11 @@
 <template>
-  <div
-    class="text-gray-300 text-sm font-bold"
-  >
+  <div class="text-gray-300 text-sm font-bold">
     <slot />
   </div>
 </template>
 
 <script>
-export default {
-
-}
+export default {};
 </script>
 
-<style>
-
-</style>
+<style></style>
