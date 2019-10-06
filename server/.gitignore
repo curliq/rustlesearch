@@ -19,3 +19,4 @@ data/
 # cache path
 cache/
 config/nginx/
+letsencrypt/
