@@ -3,6 +3,7 @@ const {isTest} = require('./environment')
 const config = require('./config')
 const logger = require('./logger')
 
+// eslint-disable-next-line import/order
 const Redis = isTest() ? require('ioredis-mock') : require('ioredis')
 
 Redis.Promise = Promise

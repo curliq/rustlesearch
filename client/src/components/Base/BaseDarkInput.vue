@@ -17,7 +17,7 @@
       :type="type"
       :value="value"
       :placeholder="placeholder"
-      class="field__input bg-gray-700 rounded w-full py-2 px-3 text-gray-100 focus:outline-none"
+      class="field__input bg-gray-700 rounded w-full py-2 px-3 placeholder-gray-400 text-gray-100 focus:outline-none"
       v-bind="$attrs"
       v-on="listeners"
     />

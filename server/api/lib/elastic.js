@@ -43,7 +43,7 @@ const generateElasticQuery = query => {
       },
     },
     size: 100,
-    sort: [{ts: {order: 'desc'}}],
+    sort: '_doc',
   }
 }
 
@@ -52,8 +52,11 @@ module.exports = co(function* searchElastic(query) {
     const result = yield elasticClient.search({
       body: generateElasticQuery(query),
       index: config.INDEX_NAME,
+      // eslint-disable-next-line camelcase
+      // request_cache: false,
     })
 
+    // eslint-disable-next-line no-underscore-dangle
     const logs = result.body.hits.hits.map(log => log._source)
 
     return {

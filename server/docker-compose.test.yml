@@ -6,12 +6,24 @@ services:
     volumes:
       - .:/node_app
     working_dir: /node_app
-    command: yarn start:api
-    environment:
-      - VIRTUAL_HOST=${DOMAIN}
-      - VIRTUAL_PORT=${APP_PORT}
-      - LETSENCRYPT_HOST=${DOMAIN}
-    expose:
-      - ${APP_PORT}
+    command: tail -F /dev/null
+    ports:
+      - ${APP_PORT}:${APP_PORT}
     depends_on:
       - redis
+  redis:
+    image: redis:5-alpine
+    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
+    restart: unless-stopped
+    env_file: .env
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    volumes:
+      - ./config/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    expose:
+      - ${REDIS_PORT}
+

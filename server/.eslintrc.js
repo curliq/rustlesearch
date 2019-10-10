@@ -1,14 +1,10 @@
 module.exports = {
   env: {
-    'es6': true,
-    'jest/globals': true,
-    'node': true,
+    es6: true,
+    node: true,
+    jest: true,
   },
-  extends: [
-    'plugin:jest/recommended',
-    'emerald',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['airbnb-base', 'plugin:prettier/recommended'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
@@ -20,12 +16,5 @@ module.exports = {
       impliedStrict: true,
     },
   },
-  plugins: ['jest', 'prettier'],
-  rules: {
-    // doesnt work well with dynamic require()
-    'import/newline-after-import': 'off',
-    // this only works with import
-    'import/order': 'off',
-    'prettier/prettier': 'error',
-  },
+  rules: {},
 }
