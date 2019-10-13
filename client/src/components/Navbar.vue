@@ -10,11 +10,11 @@
         </router-link>
 
         <div class="hidden sm:flex sm:items-center">
-          <a
-            href="#"
+          <router-link
+            :to="{ name: 'About' }"
             class="text-white text-sm font-semibold hover:text-gray-200"
-            >About</a
-          >
+            >About
+          </router-link>
         </div>
       </div>
     </div>
