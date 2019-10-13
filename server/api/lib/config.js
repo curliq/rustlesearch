@@ -22,6 +22,7 @@ const getConfig = () =>
     // allow missing in non prod
     if (!envVar && process.env.NODE_ENV === 'production')
       throw new Error(`${varName} not found in configuration file`)
+    // eslint-disable-next-line no-param-reassign
     config[varName] = envVar
 
     return config

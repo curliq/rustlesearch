@@ -22,11 +22,8 @@ router.get(
   }),
 )
 
-router.get(
-  '/channels',
-  co(function* getChannels(req, res) {
-    res.json({channels})
-  }),
-)
+router.get('/channels', (req, res) => {
+  res.json({channels})
+})
 
 module.exports = router

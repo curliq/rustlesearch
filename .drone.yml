@@ -30,7 +30,7 @@ steps:
       - apk update
       - apk add wait4ports
       - yarn install --frozen-lockfile
-      - yarn check-lint
+      - yarn lint
       - wait4ports tcp://elastic-server:9200 tcp://redis:6379
       - yarn test
 
@@ -76,7 +76,7 @@ steps:
       - apk update
       - apk add wait4ports
       - yarn install --frozen-lockfile
-      - yarn check-lint
+      - yarn lint
       - wait4ports tcp://elastic-scripts:9200
       - yarn test
 
