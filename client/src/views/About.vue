@@ -7,7 +7,7 @@
         <h1>Servers are expensive. please send help</h1>
         <a
           href="https://patreon.com/rustlesearch"
-          class="text-blue-200 hover:underline"
+          class="text-accent hover:underline"
           target="_blank"
           >patreon</a
         >

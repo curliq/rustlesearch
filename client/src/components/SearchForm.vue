@@ -48,7 +48,7 @@
         />
       </div>
       <button
-        class="hover:border-blue-400 border-gray-700 text-white border border-transparent w-full px-10 text-center py-3 rounded focus:outline-none my-1"
+        class="hover:border-accent border-gray-700 text-white border border-transparent w-full px-10 text-center py-3 rounded focus:outline-none my-1"
         @click="$emit('submit', query)"
       >
         <span v-if="!loading">Submit</span>

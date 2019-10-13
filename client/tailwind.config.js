@@ -1,3 +1,5 @@
+const { colors } = require("tailwindcss/defaultTheme");
+
 module.exports = {
   theme: {
     extend: {
@@ -5,7 +7,7 @@ module.exports = {
         sans: ["Roboto", "Helvetica", "Arial", "sans-serif"]
       },
       colors: {
-        accent: "#ff3f01",
+        accent: "#de973a",
         gray: {
           "100": "#f5f5f5",
           "200": "#eeeeee",

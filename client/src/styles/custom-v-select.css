@@ -16,5 +16,5 @@
 }
 .style-chooser .vs__clear,
 .style-chooser .vs__open-indicator {
-  @apply fill-current text-gray-300 cursor-pointer;
+  @apply fill-current text-accent cursor-pointer;
 }
