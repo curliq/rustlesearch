@@ -1,8 +1,15 @@
 <template>
   <div class="flex items-center text-gray-200 pl-2 mb-1 rounded-t bg-gray-800">
-    <p class="py-2 pl-1 font-bold">
-      Results
-    </p>
+    <p class="py-2 pl-1 font-bold">Results</p>
+    <span
+      :class="[sharedClasses, !isFirst ? activeClass : nonActiveClass]"
+      @click="() => changePage(-1)"
+      >‹</span
+    >
+    <span :class="[sharedClasses, activeClass]" @click="() => changePage(1)"
+      >›</span
+    >
+
     <div class="ml-auto" />
     <div
       :class="[sharedWordClass, isUtc ? activeClass : nonActiveClass]"
@@ -40,6 +47,8 @@
 </template>
 
 <script>
+import { path } from "ramda";
+
 export default {
   props: {
     mode: {
@@ -62,6 +71,14 @@ export default {
   computed: {
     isCompact() {
       return this.mode === "compact-message";
+    },
+    isFirst() {
+      return path(["page"], this.$store.state.currentQuery) === 0;
+    }
+  },
+  methods: {
+    changePage(num) {
+      return this.$store.dispatch("changePage", parseInt(num, 10));
     }
   }
 };

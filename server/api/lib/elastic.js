@@ -13,7 +13,7 @@ elasticClient.info().catch(error => {
 })
 
 const generateElasticQuery = query => {
-  const {username, channel, text, startingDate, endingDate} = query
+  const {username, channel, text, startingDate, endingDate, page = 0} = query
   const filter = []
   const must = []
 
@@ -42,7 +42,8 @@ const generateElasticQuery = query => {
         must,
       },
     },
-    size: 100,
+    from: page * config.SIZE_LIMIT,
+    size: config.SIZE_LIMIT,
     sort: '_doc',
   }
 }

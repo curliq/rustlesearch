@@ -14,6 +14,7 @@ const ourEnv = [
   'RATE_LIMIT',
   'RATE_LIMIT_TIMEOUT',
   'WORKER_COUNT',
+  'SIZE_LIMIT',
 ]
 
 const getConfig = () =>

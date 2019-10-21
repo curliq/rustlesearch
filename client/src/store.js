@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import superagent from "superagent";
-import { last } from "ramda";
+import { mergeRight, path } from "ramda";
 
 const baseUrl = process.env.VUE_APP_API;
 Vue.use(Vuex);
@@ -43,6 +43,7 @@ export default new Vuex.Store({
       console.log(query.startingDate, query.endingDate);
       try {
         const { body } = await superagent.get(`${baseUrl}/search`).query(query);
+
         commit("setResults", body);
         commit("setLoading", false);
       } catch (e) {
@@ -56,24 +57,12 @@ export default new Vuex.Store({
         }
       }
     },
-    async scrollResults({ commit, state, dispatch }) {
-      if (state.currentQuery === null || state.results.length === 0) return;
-      const searchAfterVal = last(state.results).searchAfter;
-      if (!searchAfterVal) return;
-      try {
-        const { body } = await superagent
-          .get(`${baseUrl}/search`)
-          .query(state.currentQuery)
-          .query({ searchAfter: searchAfterVal });
-
-        commit("appendResults", body);
-      } catch (e) {
-        if (e.response.status === 429) {
-          const retryAfterString = e.response.headers["retry-after"];
-          const retryAfter = parseInt(retryAfterString, 10);
-          setTimeout(() => dispatch("scrollResults"), retryAfter + 100);
-        }
-      }
+    async changePage({ dispatch, state }, pageChange) {
+      const currentPage = path(["page"], state.currentQuery) || 0;
+      const query = mergeRight(state.currentQuery, {
+        page: Math.max(currentPage + pageChange, 0)
+      });
+      dispatch("getResults", query);
     },
     async getChannels({ commit }) {
       try {

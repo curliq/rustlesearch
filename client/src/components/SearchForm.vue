@@ -82,7 +82,8 @@ export default {
           .format("YYYY-MM-DD"),
         endingDate: dayjs()
           .utc()
-          .format("YYYY-MM-DD")
+          .format("YYYY-MM-DD"),
+        page: 0
       },
       today: new Date()
     };
@@ -95,7 +96,9 @@ export default {
   mounted() {
     this.$store.dispatch("getChannels");
     if (keys(this.$route.query).length > 0) {
+      console.log("Before mergeRight");
       this.query = mergeRight(this.query, this.$route.query);
+      console.log("After mergeRight");
       this.$emit("submit", this.query);
     }
   }
