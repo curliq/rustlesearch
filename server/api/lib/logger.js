@@ -6,7 +6,14 @@ const name = config.APP_NAME
 
 const getLoggerInfo = req => {
   const ip = req.realIp
-  const {channel, username, text, startingDate, endingDate} = req.query
+  const {
+    channel,
+    username,
+    text,
+    startingDate,
+    endingDate,
+    searchAfter,
+  } = req.query
 
   return {
     channel,
@@ -15,6 +22,7 @@ const getLoggerInfo = req => {
     startingDate,
     text,
     username,
+    searchAfter,
   }
 }
 

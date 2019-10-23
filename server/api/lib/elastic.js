@@ -13,10 +13,9 @@ elasticClient.info().catch(error => {
 })
 
 const generateElasticQuery = query => {
-  const {username, channel, text, startingDate, endingDate} = query
+  const {username, channel, text, startingDate, endingDate, searchAfter} = query
   const filter = []
   const must = []
-
   if (channel) filter.push({term: {channel: capitalise(channel)}})
   if (username) filter.push({term: {username: username.toLowerCase()}})
   if (text) {
@@ -44,6 +43,7 @@ const generateElasticQuery = query => {
     },
     size: 100,
     sort: '_doc',
+    search_after: searchAfter ? [searchAfter] : undefined,
   }
 }
 
@@ -56,8 +56,13 @@ module.exports = co(function* searchElastic(query) {
       // request_cache: false,
     })
 
-    // eslint-disable-next-line no-underscore-dangle
-    const logs = result.body.hits.hits.map(log => log._source)
+    const logs = result.body.hits.hits.map(log => {
+      return {
+        // eslint-disable-next-line no-underscore-dangle
+        ...log._source,
+        search_after: log.sort[0],
+      }
+    })
 
     return {
       logs,
