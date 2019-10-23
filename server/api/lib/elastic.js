@@ -42,7 +42,7 @@ const generateElasticQuery = query => {
       },
     },
     size: 100,
-    sort: '_doc',
+    sort: [{ts: 'desc'}],
     search_after: searchAfter ? [searchAfter] : undefined,
   }
 }
