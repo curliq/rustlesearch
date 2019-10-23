@@ -92,8 +92,8 @@ export default {
       channels: state => state.channels
     })
   },
-  mounted() {
-    this.$store.dispatch("getChannels");
+  async mounted() {
+    await this.$store.dispatch("getChannels");
     if (keys(this.$route.query).length > 0) {
       this.query = mergeRight(this.query, this.$route.query);
       this.$emit("submit", this.query);

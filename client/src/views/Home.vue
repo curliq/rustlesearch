@@ -40,11 +40,15 @@ export default {
     async submitQuery(query) {
       if (!this.loading) {
         await this.$store.dispatch("getResults", query);
+
         const isBad = anyPass([isNil, equals("")]);
-        this.$router.push({
-          name: "Home",
-          query: reject(isBad)(this.currentQuery)
-        });
+        const toPush = reject(isBad)(this.currentQuery);
+        if (!equals(toPush, this.$route.query)) {
+          this.$router.push({
+            name: "Home",
+            query: reject(isBad)(this.currentQuery)
+          });
+        }
       }
     }
   }

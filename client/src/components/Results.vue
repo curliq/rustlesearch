@@ -12,8 +12,9 @@
         :text="message.text"
         :is-utc="isUtc"
       />
-    </div>
 
+      <load-more-messages></load-more-messages>
+    </div>
     <div
       v-else-if="currentQuery && !loading"
       class="py-4 text-center font-bold text-gray-100"
@@ -30,12 +31,14 @@
 import CompactMessage from "./CompactMessage.vue";
 import Message from "./Message.vue";
 import ToggleModeBar from "./ToggleModeBar.vue";
+import LoadMoreMessages from "./LoadMoreMessages.vue";
 
 export default {
   components: {
     Message,
     CompactMessage,
-    ToggleModeBar
+    ToggleModeBar,
+    LoadMoreMessages
   },
   props: {
     results: {
