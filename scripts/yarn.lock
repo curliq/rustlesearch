@@ -1773,10 +1773,9 @@ esutils@^2.0.2:
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.2.tgz#0abf4f1caa5bcb1f7a9d8acc6dea4faaa04bac9b"
   integrity sha1-Cr9PHKpbyx96nYrMbepPqqBLrJs=
 
-etl@0.6.7:
+"etl@git+https://github.com/johnpyp/node-etl.git":
   version "0.6.7"
-  resolved "https://registry.yarnpkg.com/etl/-/etl-0.6.7.tgz#797475ea507f62ffb49d214fcb3a9bd10b765948"
-  integrity sha512-8KU4FLI3k2tFkOUiKvNY3cuQl715kUnApC/OUNFaVMScmPSULR3t+QQMS9neRimM2zgLIEWxn8WMpbf0MRii2w==
+  resolved "git+https://github.com/johnpyp/node-etl.git#f408b6d55e9114c3f1e3039b9874c3d6bbdb5c18"
   dependencies:
     bluebird "~3.5.0"
     csv-parser "~1.8.0"

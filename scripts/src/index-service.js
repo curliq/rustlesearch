@@ -87,6 +87,7 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
     .pipe(
       etl.elastic.index(client, process.env.INDEX_NAME, null, {
         concurrency: 5,
+        pipeline: 'rustlesearch-pipeline',
         pushErrors: true,
       }),
     )
