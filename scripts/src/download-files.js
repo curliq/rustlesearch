@@ -46,7 +46,7 @@ const downloadFile = async ([path, uri]) => {
     const {text: res} = await request.get(uri)
     await fs.outputFile(path, res)
     console.info(`Wrote ${path} to disk.`)
-  } catch {
+  } catch (e) {
     await fs.outputFile(downloadCachePath, `${path}\n`, {flag: 'a'})
     console.info(`${path} 404, wrote file to download cache.`)
   }
@@ -114,7 +114,7 @@ const downloadFiles = async (channels, daysBack) => {
 
 const main = async () => {
   const channels = await getFileByLine(channelsListPath)
-  const daysBack = parseInt(process.argv[2] || 10)
+  const daysBack = parseInt(process.argv[2] || 10, 10)
   downloadFiles(channels, daysBack)
 }
 if (require.main === module) main()

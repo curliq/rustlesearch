@@ -52,7 +52,7 @@ const initElastic = (refreshInterval = '60s') => {
   })
 }
 
-if (require.main === module) initElastic()
+if (require.main === module) initElastic(process.argv[2])
 
 module.exports = {
   initElastic,

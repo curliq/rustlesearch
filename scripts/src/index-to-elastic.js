@@ -1,11 +1,9 @@
-/* eslint-disable node/no-unsupported-features/node-builtins */
+const {splitEvery} = require('ramda')
+const {Worker} = require('worker_threads')
 const {indexCachePath, rustlePath} = require('./cache')
 const {fs, getFileByLine} = require('../util')
-const {splitEvery} = require('ramda')
-// eslint-disable-next-line node/no-missing-require
-const {Worker} = require('worker_threads')
 
-const THREADS = parseInt(process.argv[2]) || 6
+const THREADS = parseInt(process.argv[2], 10) || 6
 
 const indexToElastic = async () => {
   const allPathsNames = await fs.readdirSafe(rustlePath)

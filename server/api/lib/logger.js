@@ -6,6 +6,7 @@ const name = config.APP_NAME
 
 const getLoggerInfo = req => {
   const ip = req.realIp
+
   const {
     channel,
     username,

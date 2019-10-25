@@ -1,6 +1,6 @@
-const {rustlePath, indexCachePath, dataPath} = require('../src/cache')
 const {DateTime} = require('luxon')
 const {Client} = require('@elastic/elasticsearch')
+const {rustlePath, indexCachePath, dataPath} = require('../src/cache')
 const {initElastic} = require('../src/init-elastic')
 const {indexToElastic} = require('../src/index-to-elastic')
 const {fs} = require('../util')
@@ -88,6 +88,7 @@ module.exports = () => {
   describe('indexes correct documents', () => {
     test('', async () => {
       const result = await client.search({index: process.env.INDEX_NAME})
+      // eslint-disable-next-line no-underscore-dangle
       const messages = result.body.hits.hits.map(log => log._source)
       expect(messages).toEqual(expect.arrayContaining(expectedSearchResult))
     })

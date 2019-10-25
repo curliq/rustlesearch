@@ -1,32 +1,97 @@
 module.exports = {
+  root: true,
   env: {
-    'es6': true,
-    'jest/globals': true,
-    'node': true,
+    es6: true,
+    jest: true,
+    node: true,
   },
-  extends: [
-    'plugin:jest/recommended',
-    'emerald',
-    'plugin:prettier/recommended',
-  ],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
   },
-  parserOptions: {
-    ecmaVersion: 2019,
-    sourceType: 'script',
-    ecmaFeatures: {
-      impliedStrict: true,
-    },
-  },
-  plugins: ['jest', 'prettier'],
+
+  extends: ['airbnb-base', 'plugin:prettier/recommended'],
   rules: {
-    // doesnt work well with dynamic require()
-    'import/newline-after-import': 'off',
-    // this only works with import
-    'import/order': 'off',
-    'no-process-env': 'off',
-    'prettier/prettier': 'error',
+    'no-console': 0,
+    'padding-line-between-statements': [
+      'error',
+      {
+        blankLine: 'never',
+        prev: ['singleline-const', 'singleline-let', 'singleline-var'],
+        next: ['singleline-const', 'singleline-let', 'singleline-var'],
+      },
+      {
+        blankLine: 'always',
+        prev: [
+          'class',
+          'function',
+          'multiline-const',
+          'multiline-let',
+          'multiline-var',
+          'multiline-expression',
+          'multiline-block-like',
+        ],
+        next: [
+          'class',
+          'function',
+          'multiline-const',
+          'multiline-let',
+          'multiline-var',
+          'multiline-expression',
+          'multiline-block-like',
+          'singleline-const',
+          'singleline-let',
+          'singleline-var',
+        ],
+      },
+      {
+        blankLine: 'always',
+        prev: [
+          'class',
+          'function',
+          'multiline-const',
+          'multiline-let',
+          'multiline-var',
+          'multiline-expression',
+          'multiline-block-like',
+          'singleline-const',
+          'singleline-let',
+          'singleline-var',
+        ],
+        next: [
+          'class',
+          'function',
+          'multiline-const',
+          'multiline-let',
+          'multiline-var',
+          'multiline-expression',
+          'multiline-block-like',
+        ],
+      },
+      {
+        blankLine: 'always',
+        prev: '*',
+        next: 'cjs-export',
+      },
+      {
+        blankLine: 'always',
+        prev: 'cjs-import',
+        next: '*',
+      },
+      {
+        blankLine: 'never',
+        prev: 'cjs-import',
+        next: 'cjs-import',
+      },
+      {
+        blankLine: 'always',
+        prev: '*',
+        next: 'return',
+      },
+    ],
+  },
+
+  parserOptions: {
+    parser: 'babel-eslint',
   },
 }

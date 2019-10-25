@@ -12,7 +12,7 @@ fs.inputFile = async (path, ...args) => {
     const contents = await fs.readFile(path, ...args)
 
     return contents
-  } catch {
+  } catch (e) {
     await fs.ensureFile(path)
 
     return fs.readFile(path, ...args)
@@ -24,7 +24,7 @@ fs.inputFileSync = (path, ...args) => {
     const contents = fs.readFileSync(path, ...args)
 
     return contents
-  } catch {
+  } catch (e) {
     fs.ensureFileSync(path)
 
     return fs.readFileSync(path, ...args)
@@ -36,7 +36,7 @@ fs.readdirSafe = async (path, ...args) => {
     const contents = await fs.readdir(path, ...args)
 
     return contents
-  } catch {
+  } catch (e) {
     await fs.ensureDir(path)
 
     return fs.readdir(path, ...args)
@@ -48,7 +48,7 @@ fs.readdirSafeSync = async (path, ...args) => {
     const contents = fs.readdirSync(path, ...args)
 
     return contents
-  } catch {
+  } catch (e) {
     fs.ensureDirSync(path)
 
     return fs.readdirSync(path, ...args)

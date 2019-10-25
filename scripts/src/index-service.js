@@ -1,12 +1,10 @@
-/* eslint-disable node/no-unsupported-features/node-builtins */
 const {parse} = require('path')
 const etl = require('etl')
 const Promise = require('bluebird')
 const {Client} = require('@elastic/elasticsearch')
+const {parentPort, workerData} = require('worker_threads')
 const {blacklistPath, indexCachePath} = require('./cache')
 const {co, capitalise, fs} = require('../util')
-// eslint-disable-next-line node/no-missing-require
-const {parentPort, workerData} = require('worker_threads')
 
 let SHOULD_EXIT = false
 

@@ -31,6 +31,7 @@ cluster.on('exit', worker => {
 cluster.on('error', err => {
   logger.error({error: err.message})
 })
+
 if (cluster.isMaster) {
   initMaster()
 } else {

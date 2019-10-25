@@ -1,6 +1,6 @@
+const Promise = require('bluebird')
 const {discardCachePath, indexCachePath} = require('./cache')
 const {co, fs, getFileByLine} = require('../util')
-const Promise = require('bluebird')
 
 const deleteFile = co(function* deleteFile(filePath) {
   try {

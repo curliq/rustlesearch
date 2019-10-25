@@ -1,4 +1,5 @@
 /* eslint-disable no-sync */
+const {DateTime} = require('luxon')
 const {discardDownloads} = require('../src/discard-downloads')
 const {
   rustlePath,
@@ -6,7 +7,6 @@ const {
   indexCachePath,
   dataPath,
 } = require('../src/cache')
-const {DateTime} = require('luxon')
 const {fs, getFileByLine} = require('../util')
 
 const yesterday = DateTime.utc().minus({days: 1})

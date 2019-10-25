@@ -1,4 +1,6 @@
 /* eslint-disable no-sync */
+const nock = require('nock')
+const {DateTime} = require('luxon')
 const {downloadFiles} = require('../src/download-files')
 const {
   downloadCachePath,
@@ -6,8 +8,6 @@ const {
   discardCachePath,
   dataPath,
 } = require('../src/cache')
-const nock = require('nock')
-const {DateTime} = require('luxon')
 const {fs, getFileByLine} = require('../util')
 
 const yesterday = DateTime.utc().minus({days: 1})
