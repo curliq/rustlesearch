@@ -51,9 +51,7 @@ module.exports = co(function* searchElastic(query) {
   try {
     const result = yield elasticClient.search({
       body: generateElasticQuery(query),
-      index: config.INDEX_NAME,
-      // eslint-disable-next-line camelcase
-      // request_cache: false,
+      index: `${config.INDEX_NAME}-*`,
     })
 
     const logs = result.body.hits.hits.map(log => {
