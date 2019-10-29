@@ -113,7 +113,10 @@ const downloadFiles = async (channels, daysBack) => {
 }
 
 const main = async () => {
-  const channels = await getFileByLine(channelsListPath)
+  const {body: channels} = await request.get(
+    'https://overrustlelogs.net/api/v1/channels.json',
+  )
+
   const daysBack = parseInt(process.argv[2] || 10, 10)
   downloadFiles(channels, daysBack)
 }

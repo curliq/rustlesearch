@@ -1,7 +1,7 @@
 const {join} = require('path')
 
 const dataPath = process.env.DATA_PATH || './data'
-const channelsListPath = join('.', 'channels.txt')
+const channelsListPath = join('.', 'channels.json')
 const cachePath = join(dataPath, 'cache')
 const monthsPath = join(dataPath, 'months')
 const rustlePath = join(dataPath, 'rustle')
