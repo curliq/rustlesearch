@@ -48,7 +48,7 @@ const lineToMessage = (line, channel) => {
 
 const blacklistLineToMessage = blacklist => (line, channel) => {
   const message = lineToMessage(line, channel)
-
+  if (!message) return message
   if (blacklist.has(message.username)) {
     console.debug(`${message.username} in blacklist, ignoring message...`)
 

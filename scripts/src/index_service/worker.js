@@ -3,7 +3,7 @@ const etl = require('etl')
 const Promise = require('bluebird')
 const {Client} = require('@elastic/elasticsearch')
 const {parentPort, workerData} = require('worker_threads')
-const {blacklistPath, indexCachePath} = require('../cache')
+const config = require('../config')
 const {co, fs} = require('../../util')
 const {blacklistLineToMessage} = require('./shared')
 
@@ -11,17 +11,20 @@ let SHOULD_EXIT = false
 
 const blacklist = new Set(
   fs
-    .inputFileSync(blacklistPath, 'utf8')
+    .inputFileSync(config.paths.blacklist, 'utf8')
     .trim()
     .split('\n')
     .map(name => name.toLowerCase()),
 )
 
 const lineToMessageWithBlacklist = blacklistLineToMessage(blacklist)
-const indexCacheStream = fs.createWriteStream(indexCachePath, {flags: 'a'})
+
+const indexCacheStream = fs.createWriteStream(config.paths.indexCache, {
+  flags: 'a',
+})
 
 const client = new Client({
-  node: process.env.ELASTIC_LOCATION,
+  node: config.elastic.url,
 })
 
 const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
@@ -33,7 +36,7 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
     .pipe(etl.map(line => lineToMessageWithBlacklist(line, channel)))
     .pipe(etl.collect(8000))
     .pipe(
-      etl.elastic.index(client, process.env.INDEX_NAME, null, {
+      etl.elastic.index(client, config.elastic.index, null, {
         concurrency: 5,
         pipeline: 'rustlesearch-pipeline',
         pushErrors: true,

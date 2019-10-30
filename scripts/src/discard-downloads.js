@@ -1,11 +1,11 @@
 const Promise = require('bluebird')
-const {discardCachePath, indexCachePath} = require('./cache')
+const config = require('./config')
 const {co, fs, getFileByLine} = require('../util')
 
 const deleteFile = co(function* deleteFile(filePath) {
   try {
     yield fs.remove(filePath)
-    yield fs.outputFile(discardCachePath, `${filePath}\n`, {flag: 'a'})
+    yield fs.outputFile(config.paths.discardCache, `${filePath}\n`, {flag: 'a'})
     console.debug({filePath, message: 'Deleted & cached file'})
   } catch (error) {
     console.warn({
@@ -17,8 +17,11 @@ const deleteFile = co(function* deleteFile(filePath) {
 })
 
 const discardDownloads = async () => {
-  const ingestedPaths = await getFileByLine(indexCachePath)
-  const discardedPaths = await getFileByLine(discardCachePath, {set: true})
+  const ingestedPaths = await getFileByLine(config.paths.indexCache)
+
+  const discardedPaths = await getFileByLine(config.paths.discardCache, {
+    set: true,
+  })
 
   const pathsToDiscard = ingestedPaths
     .filter(file => !discardedPaths.has(file))

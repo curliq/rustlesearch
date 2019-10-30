@@ -3,12 +3,7 @@ const {DateTime} = require('luxon')
 const Promise = require('bluebird')
 const {inc, map, pipe, range, unnest, reject, isNil, last} = require('ramda')
 const {getFileByLine, fs, sleep} = require('../../util')
-const {
-  downloadCachePath,
-  rustlePath,
-  discardCachePath,
-  monthsPath,
-} = require('../cache')
+const config = require('../config')
 
 // "Constants"
 const baseUrl = 'https://overrustlelogs.net'
@@ -21,7 +16,7 @@ const dateFromMonths = months => DateTime.fromFormat(last(months), 'LLLL yyyy')
 const toPathAndUrl = ({channel: {channel, startDate}, date}) => {
   if (startDate < date) {
     return [
-      `${rustlePath}/${channel}::${fileDateFormat(date)}.txt`,
+      `${config.paths.orl}/${channel}::${fileDateFormat(date)}.txt`,
       `${baseUrl}/${channel} chatlog/${fullDateFormat(date)}.txt`,
     ]
   }
@@ -40,14 +35,14 @@ const getUrlList = (channels, daysBack) =>
     reject(isNil),
   )(daysBack)
 
-const downloadFile = async ([path, uri]) => {
-  await sleep(400)
+const downloadFile = throttle => async ([path, uri]) => {
+  await sleep(throttle)
   try {
     const {text: res} = await request.get(uri)
     await fs.outputFile(path, res)
     console.info(`Wrote ${path} to disk.`)
   } catch (e) {
-    await fs.outputFile(downloadCachePath, `${path}\n`, {flag: 'a'})
+    await fs.outputFile(config.paths.downloadCache, `${path}\n`, {flag: 'a'})
     console.info(`${path} 404, wrote file to download cache.`)
   }
 }
@@ -73,25 +68,42 @@ const cachedGet = async (path, uri) => {
 
 const getChannelStartDate = async channel => {
   const months = await cachedGet(
-    `${monthsPath}/${channel}.json`,
+    `${config.paths.months}/${channel}.json`,
     `${baseUrl}/api/v1/${channel}/months.json`,
   )
 
   return {channel, startDate: dateFromMonths(JSON.parse(months))}
 }
 
-const downloadFiles = async (channels, daysBack) => {
+const download = async (daysBack, throttle) => {
+  if (!daysBack || !throttle) {
+    console.log('options missing')
+
+    return
+  }
+
+  const {body: channels} = await request.get(
+    'https://overrustlelogs.net/api/v1/channels.json',
+  )
+
   const processedChannels = await Promise.map(channels, getChannelStartDate, {
     concurrency: 20,
   })
 
   const totalUrls = getUrlList(processedChannels, daysBack)
-  const discardCache = await getFileByLine(discardCachePath, {set: true})
-  const downloadCache = await getFileByLine(downloadCachePath, {set: true})
-  const downloadedLogFiles = await fs.readdirSafe(rustlePath)
+
+  const discardCache = await getFileByLine(config.paths.discardCache, {
+    set: true,
+  })
+
+  const downloadCache = await getFileByLine(config.paths.downloadCache, {
+    set: true,
+  })
+
+  const downloadedLogFiles = await fs.readdirSafe(config.paths.orl)
 
   const downloadedLogs = new Set(
-    downloadedLogFiles.map(file => `${rustlePath}/${file}`),
+    downloadedLogFiles.map(file => `${config.paths.orl}/${file}`),
   )
 
   const urlsToDownload = totalUrls.filter(
@@ -109,19 +121,9 @@ const downloadFiles = async (channels, daysBack) => {
   Days already downloaded: ${downloadedLogs.size || 0}
   Days to download right now: ${urlsToDownload.length}`)
 
-  await Promise.map(urlsToDownload, downloadFile, {concurrency: 10})
+  await Promise.map(urlsToDownload, downloadFile(throttle), {concurrency: 10})
 }
-
-const main = async () => {
-  const {body: channels} = await request.get(
-    'https://overrustlelogs.net/api/v1/channels.json',
-  )
-
-  const daysBack = parseInt(process.argv[2] || 10, 10)
-  downloadFiles(channels, daysBack)
-}
-if (require.main === module) main()
 
 module.exports = {
-  downloadFiles,
+  download,
 }

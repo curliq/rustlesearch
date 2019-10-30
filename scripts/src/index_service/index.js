@@ -1,16 +1,18 @@
 const {splitEvery} = require('ramda')
 const {Worker} = require('worker_threads')
-const {indexCachePath, rustlePath} = require('../cache')
+const config = require('../config')
 const {fs, getFileByLine} = require('../../util')
 
-const THREADS = parseInt(process.argv[2], 10) || 6
+const indexToElastic = async threads => {
+  const allPathsNames = await fs.readdirSafe(config.paths.orl)
+  const allPaths = allPathsNames.map(file => `${config.paths.orl}/${file}`)
 
-const indexToElastic = async () => {
-  const allPathsNames = await fs.readdirSafe(rustlePath)
-  const allPaths = allPathsNames.map(file => `${rustlePath}/${file}`)
-  const ingestedPaths = await getFileByLine(indexCachePath, {set: true})
+  const ingestedPaths = await getFileByLine(config.paths.indexCache, {
+    set: true,
+  })
+
   const pathsToIngest = allPaths.filter(file => !ingestedPaths.has(file))
-  const chunkLength = Math.ceil(pathsToIngest.length / THREADS)
+  const chunkLength = Math.ceil(pathsToIngest.length / threads)
   if (chunkLength < 1) return
   const chunkedPaths = splitEvery(chunkLength, pathsToIngest)
 

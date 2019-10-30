@@ -1,14 +1,16 @@
 /* eslint-disable camelcase */
 const {Client} = require('@elastic/elasticsearch')
+const config = require('./config')
+const {sleep} = require('../util')
 
 const client = new Client({
-  node: process.env.ELASTIC_LOCATION,
+  node: config.elastic.url,
 })
 
-const initElastic = (refreshInterval = '60s') => {
+const initElastic = async (refreshInterval = '60s') => {
   client.indices.putTemplate({
     body: {
-      index_patterns: `${process.env.INDEX_NAME}*`,
+      index_patterns: `${config.elastic.index}*`,
       mappings: {
         properties: {
           channel: {type: 'keyword'},
@@ -37,7 +39,7 @@ const initElastic = (refreshInterval = '60s') => {
           date_index_name: {
             date_rounding: 'M',
             field: 'ts',
-            index_name_prefix: `${process.env.INDEX_NAME}-`,
+            index_name_prefix: `${config.elastic.index}-`,
           },
         },
         {
@@ -50,9 +52,8 @@ const initElastic = (refreshInterval = '60s') => {
     },
     id: 'rustlesearch-pipeline',
   })
+  await sleep(500)
 }
-
-if (require.main === module) initElastic(process.argv[2])
 
 module.exports = {
   initElastic,
