@@ -63,9 +63,12 @@ const getFileByLine = async (filePath, {set} = {set: false}) => {
   return arr
 }
 
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+
 module.exports = {
   capitalise,
   co,
+  sleep,
   fs,
   getFileByLine,
 }

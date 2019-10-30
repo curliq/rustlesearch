@@ -7,8 +7,8 @@
     "node": "12"
   },
   "scripts": {
-    "run:download": "node -r dotenv/config ./src/download-files.js",
-    "run:index": "node -r dotenv/config ./src/index-to-elastic.js",
+    "run:download": "node -r dotenv/config ./src/download_service",
+    "run:index": "node -r dotenv/config ./src/index_service",
     "run:esinit": "node -r dotenv/config ./src/init-elastic.js",
     "run:discard": "node -r dotenv/config ./src/discard-downloads.js",
     "lint": "eslint --ext .js ./",
@@ -53,6 +53,7 @@
     "luxon": "1.19.3",
     "nock": "11.3.5",
     "ramda": "0.26.1",
+    "read-last-lines": "1.7.1",
     "superagent": "5.1.0"
   },
   "devDependencies": {

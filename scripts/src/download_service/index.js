@@ -2,14 +2,13 @@ const request = require('superagent')
 const {DateTime} = require('luxon')
 const Promise = require('bluebird')
 const {inc, map, pipe, range, unnest, reject, isNil, last} = require('ramda')
-const {getFileByLine, fs} = require('../util')
+const {getFileByLine, fs, sleep} = require('../../util')
 const {
-  channelsListPath,
   downloadCachePath,
   rustlePath,
   discardCachePath,
   monthsPath,
-} = require('./cache')
+} = require('../cache')
 
 // "Constants"
 const baseUrl = 'https://overrustlelogs.net'
@@ -42,6 +41,7 @@ const getUrlList = (channels, daysBack) =>
   )(daysBack)
 
 const downloadFile = async ([path, uri]) => {
+  await sleep(400)
   try {
     const {text: res} = await request.get(uri)
     await fs.outputFile(path, res)
@@ -109,7 +109,7 @@ const downloadFiles = async (channels, daysBack) => {
   Days already downloaded: ${downloadedLogs.size || 0}
   Days to download right now: ${urlsToDownload.length}`)
 
-  await Promise.map(urlsToDownload, downloadFile, {concurrency: 20})
+  await Promise.map(urlsToDownload, downloadFile, {concurrency: 10})
 }
 
 const main = async () => {

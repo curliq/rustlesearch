@@ -1,7 +1,7 @@
 const {splitEvery} = require('ramda')
 const {Worker} = require('worker_threads')
-const {indexCachePath, rustlePath} = require('./cache')
-const {fs, getFileByLine} = require('../util')
+const {indexCachePath, rustlePath} = require('../cache')
+const {fs, getFileByLine} = require('../../util')
 
 const THREADS = parseInt(process.argv[2], 10) || 6
 
@@ -15,7 +15,9 @@ const indexToElastic = async () => {
   const chunkedPaths = splitEvery(chunkLength, pathsToIngest)
 
   const workers = chunkedPaths.map(pathChunk => {
-    const worker = new Worker('./src/index-service.js', {workerData: pathChunk})
+    const worker = new Worker('./src/index_service/worker.js', {
+      workerData: pathChunk,
+    })
 
     return worker
   })

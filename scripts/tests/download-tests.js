@@ -1,7 +1,7 @@
 /* eslint-disable no-sync */
 const nock = require('nock')
 const {DateTime} = require('luxon')
-const {downloadFiles} = require('../src/download-files')
+const {downloadFiles} = require('../src/download_service')
 const {
   downloadCachePath,
   rustlePath,
