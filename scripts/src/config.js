@@ -1,5 +1,6 @@
 const snakeCase = require('lodash.snakecase')
 const isPlainObject = require('lodash.isplainobject')
+const _ = require('lodash')
 const {join} = require('path')
 
 const shallowClone = obj => {
@@ -18,8 +19,10 @@ const suspect = (config, {inspect, parentTree} = {}) => {
     const envVar = process.env[envKey]
 
     if (envVar) {
+      const value = _.isNumber(configCopy[key]) ? _.toNumber(envVar) : envVar
+
       Object.defineProperty(configCopy, key, {
-        value: envVar,
+        value,
       })
 
       console.log('Environment override:', dotPath, envVar)
@@ -55,6 +58,7 @@ module.exports = suspect({
   },
   index: {
     threads: 6,
+    bulkSize: 2000,
   },
   paths: {
     data: 'data',

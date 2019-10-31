@@ -1,9 +1,10 @@
 /* eslint-disable func-names */
 const {parse} = require('path')
 const {Promise} = require('bluebird')
-const readLastLines = require('read-last-lines')
 const etl = require('etl')
 const {Client} = require('@elastic/elasticsearch')
+const zlib = require('zlib')
+const {takeLast} = require('ramda')
 const {lineToMessage} = require('./shared')
 const {fs} = require('../../util')
 const config = require('../config')
@@ -17,6 +18,19 @@ function parseISOToIndexMonth(date) {
   return `${yyyy}-${MM}-01`
 }
 
+const streamToString = stream =>
+  new Promise(resolve => {
+    let str = ''
+
+    stream.on('data', function(chunk) {
+      str += chunk
+    })
+
+    stream.on('end', function() {
+      resolve(str)
+    })
+  })
+
 const pathToCacheMaybe = indexCacheStream => async paths => {
   await etl
     .toStream(paths)
@@ -25,8 +39,11 @@ const pathToCacheMaybe = indexCacheStream => async paths => {
         const [channel] = parse(path).name.split('::')
 
         try {
-          const line = await readLastLines.read(path, 1)
+          const file = await streamToString(
+            fs.createReadStream(path).pipe(zlib.createInflate()),
+          )
 
+          const line = takeLast(1, file.trim().split('\n'))[0]
           this.push({channel, line, path})
         } catch (e) {
           console.log('Error: ', e)
@@ -56,6 +73,7 @@ const pathToCacheMaybe = indexCacheStream => async paths => {
         })
 
         if (exists.body) {
+          console.log(`Pushing ${path}`)
           this.push(path)
         }
       }),

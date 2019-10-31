@@ -49,6 +49,7 @@
     "commander": "3.0.2",
     "etl": "git+https://github.com/johnpyp/node-etl.git",
     "fs-extra": "8.1.0",
+    "lodash": "4.17.15",
     "lodash.isplainobject": "4.0.6",
     "lodash.snakecase": "4.1.1",
     "luxon": "1.19.3",
