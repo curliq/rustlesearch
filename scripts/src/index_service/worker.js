@@ -3,6 +3,7 @@ const etl = require('etl')
 const Promise = require('bluebird')
 const {Client} = require('@elastic/elasticsearch')
 const {parentPort, workerData} = require('worker_threads')
+const zlib = require('zlib')
 const config = require('../config')
 const {co, fs} = require('../../util')
 const {blacklistLineToMessage} = require('./shared')
@@ -29,9 +30,12 @@ const client = new Client({
 
 const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
   const [channel] = parse(filePath).name.split('::')
+  const decoder = zlib.createInflate()
 
-  yield etl
-    .file(filePath)
+  yield fs
+    .createReadStream(filePath)
+
+    .pipe(decoder)
     .pipe(etl.split())
     .pipe(etl.map(line => lineToMessageWithBlacklist(line, channel)))
     .pipe(etl.collect(8000))
@@ -45,7 +49,6 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
     .promise()
     .catch(error => {
       console.error({error, message: 'Elastic error'})
-      process.exit(1)
     })
   indexCacheStream.write(`${filePath}\n`)
   console.debug(`Indexed ${filePath}`)
@@ -69,4 +72,9 @@ const indexToElastic = async pathsToIngest => {
 parentPort.on('message', msg => {
   if (msg === 'shouldExit') SHOULD_EXIT = true
 })
+
 indexToElastic(workerData)
+
+module.exports = {
+  indexToElastic,
+}

@@ -2,6 +2,7 @@ const {splitEvery} = require('ramda')
 const {Worker} = require('worker_threads')
 const config = require('../config')
 const {fs, getFileByLine} = require('../../util')
+// const worker = require('./worker')
 
 const indexToElastic = async threads => {
   const allPathsNames = await fs.readdirSafe(config.paths.orl)
@@ -29,6 +30,7 @@ const indexToElastic = async threads => {
     workers.forEach(worker => worker.postMessage('shouldExit'))
   })
 
+  // worker.indexToElastic(pathsToIngest)
   console.info({
     totalDaysIngested: ingestedPaths.size,
     totalDaysOfLogs: allPaths.length,

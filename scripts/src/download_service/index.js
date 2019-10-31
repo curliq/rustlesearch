@@ -2,9 +2,13 @@ const request = require('superagent')
 const {DateTime} = require('luxon')
 const Promise = require('bluebird')
 const {inc, map, pipe, range, unnest, reject, isNil, last} = require('ramda')
+const {promisify} = require('util')
+const stream = require('stream')
+const zlib = require('zlib')
 const {getFileByLine, fs, sleep} = require('../../util')
 const config = require('../config')
 
+const finished = promisify(stream.finished)
 // "Constants"
 const baseUrl = 'https://overrustlelogs.net'
 const today = DateTime.utc()
@@ -39,9 +43,16 @@ const downloadFile = throttle => async ([path, uri]) => {
   await sleep(throttle)
   try {
     const {text: res} = await request.get(uri)
-    await fs.outputFile(path, res)
+    const s = new stream.Readable()
+    s.push(res)
+    s.push(null)
+    const writeStream = fs.createWriteStream(path)
+    const encoder = zlib.createDeflate()
+
+    await finished(s.pipe(encoder).pipe(writeStream))
     console.info(`Wrote ${path} to disk.`)
   } catch (e) {
+    // console.log(e)
     await fs.outputFile(config.paths.downloadCache, `${path}\n`, {flag: 'a'})
     console.info(`${path} 404, wrote file to download cache.`)
   }
