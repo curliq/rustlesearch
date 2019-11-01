@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 services:
   rustlesearch_dev:
@@ -7,23 +7,23 @@ services:
       - .:/node_app
     working_dir: /node_app
     command: tail -F /dev/null
+    network_mode: host
     ports:
       - ${APP_PORT}:${APP_PORT}
     depends_on:
       - redis
   redis:
     image: redis:5-alpine
-    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     restart: unless-stopped
     env_file: .env
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ["CMD", "redis-cli", "ping"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 5s
     volumes:
       - ./config/redis/redis.conf:/usr/local/etc/redis/redis.conf
-    expose:
-      - ${REDIS_PORT}
-
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}

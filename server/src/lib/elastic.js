@@ -54,7 +54,7 @@ const generateElasticQuery = query => {
   };
 };
 
-module.exports = co(function* searchElastic(query) {
+const search = co(function* searchElastic(query) {
   try {
     const result = yield elasticClient.search({
       body: generateElasticQuery(query),
@@ -82,3 +82,26 @@ module.exports = co(function* searchElastic(query) {
     };
   }
 });
+
+const health = co(function* healthcheck() {
+  try {
+    yield elasticClient.cat.health();
+
+    return {
+      statusCode: 200,
+      message: "Elasticsearch up",
+    };
+  } catch (e) {
+    logger.error("Healthcheck failed");
+
+    return {
+      statusCode: 503,
+      message: "Elasticsearch down",
+    };
+  }
+});
+
+module.exports = {
+  search,
+  health,
+};

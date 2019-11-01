@@ -1,12 +1,21 @@
 const express = require("express");
-const search = require("../lib/elastic");
+const { search, health } = require("../lib/elastic");
 const { co } = require("../lib/util");
 const ratelimit = require("../middleware/rate-limiter");
 const channels = require("../lib/channels");
 
 const router = express.Router();
 
-router.get("/healthcheck", (req, res) => res.json({ status: "ALIVE" }));
+router.get(
+  "/healthcheck",
+  co(function* healthcheck(req, res) {
+    const { statusCode, message } = yield health();
+
+    res.status(statusCode);
+
+    return res.json({ status: statusCode, message });
+  }),
+);
 
 router.get(
   "/search",
