@@ -1,6 +1,11 @@
 version: "3"
 
 services:
+  dockerhost:
+    image: qoomon/docker-host
+    cap_add: ["NET_ADMIN", "NET_RAW"]
+    mem_limit: 8M
+    restart: on-failure
   rustlesearch_api:
     image: rustlesearch_api:latest
     build:
@@ -10,6 +15,7 @@ services:
     expose:
       - ${APP_PORT}
     depends_on:
+      - dockerhost
       - redis
   redis:
     image: redis:5-alpine
