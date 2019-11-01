@@ -11,13 +11,6 @@ services:
       - ${APP_PORT}
     depends_on:
       - redis
-    labels:
-      traefik.enable: true
-      traefik.http.routers.api.entrypoints: https
-      traefik.http.routers.api.tls.certResolver: letsencrypt
-      traefik.http.routers.api.rule: host(`api.${DOMAIN}`)
-      traefik.http.services.api.loadBalancer.server.port: ${APP_PORT}
-
   redis:
     image: redis:5-alpine
     command: ['redis-server', '/usr/local/etc/redis/redis.conf']
@@ -33,36 +26,3 @@ services:
       - ./config/redis/redis.conf:/usr/local/etc/redis/redis.conf
     expose:
       - ${REDIS_PORT}
-  traefik:
-    image: traefik:v2.0.0
-    command:
-      - '--log.level=DEBUG'
-      - '--api.dashboard=true'
-      - '--entrypoints.http.address=:80'
-      - '--entrypoints.https.address=:443'
-      - '--providers.docker=true'
-      - '--certificatesResolvers.letsencrypt.acme.tlsChallenge=true'
-      - '--certificatesResolvers.letsencrypt.acme.email=${EMAIL}'
-      - '--certificatesResolvers.letsencrypt.acme.storage=/letsencrypt/acme.json'
-      # - '--certificatesResolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory'
-      - '--providers.docker.exposedByDefault=false'
-    ports:
-      - 80:80
-      - 443:443
-    labels:
-      traefik.enable: true
-      traefik.http.routers.traefik.entrypoints: https
-      traefik.http.routers.traefik.tls.certResolver: letsencrypt
-      traefik.http.routers.traefik.middlewares: auth@docker
-      traefik.http.routers.traefik.rule: host(`traefik.${DOMAIN}`)
-      traefik.http.routers.traefik.service: api@internal
-      # Global Auth
-      traefik.http.middlewares.auth.basicauth.users: '${BASIC_AUTH}'
-      # Global Redirect
-      traefik.http.routers.http-catchall.rule: hostregexp(`{host:.+}`)
-      traefik.http.routers.http-catchall.entrypoints: http
-      traefik.http.routers.http-catchall.middlewares: redirect-to-https@docker
-      traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
-    volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock:ro'
-      - './letsencrypt:/letsencrypt/'

@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "eslint --ext .js ./",
     "test": "jest --forceExit",
-    "start:api": "node -r dotenv/config api/start.js"
+    "start:api": "node -r dotenv/config src/start.js"
   },
   "contributors": [
     {

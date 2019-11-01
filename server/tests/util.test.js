@@ -1,15 +1,15 @@
-const {capitalise} = require('../api/lib/util')
+const { capitalise } = require("../api/lib/util");
 
-describe('util test', () => {
-  test('capitalise resets and capitalises a string...', () => {
-    const testString = 'miRaNda'
-    const result = capitalise(testString)
-    expect(result).toBe('Miranda')
-  })
+describe("util test", () => {
+  test("capitalise resets and capitalises a string...", () => {
+    const testString = "miRaNda";
+    const result = capitalise(testString);
+    expect(result).toBe("Miranda");
+  });
 
   test("capitalise doesn't throw on empty...", () => {
-    const testString = ''
-    const testFn = () => capitalise(testString)
-    expect(testFn).not.toThrow()
-  })
-})
+    const testString = "";
+    const testFn = () => capitalise(testString);
+    expect(testFn).not.toThrow();
+  });
+});

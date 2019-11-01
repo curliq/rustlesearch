@@ -1,11 +1,11 @@
-const pino = require('pino')
-const {isProd} = require('./environment')
-const config = require('./config')
+const pino = require("pino");
+const { isProd } = require("./environment");
+const config = require("./config");
 
-const name = config.APP_NAME
+const name = config.APP_NAME;
 
 const getLoggerInfo = req => {
-  const ip = req.realIp
+  const ip = req.realIp;
 
   const {
     channel,
@@ -14,7 +14,7 @@ const getLoggerInfo = req => {
     startingDate,
     endingDate,
     searchAfter,
-  } = req.query
+  } = req.query;
 
   return {
     channel,
@@ -24,11 +24,11 @@ const getLoggerInfo = req => {
     text,
     username,
     searchAfter,
-  }
-}
+  };
+};
 
 const pinoOptions = {
-  base: {name},
+  base: { name },
   level: config.LOG_LEVEL,
   name,
   prettyPrint: !isProd(),
@@ -36,6 +36,6 @@ const pinoOptions = {
     req: req => getLoggerInfo(req.raw),
   },
   timestamp: () => `,"time":"${new Date(Date.now()).toISOString()}"`,
-}
+};
 
-module.exports = pino(pinoOptions)
+module.exports = pino(pinoOptions);

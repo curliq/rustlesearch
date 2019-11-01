@@ -9,14 +9,3 @@ node_modules
 
 # tern
 .tern-project
-
-# built app
-*dist/
-
-# data directory
-data/
-
-# cache path
-cache/
-config/nginx/
-letsencrypt/
