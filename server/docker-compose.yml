@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3"
 
 services:
   rustlesearch_api:
@@ -13,11 +13,11 @@ services:
       - redis
   redis:
     image: redis:5-alpine
-    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     restart: unless-stopped
     env_file: .env
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ["CMD", "redis-cli", "ping"]
       interval: 30s
       timeout: 5s
       retries: 3
