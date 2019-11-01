@@ -1,22 +1,19 @@
 version: "3"
 
 services:
-  dockerhost:
-    image: qoomon/docker-host
-    cap_add: ["NET_ADMIN", "NET_RAW"]
-    mem_limit: 8M
-    restart: on-failure
   rustlesearch_api:
     image: rustlesearch_api:latest
     build:
       context: .
     restart: unless-stopped
     env_file: .env
-    expose:
-      - ${APP_PORT}
+    environment:
+      - NODE_ENV=production
+    ports:
+      - ${APP_PORT}:${APP_PORT}
     depends_on:
-      - dockerhost
       - redis
+    network_mode: host
   redis:
     image: redis:5-alpine
     command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
@@ -24,5 +21,5 @@ services:
     env_file: .env
     volumes:
       - ./config/redis/redis.conf:/usr/local/etc/redis/redis.conf
-    expose:
-      - ${REDIS_PORT}
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}

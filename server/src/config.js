@@ -13,7 +13,7 @@ module.exports = confic({
     index: "rustlesearch",
   },
   redis: {
-    host: "redis",
+    host: "localhost",
     port: null,
   },
   rateLimit: {
