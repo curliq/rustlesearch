@@ -47,15 +47,12 @@
     "bluebird": "3.7.0",
     "cli-table3": "0.5.1",
     "commander": "3.0.2",
+    "confic": "0.0.2",
     "etl": "git+https://github.com/johnpyp/node-etl.git",
     "fs-extra": "8.1.0",
-    "lodash": "4.17.15",
-    "lodash.isplainobject": "4.0.6",
-    "lodash.snakecase": "4.1.1",
     "luxon": "1.19.3",
     "nock": "11.3.5",
     "ramda": "0.26.1",
-    "read-last-lines": "1.7.1",
     "superagent": "5.1.0"
   },
   "devDependencies": {

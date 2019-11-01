@@ -1,53 +1,7 @@
-const snakeCase = require('lodash.snakecase')
-const isPlainObject = require('lodash.isplainobject')
-const _ = require('lodash')
+const confic = require('confic')
 const {join} = require('path')
 
-const shallowClone = obj => {
-  return Object.create(
-    Object.getPrototypeOf(obj),
-    Object.getOwnPropertyDescriptors(obj),
-  )
-}
-
-const suspect = (config, {inspect, parentTree} = {}) => {
-  const configCopy = shallowClone(config)
-
-  Object.keys(configCopy).forEach(key => {
-    const dotPath = parentTree ? `${parentTree}.${key}` : key
-    const envKey = snakeCase(dotPath).toUpperCase()
-    const envVar = process.env[envKey]
-
-    if (envVar) {
-      const value = _.isNumber(configCopy[key]) ? _.toNumber(envVar) : envVar
-
-      Object.defineProperty(configCopy, key, {
-        value,
-      })
-
-      console.log('Environment override:', dotPath, envVar)
-
-      return
-    }
-
-    if (configCopy[key] === null) {
-      throw new Error(`Required key ${envKey} not found in environment.`)
-    }
-
-    if (isPlainObject(configCopy[key])) {
-      configCopy[key] = suspect(configCopy[key], {
-        parentTree: dotPath,
-      })
-    }
-  })
-
-  const final = Object.freeze(configCopy)
-  if (inspect) console.log(final)
-
-  return final
-}
-
-module.exports = suspect({
+module.exports = confic({
   elastic: {
     url: 'http://localhost:9200',
     index: 'rustlesearch',
