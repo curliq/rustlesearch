@@ -1,36 +1,36 @@
-const {parse} = require('path')
-const etl = require('etl')
-const Promise = require('bluebird')
-const {Client} = require('@elastic/elasticsearch')
-const {parentPort, workerData} = require('worker_threads')
-const zlib = require('zlib')
-const config = require('../config')
-const {co, fs} = require('../../util')
-const {blacklistLineToMessage} = require('./shared')
+const { parse } = require("path");
+const etl = require("etl");
+const Promise = require("bluebird");
+const { Client } = require("@elastic/elasticsearch");
+const { parentPort, workerData } = require("worker_threads");
+const zlib = require("zlib");
+const config = require("../config");
+const { co, fs } = require("../../util");
+const { blacklistLineToMessage } = require("./shared");
 
-let SHOULD_EXIT = false
+let SHOULD_EXIT = false;
 
 const blacklist = new Set(
   fs
-    .inputFileSync(config.paths.blacklist, 'utf8')
+    .inputFileSync(config.paths.blacklist, "utf8")
     .trim()
-    .split('\n')
+    .split("\n")
     .map(name => name.toLowerCase()),
-)
+);
 
-const lineToMessageWithBlacklist = blacklistLineToMessage(blacklist)
+const lineToMessageWithBlacklist = blacklistLineToMessage(blacklist);
 
 const indexCacheStream = fs.createWriteStream(config.paths.indexCache, {
-  flags: 'a',
-})
+  flags: "a",
+});
 
 const client = new Client({
   node: config.elastic.url,
-})
+});
 
 const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
-  const [channel] = parse(filePath).name.split('::')
-  const decoder = zlib.createInflate()
+  const [channel] = parse(filePath).name.split("::");
+  const decoder = zlib.createInflate();
 
   yield fs
     .createReadStream(filePath)
@@ -42,39 +42,39 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
     .pipe(
       etl.elastic.index(client, config.elastic.index, null, {
         concurrency: 5,
-        pipeline: 'rustlesearch-pipeline',
+        pipeline: "rustlesearch-pipeline",
         pushErrors: true,
       }),
     )
     .promise()
     .catch(error => {
-      console.error({error, message: 'Elastic error'})
-    })
-  indexCacheStream.write(`${filePath}\n`)
-  console.debug(`Indexed ${filePath}`)
+      console.error({ error, message: "Elastic error" });
+    });
+  indexCacheStream.write(`${filePath}\n`);
+  console.debug(`Indexed ${filePath}`);
   if (SHOULD_EXIT) {
-    console.info('Exiting gracefully...')
-    process.exit(0)
+    console.info("Exiting gracefully...");
+    process.exit(0);
   }
-})
+});
 
 const indexToElastic = async pathsToIngest => {
   await client
     .info()
     .then(() => Promise.each(pathsToIngest, indexPathsToMessages))
     .catch(error => {
-      console.error('Failed to connect to Elastic:', error)
-      throw error
-    })
-  process.exit(0)
-}
+      console.error("Failed to connect to Elastic:", error);
+      throw error;
+    });
+  process.exit(0);
+};
 
-parentPort.on('message', msg => {
-  if (msg === 'shouldExit') SHOULD_EXIT = true
-})
+parentPort.on("message", msg => {
+  if (msg === "shouldExit") SHOULD_EXIT = true;
+});
 
-indexToElastic(workerData)
+indexToElastic(workerData);
 
 module.exports = {
   indexToElastic,
-}
+};

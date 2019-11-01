@@ -1,10 +1,10 @@
-const confic = require('confic')
-const {join} = require('path')
+const confic = require("confic");
+const { join } = require("path");
 
 module.exports = confic({
   elastic: {
-    url: 'http://localhost:9200',
-    index: 'rustlesearch',
+    url: "http://localhost:9200",
+    index: "rustlesearch",
   },
   download: {
     throttle: 500,
@@ -15,28 +15,28 @@ module.exports = confic({
     bulkSize: 2000,
   },
   paths: {
-    data: 'data',
-    channels: 'channels.json',
+    data: "data",
+    channels: "channels.json",
     get cache() {
-      return join(this.data, 'cache')
+      return join(this.data, "cache");
     },
     get blacklist() {
-      return join(this.cache, 'blacklist.txt')
+      return join(this.cache, "blacklist.txt");
     },
     get months() {
-      return join(this.data, 'months')
+      return join(this.data, "months");
     },
     get orl() {
-      return join(this.data, 'orl')
+      return join(this.data, "orl");
     },
     get downloadCache() {
-      return join(this.cache, 'download_cache.txt')
+      return join(this.cache, "download_cache.txt");
     },
     get indexCache() {
-      return join(this.cache, 'index_cache.txt')
+      return join(this.cache, "index_cache.txt");
     },
     get discardCache() {
-      return join(this.cache, 'discard_cache.txt')
+      return join(this.cache, "discard_cache.txt");
     },
   },
-})
+});
