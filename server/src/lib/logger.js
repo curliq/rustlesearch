@@ -1,6 +1,5 @@
 const pino = require("pino");
-const { isProd } = require("./environment");
-const config = require("./config");
+const config = require("../config");
 
 const name = config.APP_NAME;
 
@@ -29,9 +28,9 @@ const getLoggerInfo = req => {
 
 const pinoOptions = {
   base: { name },
-  level: config.LOG_LEVEL,
+  level: config.logLevel,
   name,
-  prettyPrint: !isProd(),
+  prettyPrint: !config.isProd,
   serializers: {
     req: req => getLoggerInfo(req.raw),
   },

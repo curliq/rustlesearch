@@ -1,10 +1,10 @@
 const { request } = require("http");
-const config = require("./lib/config");
+const config = require("./config");
 
 const options = {
   host: "localhost",
   path: "/healthcheck",
-  port: config.APP_PORT,
+  port: config.app.port,
   timeout: 3000,
 };
 

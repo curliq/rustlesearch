@@ -2,7 +2,7 @@ const { RateLimiterRedis } = require("rate-limiter-flexible");
 const { DateTime } = require("luxon");
 const { redisLimiter } = require("../lib/redis");
 const { co } = require("../lib/util");
-const config = require("../lib/config");
+const config = require("../config");
 
 const rateLimiter = new RateLimiterRedis({
   duration: config.RATE_LIMIT_TIMEOUT,

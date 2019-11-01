@@ -1,5 +1,5 @@
 const { readFileSync } = require("fs");
-const config = require("./config");
+const config = require("../config");
 
 const getChannels = channelFilePath => {
   const channelsString = readFileSync(channelFilePath, { encoding: "utf8" });
@@ -9,4 +9,4 @@ const getChannels = channelFilePath => {
   return channels;
 };
 
-module.exports = getChannels(config.CHANNEL_LOCATION);
+module.exports = getChannels(config.paths.channels);

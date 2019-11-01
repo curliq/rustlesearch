@@ -1,10 +1,9 @@
 const { Client } = require("@elastic/elasticsearch");
-const config = require("./config");
+const config = require("../config");
 const logger = require("./logger");
 const { co, capitalise } = require("./util");
 
-const elasticLocation = { node: config.ELASTIC_LOCATION };
-const elasticClient = new Client(elasticLocation);
+const elasticClient = new Client({ node: config.elastic.url });
 
 // throws here if we can't connect
 elasticClient.info().catch(error => {
@@ -59,7 +58,7 @@ module.exports = co(function* searchElastic(query) {
   try {
     const result = yield elasticClient.search({
       body: generateElasticQuery(query),
-      index: `${config.INDEX_NAME}-*`,
+      index: `${config.elastic.index}-*`,
     });
 
     const logs = result.body.hits.hits.map(log => {

@@ -1,10 +1,9 @@
 const Promise = require("bluebird");
-const { isTest } = require("./environment");
-const config = require("./config");
+const config = require("../config");
 const logger = require("./logger");
 
 // eslint-disable-next-line import/order
-const Redis = isTest() ? require("ioredis-mock") : require("ioredis");
+const Redis = config.isTest ? require("ioredis-mock") : require("ioredis");
 
 Redis.Promise = Promise;
 
@@ -13,9 +12,9 @@ const getRedis = opts => new Redis(opts);
 const redisOptions = {
   enableOfflineQueue: false,
   family: 4,
-  host: config.REDIS_HOST,
+  host: config.redis.host,
   maxRetriesPerRequest: 5,
-  port: config.REDIS_PORT,
+  port: config.redis.port,
   retryStrategy: attempts => {
     if (attempts > 5) {
       logger.error("Multiple redis connection failures, exiting...");

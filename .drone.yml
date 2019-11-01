@@ -18,12 +18,9 @@ steps:
   - name: test-server
     image: node:12-alpine
     environment:
-      CHANNEL_LOCATION: 'channels.txt'
-      ELASTIC_LOCATION: http://elastic-server:9200
-      INDEX_NAME: drone-server-elastic
-      LOG_LEVEL: debug
+      ELASTIC_URL: http://elastic-server:9200
+      ELASTIC_INDEX: drone-server-elastic
       NODE_ENV: development
-      REDIS_HOST: redis
       REDIS_PORT: 6379
     commands:
       - cd server
@@ -36,7 +33,7 @@ steps:
 
 services:
   - name: elastic-server
-    image: elasticsearch:7.2.0
+    image: elasticsearch:7.4.0
     environment:
       discovery.type: single-node
       ES_JAVA_OPTS: '-Xms2g -Xmx2g'
@@ -68,9 +65,9 @@ steps:
   - name: test-scripts
     image: node:12-alpine
     environment:
-      ELASTIC_LOCATION: http://elastic-scripts:9200
-      INDEX_NAME: drone-scripts-elastic
-      DATA_PATH: './test-data'
+      ELASTIC_URL: http://elastic-scripts:9200
+      ELASTIC_INDEX: drone-scripts-elastic
+      PATHS_DATA: './test-data'
     commands:
       - cd scripts
       - apk update

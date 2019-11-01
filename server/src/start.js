@@ -1,30 +1,29 @@
 /* eslint-disable global-require */
 const cluster = require("cluster");
 const { times } = require("ramda");
-const config = require("./lib/config");
+const config = require("./config");
 const logger = require("./lib/logger");
-const { isProd } = require("./lib/environment");
 
 const launch = () => cluster.fork();
 
 const initMaster = () => {
-  const workerCount = isProd() ? config.WORKER_COUNT : 1;
+  const workerCount = config.isProd ? config.workers : 1;
 
   times(launch, workerCount);
 
   logger.info(`Started ${workerCount} workers.`);
-  logger.info(`App listening at http://localhost:${config.APP_PORT}`);
+  logger.info(`App listening at http://localhost:${config.app.port}`);
 };
 
 const initWorker = () => {
   const app = require("./server");
 
-  app.listen(config.APP_PORT);
+  app.listen(config.app.port);
 };
 
 cluster.on("exit", worker => {
   logger.error(`Worker ${worker.id} died...`);
-  if (isProd()) cluster.fork();
+  if (config.isProd) cluster.fork();
   throw new Error("Application failed to run");
 });
 

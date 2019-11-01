@@ -1,4 +1,4 @@
-const { capitalise } = require("../api/lib/util");
+const { capitalise } = require("../src/lib/util");
 
 describe("util test", () => {
   test("capitalise resets and capitalises a string...", () => {

@@ -2,8 +2,8 @@ const { range } = require("ramda");
 const request = require("supertest");
 const Promise = require("bluebird");
 const { Client } = require("@elastic/elasticsearch");
-const app = require("../api");
-const config = require("../api/lib/config");
+const app = require("../src");
+const config = require("../src/config");
 
 const getManyRequests = (count, url, query) =>
   range(0, count).map(() =>
@@ -13,12 +13,15 @@ const getManyRequests = (count, url, query) =>
   );
 
 const client = new Client({
-  node: config.ELASTIC_LOCATION,
+  node: config.elastic.url,
 });
 
+// const sleep = ms => new Promise(resolve => setTimeout(resolve(), ms));
+
 beforeAll(async () => {
-  await client.indices.create({
+  await client.indices.putTemplate({
     body: {
+      index_patterns: `${config.elastic.index}*`,
       mappings: {
         properties: {
           channel: { type: "keyword" },
@@ -29,23 +32,47 @@ beforeAll(async () => {
       },
       settings: {
         number_of_replicas: 0,
-        refresh_interval: "60s",
+        number_of_shards: 1,
+
         "sort.field": "ts",
         "sort.order": "desc",
       },
     },
-    index: config.INDEX_NAME,
+    name: "rustlesearch-template",
   });
 
-  await client.index({
+  await client.ingest.putPipeline({
     body: {
-      channel: "destinygg",
-      text: "meme",
-      ts: "2019-02-31T15:14:12Z",
-      username: "memer",
+      description: "monthly date-time index naming",
+      processors: [
+        {
+          date_index_name: {
+            date_rounding: "M",
+            field: "ts",
+            index_name_prefix: `${config.elastic.index}-`,
+          },
+        },
+        {
+          set: {
+            field: "_id",
+            value: "{{channel}}-{{username}}-{{ts}}",
+          },
+        },
+      ],
     },
-    index: config.INDEX_NAME,
+    id: "rustlesearch-pipeline",
   });
+  // await sleep(300);
+  // await client.index({
+  //   index: "rustlesearch",
+  //   body: {
+  //     channel: "Destinygg",
+  //     text: "meme",
+  //     ts: "2019-02-31T15:14:12Z",
+  //     username: "epicgamermemer",
+  //   },
+  //   pipeline: "rustlesearch-pipeline",
+  // });
 });
 
 describe("server test", () => {
