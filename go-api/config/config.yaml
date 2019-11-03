@@ -1,0 +1,9 @@
+server:
+  port: :3000
+elastic:
+  index: rustlesearch
+  url: http://localhost:9200
+  size: 100
+paths:
+  channels: channels.json
+env: development
