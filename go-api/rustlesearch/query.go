@@ -47,7 +47,7 @@ func (s *Surrounds) Query(q SurroundsQuery) ([][]Message, error) {
 	client := elasticsearch.GetDB()
 	queryResult, err := surroundsBuilder(q, client).Do(context.Background())
 	if err != nil {
-		log.Error().Err(err).Msg("SearchQuery builder error")
+		log.Error().Err(err).Msg("SurroundsQuery builder error")
 		return [][]Message{}, err
 	}
 	results := [][]Message{}

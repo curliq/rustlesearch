@@ -7,12 +7,12 @@ import (
 	"github.com/olivere/elastic/v7"
 )
 
-var db *elastic.Client
+var client *elastic.Client
 
 func Init() error {
 	var err error
 	c := config.GetConfig()
-	db, err = elastic.NewClient(
+	client, err = elastic.NewClient(
 		elastic.SetURL(c.GetString("elastic.url")),
 		elastic.SetSniff(false),
 		elastic.SetHealthcheck(false),
@@ -24,5 +24,5 @@ func Init() error {
 }
 
 func GetDB() *elastic.Client {
-	return db
+	return client
 }
