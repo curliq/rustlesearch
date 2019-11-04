@@ -2,7 +2,6 @@ package elasticsearch
 
 import (
 	"errors"
-
 	"github.com/johnpyp/rustlesearch/go-api/config"
 	"github.com/olivere/elastic/v7"
 )
