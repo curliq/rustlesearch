@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/johnpyp/rustlesearch/go-api/config"
@@ -17,6 +18,7 @@ func NewRouter(options Options) *gin.Engine {
 	r := gin.New()
 	r.Use(middleware.Logger())
 	r.Use(gin.Recovery())
+	r.Use(cors.Default())
 	r.GET("/health", controllers.HealthController{}.Status)
 	r.GET("/search", options.SearchController.Retrieve)
 	r.GET("/surrounds", options.SurroundsController.Retrieve)

@@ -3,6 +3,7 @@ module github.com/johnpyp/rustlesearch/go-api
 go 1.13
 
 require (
+	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-contrib/logger v0.0.2
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-playground/locales v0.13.0 // indirect

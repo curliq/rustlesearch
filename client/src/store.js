@@ -43,7 +43,7 @@ export default new Vuex.Store({
       console.log(query.startingDate, query.endingDate);
       try {
         const { body } = await superagent.get(`${baseUrl}/search`).query(query);
-        commit("setResults", body);
+        commit("setResults", body.data);
 
         commit("setLoading", false);
       } catch (e) {
@@ -52,21 +52,21 @@ export default new Vuex.Store({
           const retryAfter = parseInt(retryAfterString, 10);
           setTimeout(() => dispatch("getResults", query), retryAfter + 100);
         } else {
-          Vue.notify(buildNotify(e.response.body.error));
+          Vue.notify(buildNotify(e.response.body.message));
           commit("setLoading", false);
         }
       }
     },
     async loadMoreMessages({ commit, state, dispatch }) {
       const lastResult = last(state.results);
-      const searchAfter = lastResult ? lastResult.search_after : undefined;
+      const searchAfter = lastResult ? lastResult.searchAfter : undefined;
       commit("setLoading", true);
       try {
         const { body } = await superagent
           .get(`${baseUrl}/search`)
           .query(state.currentQuery)
-          .query({ searchAfter });
-        commit("appendResults", body);
+          .query({ search_after: searchAfter });
+        commit("appendResults", body.data);
         commit("setLoading", false);
       } catch (e) {
         if (e.response.status === 429) {
@@ -74,15 +74,15 @@ export default new Vuex.Store({
           const retryAfter = parseInt(retryAfterString, 10);
           setTimeout(() => dispatch("loadMoreMessages"), retryAfter + 100);
         } else {
-          Vue.notify(buildNotify(e.response.body.error));
+          Vue.notify(buildNotify(e.response.body.message));
           commit("setLoading", false);
         }
       }
     },
     async getChannels({ commit }) {
       try {
-        const { body } = await superagent.get(`${baseUrl}/channels`);
-        commit("setChannels", body.channels);
+        const { body } = await superagent.get(`${baseUrl}/channels.json`);
+        commit("setChannels", body);
       } catch (e) {
         console.log(e);
       }
