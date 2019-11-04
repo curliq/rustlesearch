@@ -1,10 +1,11 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/johnpyp/rustlesearch/go-api/models"
 	"github.com/johnpyp/rustlesearch/go-api/requests"
-	"net/http"
 )
 
 type SearchController struct{}
@@ -14,7 +15,11 @@ var searchModel = new(models.Search)
 func (s SearchController) Retrieve(c *gin.Context) {
 	var query requests.Search
 	if err := c.ShouldBindQuery(&query); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "Search validation failed"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"data":    nil,
+			"error":   "SearchInputError",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -24,16 +29,22 @@ func (s SearchController) Retrieve(c *gin.Context) {
 
 	if channelMissing && usernameMissing && textMissing {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   "At least one of channel, username, or text are required.",
-			"message": "Search validation failed",
+			"data":    nil,
+			"message": "At least one field: channel, username, or text are required.",
+			"error":   "SearchInputError",
 		})
 		return
 	}
+
 	results, err := searchModel.Query(query)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		DbErr(c)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": results, "message": "Search success"})
+	c.JSON(http.StatusOK, gin.H{
+		"data":    results,
+		"message": "Search request succeeded",
+		"error":   nil,
+	})
 	return
 }

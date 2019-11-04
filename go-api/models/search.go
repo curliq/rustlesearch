@@ -4,12 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"strings"
+	"time"
+
 	"github.com/johnpyp/rustlesearch/go-api/config"
 	"github.com/johnpyp/rustlesearch/go-api/db"
 	"github.com/johnpyp/rustlesearch/go-api/requests"
 	"github.com/olivere/elastic/v7"
-	"log"
-	"time"
 )
 
 type Search struct {
@@ -24,14 +26,8 @@ type Message struct {
 }
 
 func (s *Search) Query(q requests.Search) ([]Message, error) {
-	c := config.GetConfig()
 	client := db.GetDB()
-	query := queryBuilder(q)
-	searchResult, err := client.Search().
-		Query(query).
-		Size(c.GetInt("elastic.size")).
-		Sort("ts", false).
-		Do(context.Background())
+	searchResult, err := searchBuilder(q, client).Do(context.Background())
 	if err != nil {
 		log.Print("First: ", err)
 		return []Message{}, err
@@ -63,13 +59,16 @@ func (s *Search) Query(q requests.Search) ([]Message, error) {
 	return results, nil
 }
 
-func queryBuilder(q requests.Search) elastic.Query {
+func searchBuilder(q requests.Search, client *elastic.Client) *elastic.SearchService {
+	c := config.GetConfig()
 	query := elastic.NewBoolQuery()
 	if len(q.Channel) != 0 {
-		query = query.Filter(elastic.NewTermQuery("channel", q.Channel))
+		channel := strings.Title(strings.ToLower(q.Channel))
+		query = query.Filter(elastic.NewTermQuery("channel", channel))
 	}
 	if len(q.Username) != 0 {
-		query = query.Filter(elastic.NewTermQuery("username", q.Username))
+		username := strings.ToLower(q.Username)
+		query = query.Filter(elastic.NewTermQuery("username", username))
 	}
 	if len(q.Text) != 0 {
 		query = query.Filter(elastic.NewMatchQuery("text", q.Text).Operator("and"))
@@ -84,5 +83,13 @@ func queryBuilder(q requests.Search) elastic.Query {
 
 	query = query.Filter(rangeQuery)
 
-	return query
+	searchQuery := client.Search().
+		Query(query).
+		Size(c.GetInt("elastic.size")).
+		Sort("ts", false)
+
+	if q.SearchAfter != 0 {
+		searchQuery = searchQuery.SearchAfter(q.SearchAfter)
+	}
+	return searchQuery
 }

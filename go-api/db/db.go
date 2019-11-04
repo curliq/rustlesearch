@@ -15,9 +15,10 @@ func Init() {
 	db, err = elastic.NewClient(
 		elastic.SetURL(c.GetString("elastic.url")),
 		elastic.SetSniff(false),
+		elastic.SetHealthcheck(false),
 	)
 	if err != nil {
-		log.Fatal("Error creating elastic client: ", err)
+		log.Print("Error creating elastic client: ", err)
 	}
 }
 
