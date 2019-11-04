@@ -41,6 +41,6 @@ The scripts and tooling for rustlesearch are optimized for fast and resiliant pe
 The scripts utilize a set of caching files to make indexing and downloading resilient to interruption, for example gracefully exiting indexing and writing all finished processes to a cache to guarantee they aren't indexed again.
 
 ## Contributors
-- mmacheerpuppy
 - johnpyp
 - alg1142
+- mmacheerpuppy
