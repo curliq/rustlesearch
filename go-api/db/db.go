@@ -1,10 +1,10 @@
 package db
 
 import (
-	// "github.com/imroc/req"
+	"log"
+
 	"github.com/johnpyp/rustlesearch/go-api/config"
 	"github.com/olivere/elastic/v7"
-	"log"
 )
 
 var db *elastic.Client

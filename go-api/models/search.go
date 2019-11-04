@@ -3,13 +3,12 @@ package models
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"log"
 	"strings"
 	"time"
 
 	"github.com/johnpyp/rustlesearch/go-api/config"
 	"github.com/johnpyp/rustlesearch/go-api/db"
+	"github.com/johnpyp/rustlesearch/go-api/logging"
 	"github.com/johnpyp/rustlesearch/go-api/requests"
 	"github.com/olivere/elastic/v7"
 )
@@ -26,15 +25,16 @@ type Message struct {
 }
 
 func (s *Search) Query(q requests.Search) ([]Message, error) {
+	log := logging.GetLogger()
 	client := db.GetDB()
 	searchResult, err := searchBuilder(q, client).Do(context.Background())
 	if err != nil {
-		log.Print("First: ", err)
+		log.Error().Err(err).Msg("Search builder error")
 		return []Message{}, err
 	}
 	results := []Message{}
 	if searchResult.TotalHits() > 0 {
-		fmt.Printf("Found a total of %d tweets\n", searchResult.TotalHits())
+		log.Debug().Int64("totalHits", searchResult.TotalHits()).Msg("Total hits")
 
 		// Iterate through results
 		for _, hit := range searchResult.Hits.Hits {
@@ -52,8 +52,7 @@ func (s *Search) Query(q requests.Search) ([]Message, error) {
 			// Work with tweet
 		}
 	} else {
-		// No hits
-		fmt.Print("Found no tweets\n")
+		log.Debug().Msg("No hits found")
 	}
 
 	return results, nil

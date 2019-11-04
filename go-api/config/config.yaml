@@ -7,3 +7,5 @@ elastic:
 paths:
   channels: channels.json
 env: development
+log:
+  level: debug
