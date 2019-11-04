@@ -9,7 +9,7 @@ import (
 
 var logger zerolog.Logger
 
-func Init() {
+func Init() error {
 	c := config.GetConfig()
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	if c.GetString("log.level") == "debug" {
@@ -22,6 +22,7 @@ func Init() {
 		New(os.Stdout).
 		With().
 		Logger()
+	return nil
 }
 
 func GetLogger() zerolog.Logger {

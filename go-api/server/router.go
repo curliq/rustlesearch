@@ -9,24 +9,20 @@ import (
 	"github.com/johnpyp/rustlesearch/go-api/validation"
 )
 
-func NewRouter() *gin.Engine {
-	c := config.GetConfig()
+func NewRouter(options Options) *gin.Engine {
 	binding.Validator = new(validation.DefaultValidator)
-	if c.GetString("env") == "production" {
+	if options.Environment == Production {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := gin.New()
 	r.Use(middleware.Logger())
 	r.Use(gin.Recovery())
-	health := new(controllers.HealthController)
-	search := new(controllers.SearchController)
-	surrounds := new(controllers.SurroundsController)
+	r.GET("/health", controllers.HealthController{}.Status)
+	r.GET("/search", options.SearchController.Retrieve)
+	r.GET("/surrounds", options.SurroundsController.Retrieve)
 
-	r.GET("/health", health.Status)
-	r.GET("/search", search.Retrieve)
-	r.GET("/surrounds", surrounds.Retrieve)
+	c := config.GetConfig() // Not sure what this is, exercise for you is to lift this up.
 	r.StaticFile("/channels.json", c.GetString("paths.channels"))
 
 	return r
-
 }

@@ -1,8 +1,8 @@
 package config
 
 import (
+	"errors"
 	"github.com/spf13/viper"
-	"log"
 	"strings"
 )
 
@@ -10,7 +10,7 @@ var config *viper.Viper
 
 // Init is an exported method that takes the environment starts the viper
 // (external lib) and returns the configuration struct.
-func Init() {
+func Init() error {
 	var err error
 	config = viper.New()
 	replacer := strings.NewReplacer(".", "_")
@@ -22,8 +22,9 @@ func Init() {
 	config.SetEnvPrefix("vip")
 	err = config.ReadInConfig()
 	if err != nil {
-		log.Fatal("error on parsing configuration file", err)
+		return errors.New("error on parsing configuration file" + err.Error())
 	}
+	return nil
 }
 
 func GetConfig() *viper.Viper {

@@ -1,15 +1,14 @@
-package db
+package elasticsearch
 
 import (
-	"log"
-
+	"errors"
 	"github.com/johnpyp/rustlesearch/go-api/config"
 	"github.com/olivere/elastic/v7"
 )
 
 var db *elastic.Client
 
-func Init() {
+func Init() error {
 	var err error
 	c := config.GetConfig()
 	db, err = elastic.NewClient(
@@ -18,8 +17,9 @@ func Init() {
 		elastic.SetHealthcheck(false),
 	)
 	if err != nil {
-		log.Print("Error creating elastic client: ", err)
+		return errors.New("Error creating elastic client: " + err.Error())
 	}
+	return nil
 }
 
 func GetDB() *elastic.Client {

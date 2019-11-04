@@ -12,5 +12,4 @@ func DbErr(c *gin.Context) {
 		"message": "Elasticsearch database unavailable, try again soon.",
 		"error":   "DatabaseError",
 	})
-
 }
