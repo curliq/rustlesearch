@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"strings"
-	"time"
 
 	"github.com/johnpyp/rustlesearch/go-api/config"
 	"github.com/johnpyp/rustlesearch/go-api/db"
@@ -16,28 +15,20 @@ import (
 type Search struct {
 }
 
-type Message struct {
-	Channel     string    `json:"channel"`
-	Text        string    `json:"text"`
-	Timestamp   time.Time `json:"ts"`
-	Username    string    `json:"username"`
-	SearchAfter int       `json:"searchAfter"`
-}
-
 func (s *Search) Query(q requests.Search) ([]Message, error) {
 	log := logging.GetLogger()
 	client := db.GetDB()
-	searchResult, err := searchBuilder(q, client).Do(context.Background())
+	queryResult, err := searchBuilder(q, client).Do(context.Background())
 	if err != nil {
 		log.Error().Err(err).Msg("Search builder error")
 		return []Message{}, err
 	}
 	results := []Message{}
-	if searchResult.TotalHits() > 0 {
-		log.Debug().Int64("totalHits", searchResult.TotalHits()).Msg("Total hits")
+	if queryResult.TotalHits() > 0 {
+		log.Debug().Int64("totalHits", queryResult.TotalHits()).Msg("Total hits")
 
 		// Iterate through results
-		for _, hit := range searchResult.Hits.Hits {
+		for _, hit := range queryResult.Hits.Hits {
 			// hit.Index contains the name of the index
 
 			// Deserialize hit.Source into a Tweet (could also be just a map[string]interface{}).
@@ -84,6 +75,7 @@ func searchBuilder(q requests.Search, client *elastic.Client) *elastic.SearchSer
 
 	searchQuery := client.Search().
 		Query(query).
+		Index("rustlesearch-*").
 		Size(c.GetInt("elastic.size")).
 		Sort("ts", false)
 

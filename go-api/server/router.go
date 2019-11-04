@@ -20,9 +20,11 @@ func NewRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 	health := new(controllers.HealthController)
 	search := new(controllers.SearchController)
+	surrounds := new(controllers.SurroundsController)
 
 	r.GET("/health", health.Status)
 	r.GET("/search", search.Retrieve)
+	r.GET("/surrounds", surrounds.Retrieve)
 	r.StaticFile("/channels.json", c.GetString("paths.channels"))
 
 	return r
