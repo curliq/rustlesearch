@@ -12,7 +12,7 @@ import (
 
 func NewRouter(options Options) *gin.Engine {
 	binding.Validator = new(validation.DefaultValidator)
-	if options.Environment == Production {
+	if options.Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := gin.New()

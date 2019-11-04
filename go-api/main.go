@@ -8,7 +8,6 @@ import (
 	"github.com/johnpyp/rustlesearch/go-api/rustlesearch"
 	"github.com/johnpyp/rustlesearch/go-api/server"
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/spf13/viper"
 	"log"
 )
 
@@ -22,16 +21,17 @@ func init() {
 }
 
 func main() {
-	env := viper.GetString("env")
+	config := config.GetConfig()
 
 	options := server.Options{
-		Environment: server.Environment(env),
+		Environment: config.GetString("env"),
 		SearchController: controllers.SearchController{
 			Search: rustlesearch.Search{},
 		},
 		SurroundsController: controllers.SurroundsController{
 			Surrounds: rustlesearch.Surrounds{},
 		},
+		Port: config.GetInt("server.port"),
 	}
 
 	s := server.Server{
