@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"encoding/json"
+	"reflect"
 	"strings"
 
 	"github.com/johnpyp/rustlesearch/go-api/db"
@@ -14,16 +15,24 @@ import (
 type Surrounds struct {
 }
 
-func (s *Surrounds) Query(q requests.Surrounds) ([]Message, error) {
+func reverseAny(s interface{}) {
+	n := reflect.ValueOf(s).Len()
+	swap := reflect.Swapper(s)
+	for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
+		swap(i, j)
+	}
+}
+func (s *Surrounds) Query(q requests.Surrounds) ([][]Message, error) {
 	log := logging.GetLogger()
 	client := db.GetDB()
 	queryResult, err := surroundsBuilder(q, client).Do(context.Background())
 	if err != nil {
 		log.Error().Err(err).Msg("Search builder error")
-		return []Message{}, err
+		return [][]Message{}, err
 	}
-	results := []Message{}
-	for _, resultItem := range queryResult.Responses {
+	results := [][]Message{}
+	for i, resultItem := range queryResult.Responses {
+		results = append(results, []Message{})
 		if resultItem.TotalHits() > 0 {
 			log.Debug().Int64("totalHits", resultItem.TotalHits()).Msg("Total hits")
 
@@ -39,14 +48,14 @@ func (s *Surrounds) Query(q requests.Surrounds) ([]Message, error) {
 					log.Print(err)
 				}
 				t.SearchAfter = int(hit.Sort[0].(float64))
-				results = append(results, t)
+				results[i] = append(results[i], t)
 				// Work with tweet
 			}
 		} else {
 			log.Debug().Msg("No hits found")
 		}
 	}
-
+	reverseAny(results[0])
 	return results, nil
 }
 
@@ -73,7 +82,7 @@ func surroundsBuilder(q requests.Surrounds, client *elastic.Client) *elastic.Mul
 			Sort("ts", false))
 
 	fullQuery := client.MultiSearch().
-		Add(q1, q2)
+		Add(q2, q1)
 
 	return fullQuery
 }
