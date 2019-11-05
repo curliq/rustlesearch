@@ -6,6 +6,7 @@
     <v-select
       v-if="type === 'select'"
       v-bind="$attrs"
+      :value="value"
       :options="items"
       :placeholder="placeholder"
       class="field__input bg-gray-700 style-chooser rounded w-full py-1 pr-3 pl-1 focus:outline-none"
