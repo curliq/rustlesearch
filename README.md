@@ -14,12 +14,11 @@ Rustlesearch is built around Elasticsearch, using a few different tools.
 
 #### Backend
 
-- Node.js
-- Express.js with Clustering
-- Nginx
+- Golang
+- Caddy
 - Docker
 
-The backend API server acts as a middleman between the raw elasticsearch database and the frontend users. It provides a trimmed down query api, along with rate limiting to prevent abuse.
+The backend API server acts as a middleman between the raw elasticsearch database and the frontend users. It provides a trimmed down query api, along with rate limiting to prevent abuse. Docker is used for consistent, easy deployments, and caddy is used as a simple and modern reverse proxy for the api.
 
 #### Frontend
 
