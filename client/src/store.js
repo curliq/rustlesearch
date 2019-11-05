@@ -40,7 +40,7 @@ export default new Vuex.Store({
     async getResults({ commit, dispatch }, query) {
       commit("setCurrentQuery", query);
       commit("setLoading", true);
-      console.log(query.startingDate, query.endingDate);
+      console.log(query.start_date, query.end_date);
       try {
         const { body } = await superagent.get(`${baseUrl}/search`).query(query);
         commit("setResults", body.data);

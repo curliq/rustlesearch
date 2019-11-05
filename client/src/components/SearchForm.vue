@@ -29,20 +29,20 @@
         @keydown.enter="$emit('submit', query)"
       />
       <div class="border-b border-gray-800 my-4 h-px" />
-      <div class="mb-3 field" :class="query.startingDate && 'field--not-empty'">
+      <div class="mb-3 field" :class="query.start_date && 'field--not-empty'">
         <label class="field__label">Start Date</label>
         <base-datepicker
-          v-model="query.startingDate"
+          v-model="query.start_date"
           class="field__input"
           placeholder="Start Date"
-          :options="{ max: query.endingDate }"
+          :options="{ max: query.end_date }"
         />
       </div>
-      <div class="mb-3 field" :class="query.startingDate && 'field--not-empty'">
+      <div class="mb-3 field" :class="query.start_date && 'field--not-empty'">
         <label class="field__label">End Date</label>
         <base-datepicker
-          v-model="query.endingDate"
-          :options="{ min: query.startingDate, max: today }"
+          v-model="query.end_date"
+          :options="{ min: query.start_date, max: today }"
           class="field__input"
           placeholder="End Date"
         />
@@ -76,11 +76,11 @@ export default {
         username: null,
         channel: null,
         text: null,
-        startingDate: dayjs()
+        start_date: dayjs()
           .utc()
           .subtract(30, "day")
           .format("YYYY-MM-DD"),
-        endingDate: dayjs()
+        end_date: dayjs()
           .utc()
           .format("YYYY-MM-DD")
       },
