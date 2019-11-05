@@ -13,20 +13,41 @@
   </div>
 </template>
 <script>
-import { reject, isNil, equals, anyPass } from "ramda";
+import { reject, isNil, equals, anyPass, reverse } from "ramda";
+import superagent from "superagent";
 import Results from "@/components/Results.vue";
 import SearchForm from "@/components/SearchForm.vue";
 
+const baseUrl = process.env.VUE_APP_API;
 export default {
   components: {
     Results,
     SearchForm
   },
   data() {
-    return {};
+    return {
+      before: null,
+      after: null,
+      selectedIndex: null
+    };
   },
   computed: {
     results() {
+      /* if ( */
+      /*   !isNil(this.before) && */
+      /*   !isNil(this.after) && */
+      /*   !isNil(this.selectedIndex) */
+      /* ) { */
+      /*   const arr = this.$store.state.results; */
+      /*   const n = this.selectedIndex; */
+      /*   return [ */
+      /*     ...arr.slice(0, n), */
+      /*     ...this.after, */
+      /*     arr[n], */
+      /*     ...this.before, */
+      /*     ...arr.slice(n + 1) */
+      /*   ]; */
+      /* } */
       return this.$store.state.results;
     },
     loading() {
@@ -48,6 +69,45 @@ export default {
             name: "Home",
             query: reject(isBad)(this.currentQuery)
           });
+        }
+      }
+    },
+    async surroundsQuery(index) {
+      console.log("triggered surrounds");
+      const message = this.$store.state.results[index];
+      try {
+        const { body } = await superagent.get(`${baseUrl}/surrounds`).query({
+          channel: message.channel,
+          size: 10,
+          search_after: message.searchAfter
+        });
+
+        this.before = reverse(body.data[0]).map(x => ({
+          ...x,
+          surrounds: true
+        }));
+        this.after = reverse(body.data[1]).map(x => ({
+          ...x,
+          surrounds: true
+        }));
+        this.selectedIndex = index;
+      } catch (e) {
+        if (e.response.status === 429) {
+          const retryAfterString = e.response.headers["retry-after"];
+          const retryAfter = parseInt(retryAfterString, 10);
+          setTimeout(() => this.surroundsQuery(index), retryAfter + 100);
+        } else {
+          const buildNotify = msg => ({
+            group: "vuex",
+            title: "Error",
+            text: msg,
+            duration: 2000
+          });
+
+          this.$notify(buildNotify(e.response.body.message));
+          this.before = null;
+          this.after = null;
+          this.selectedIndex = null;
         }
       }
     }

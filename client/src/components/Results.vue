@@ -9,8 +9,10 @@
         :ts="message.ts"
         :channel="message.channel"
         :username="message.username"
+        :surrounds="message.surrounds"
         :text="message.text"
         :is-utc="isUtc"
+        @surrounds="() => $emit('surrounds', i)"
       />
 
       <load-more-messages></load-more-messages>
