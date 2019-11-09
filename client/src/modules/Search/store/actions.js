@@ -1,15 +1,9 @@
 import superagent from "superagent";
 import Vue from "vue";
-
 import { last } from "ramda";
+import { buildNotify } from "@/utils";
 
 const baseUrl = process.env.VUE_APP_API;
-const buildNotify = msg => ({
-  group: "vuex",
-  title: "Error",
-  text: msg,
-  duration: 2000
-});
 
 export default {
   async getResults({ commit, dispatch }, query) {
