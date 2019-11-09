@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     loadMoreMessages() {
-      this.$store.dispatch("loadMoreMessages");
+      this.$store.dispatch("search/loadMoreMessages");
     }
   }
 };
