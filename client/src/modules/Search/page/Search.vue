@@ -8,6 +8,7 @@
         :results="results"
         :current-query="currentQuery"
         :loading="loading"
+        @loadMoreMessages="loadMoreMessages"
       />
     </div>
   </div>
@@ -48,6 +49,9 @@ export default {
           });
         }
       }
+    },
+    loadMoreMessages() {
+      this.$store.dispatch("search/loadMoreMessages");
     }
   }
 };

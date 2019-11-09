@@ -13,7 +13,10 @@
         :mode="mode"
       />
 
-      <results-load-more />
+      <results-load-more
+        :loading="loading"
+        @click="$emit('loadMoreMessages')"
+      />
     </div>
     <div
       v-else-if="currentQuery && !loading"
