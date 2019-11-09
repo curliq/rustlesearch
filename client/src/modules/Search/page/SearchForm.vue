@@ -88,12 +88,12 @@ export default {
     };
   },
   computed: {
-    ...mapState({
+    ...mapState("common", {
       channels: state => state.channels
     })
   },
   async mounted() {
-    await this.$store.dispatch("getChannels");
+    await this.$store.dispatch("common/getChannels");
     if (keys(this.$route.query).length > 0) {
       this.query = mergeRight(this.query, this.$route.query);
       this.$emit("submit", this.query);

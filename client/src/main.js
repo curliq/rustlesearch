@@ -6,7 +6,7 @@ import router from "./router";
 import store from "./store";
 import "vue-select/dist/vue-select.css";
 
-import "./global-base-components";
+import "./modules/Common";
 import "./main.css";
 
 Vue.use(Notifications);

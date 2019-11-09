@@ -13,9 +13,11 @@
   </div>
 </template>
 <script>
-import { reject, isNil, equals, anyPass } from "ramda";
-import Results from "@/components/Results.vue";
-import SearchForm from "@/components/SearchForm.vue";
+import { mapState } from "vuex";
+import { reject, isNil, anyPass, equals } from "ramda";
+import { isEqual } from "lodash-es";
+import Results from "../components/Results.vue";
+import SearchForm from "./SearchForm.vue";
 
 export default {
   components: {
@@ -26,26 +28,22 @@ export default {
     return {};
   },
   computed: {
-    results() {
-      return this.$store.state.results;
-    },
-    loading() {
-      return this.$store.state.loading;
-    },
-    currentQuery() {
-      return this.$store.state.currentQuery;
-    }
+    ...mapState("search", {
+      results: state => state.results,
+      loading: state => state.loading,
+      currentQuery: state => state.currentQuery
+    })
   },
   methods: {
     async submitQuery(query) {
       if (!this.loading) {
-        await this.$store.dispatch("getResults", query);
+        await this.$store.dispatch("search/getResults", query);
 
         const isBad = anyPass([isNil, equals("")]);
         const toPush = reject(isBad)(this.currentQuery);
-        if (!equals(toPush, this.$route.query)) {
+        if (!isEqual(toPush, this.$route.query)) {
           this.$router.push({
-            name: "Home",
+            name: "Search",
             query: reject(isBad)(this.currentQuery)
           });
         }

@@ -1,9 +1,8 @@
 <template>
   <div class="bg-gray-850 rounded">
-    <toggle-mode-bar :mode.sync="mode" :is-utc.sync="isUtc" />
+    <results-settings :mode.sync="mode" :is-utc.sync="isUtc" />
     <div v-if="results.length > 0">
-      <component
-        :is="mode"
+      <message
         v-for="(message, i) in results"
         :key="i"
         :ts="message.ts"
@@ -11,9 +10,10 @@
         :username="message.username"
         :text="message.text"
         :is-utc="isUtc"
+        :mode="mode"
       />
 
-      <load-more-messages></load-more-messages>
+      <results-load-more />
     </div>
     <div
       v-else-if="currentQuery && !loading"
@@ -28,17 +28,15 @@
 </template>
 
 <script>
-import CompactMessage from "./CompactMessage.vue";
 import Message from "./Message.vue";
-import ToggleModeBar from "./ToggleModeBar.vue";
-import LoadMoreMessages from "./LoadMoreMessages.vue";
+import ResultsSettings from "./ResultsSettings.vue";
+import ResultsLoadMore from "./ResultsLoadMore.vue";
 
 export default {
   components: {
     Message,
-    CompactMessage,
-    ToggleModeBar,
-    LoadMoreMessages
+    ResultsSettings,
+    ResultsLoadMore
   },
   props: {
     results: {
@@ -56,7 +54,7 @@ export default {
   },
   data() {
     return {
-      mode: "message",
+      mode: "normal",
       isUtc: true
     };
   }

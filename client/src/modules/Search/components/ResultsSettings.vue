@@ -19,7 +19,7 @@
     <div class="border-l self-stretch my-1 border-gray-400" />
     <span
       :class="[sharedClasses, !isCompact ? activeClass : nonActiveClass]"
-      @click="$emit('update:mode', 'message')"
+      @click="$emit('update:mode', 'normal')"
     >
       <div>
         <div style="line-height: 0.30;">—</div>
@@ -28,7 +28,7 @@
     </span>
     <span
       :class="[sharedClasses, isCompact ? activeClass : nonActiveClass]"
-      @click="$emit('update:mode', 'compact-message')"
+      @click="$emit('update:mode', 'compact')"
     >
       <div>
         <div style="line-height: 0.25;">—</div>
@@ -44,7 +44,7 @@ export default {
   props: {
     mode: {
       type: String,
-      default: "message"
+      default: "normal"
     },
     isUtc: {
       type: Boolean,
@@ -61,7 +61,7 @@ export default {
   },
   computed: {
     isCompact() {
-      return this.mode === "compact-message";
+      return this.mode === "compact";
     }
   }
 };

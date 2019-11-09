@@ -3,7 +3,7 @@
     <div class="px-8">
       <div class="flex items-center justify-between py-3">
         <router-link
-          :to="{ name: 'Home' }"
+          :to="{ name: 'Search' }"
           class="outline-none text-xl text-white hover:text-gray-200"
         >
           <span class="font-bold text-accent">Rustle</span>Search

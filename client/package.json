@@ -10,6 +10,7 @@
   "dependencies": {
     "dayjs": "1.8.17",
     "lodash": "4.17.15",
+    "lodash-es": "4.17.15",
     "ramda": "0.26.1",
     "superagent": "5.1.0",
     "tiny-date-picker": "3.2.8",
