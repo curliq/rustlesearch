@@ -1,4 +1,4 @@
-export const displayFormat = "HH:mm:ss, MMM DD, YYYY";
+export const displayFormat = "HH:mm:ss, MMM DD 'YY";
 export const pikrDisplayFormat = "M d, Y at H:i";
 export const buildNotify = msg => ({
   group: "vuex",

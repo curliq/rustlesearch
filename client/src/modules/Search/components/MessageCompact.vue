@@ -1,26 +1,16 @@
 <template>
-  <div class="flex items-center">
-    <div class="w-full max-w-full flex flex-col lg:flex-row">
-      <div class="text-gray-400 px-2 lg:border-r border-gray-700">
-        {{ channel }}
-      </div>
-      <p
-        class="inline-block text-gray-200 ml-2 overflow-x-hidden"
-        style="overflow-wrap: anywhere;"
-      >
-        <span class="font-bold mr-1">
-          {{ username }}
-        </span>
+  <div class="text-gray-200 px-2">
+    <span
+      class="text-gray-400 border-gray-700 inline-block"
+      style="width: 6.5rem;"
+    >
+      {{ channel }}
+    </span>
 
-        {{ text }}
-      </p>
+    <span class="text-gray-500 mr-1">[ {{ formattedDate }} ]</span>
+    <span class="font-bold mr-1"> {{ username }}:</span>
 
-      <p
-        class="text-gray-500 lg:ml-auto mr-2 pl-2 mb-2 lg:mb-0 text-sm whitespace-no-wrap"
-      >
-        {{ formattedDate }}
-      </p>
-    </div>
+    <span class="">{{ text }}</span>
   </div>
 </template>
 
