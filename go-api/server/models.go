@@ -1,6 +1,6 @@
 package server
 
-import "github.com/johnpyp/rustlesearch/go-api/controllers"
+import "github.com/johnpyp/rustlesearch/go-api/handlers"
 
 type (
 	Server struct {
@@ -9,8 +9,8 @@ type (
 
 	Options struct {
 		Environment         string
-		SearchController    controllers.SearchController
-		SurroundsController controllers.SurroundsController
+		SearchController    handlers.SearchController
+		SurroundsController handlers.SurroundsController
 		Port                int
 	}
 )

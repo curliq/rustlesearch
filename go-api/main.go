@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/johnpyp/rustlesearch/go-api/config"
-	"github.com/johnpyp/rustlesearch/go-api/controllers"
 	"github.com/johnpyp/rustlesearch/go-api/elasticsearch"
+	"github.com/johnpyp/rustlesearch/go-api/handlers"
 	"github.com/johnpyp/rustlesearch/go-api/logging"
 	"github.com/johnpyp/rustlesearch/go-api/rustlesearch"
 	"github.com/johnpyp/rustlesearch/go-api/server"
@@ -25,10 +25,10 @@ func main() {
 
 	options := server.Options{
 		Environment: config.GetString("env"),
-		SearchController: controllers.SearchController{
+		SearchController: handlers.SearchController{
 			Search: rustlesearch.Search{},
 		},
-		SurroundsController: controllers.SurroundsController{
+		SurroundsController: handlers.SurroundsController{
 			Surrounds: rustlesearch.Surrounds{},
 		},
 		Port: config.GetInt("server.port"),

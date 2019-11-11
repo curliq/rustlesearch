@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/johnpyp/rustlesearch/go-api/controllers"
+	"github.com/johnpyp/rustlesearch/go-api/handlers"
 	"github.com/johnpyp/rustlesearch/go-api/rustlesearch"
 )
 
@@ -12,10 +12,10 @@ func (s Server) Start() error {
 	// Initialise with default values if server options not set
 	options := Options{
 		Environment: "development",
-		SearchController: controllers.SearchController{
+		SearchController: handlers.SearchController{
 			Search: rustlesearch.Search{},
 		},
-		SurroundsController: controllers.SurroundsController{
+		SurroundsController: handlers.SurroundsController{
 			Surrounds: rustlesearch.Surrounds{},
 		},
 		Port: 3000,

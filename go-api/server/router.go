@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/johnpyp/rustlesearch/go-api/config"
-	"github.com/johnpyp/rustlesearch/go-api/controllers"
+	"github.com/johnpyp/rustlesearch/go-api/handlers"
 	"github.com/johnpyp/rustlesearch/go-api/middleware"
 	"github.com/johnpyp/rustlesearch/go-api/validation"
 )
@@ -19,7 +19,7 @@ func NewRouter(options Options) *gin.Engine {
 	r.Use(middleware.Logger())
 	r.Use(gin.Recovery())
 	r.Use(cors.Default())
-	r.GET("/health", controllers.HealthController{}.Status)
+	r.GET("/health", handlers.HealthController{}.Status)
 	r.GET("/search", options.SearchController.Retrieve)
 	r.GET("/surrounds", options.SurroundsController.Retrieve)
 
