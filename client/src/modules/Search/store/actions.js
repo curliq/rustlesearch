@@ -27,7 +27,7 @@ export default {
     }
   },
   async loadMoreMessages({ commit, state, dispatch }) {
-    const lastResult = last(state.results);
+    const lastResult = last(state.results.messages);
     const searchAfter = lastResult ? lastResult.searchAfter : undefined;
     commit("setLoading", true);
     try {
@@ -35,7 +35,7 @@ export default {
         .get(`${baseUrl}/search`)
         .query(state.currentQuery)
         .query({ search_after: searchAfter });
-      commit("appendResults", body.data);
+      commit("appendResults", body.data.messages);
       commit("setLoading", false);
     } catch (e) {
       if (e.response.status === 429) {

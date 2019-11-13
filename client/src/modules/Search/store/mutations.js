@@ -5,7 +5,7 @@ export default {
     state.results = data;
   },
   appendResults(state, data) {
-    state.results = concat(state.results, data);
+    state.results.messages = concat(state.results.messages, data);
   },
   setCurrentQuery(state, data) {
     state.currentQuery = data;
