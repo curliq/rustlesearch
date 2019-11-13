@@ -1,5 +1,5 @@
 export default {
   currentQuery: null,
-  results: [],
+  results: null,
   loading: false
 };
