@@ -29,9 +29,9 @@
       >
         No results, try a different search
       </div>
-      <div v-else class="py-4 text-center font-bold text-gray-100">
-        Submit a search to get started
-      </div>
+    </div>
+    <div v-else class="py-4 text-center font-bold text-gray-100">
+      Submit a search to get started
     </div>
   </div>
 </template>
