@@ -1,17 +1,6 @@
-package rustlesearch
+package models
 
 import "time"
-
-type Message struct {
-	Channel     string    `json:"channel"`
-	Text        string    `json:"text"`
-	Timestamp   time.Time `json:"ts"`
-	Username    string    `json:"username"`
-	SearchAfter int       `json:"searchAfter"`
-}
-
-type Surrounds struct{}
-type Search struct{}
 
 type SurroundsQuery struct {
 	Channel     string `json:"channel" form:"channel" binding:"required"`

@@ -4,6 +4,7 @@ elastic:
   index: rustlesearch
   url: http://localhost:9200
   size: 100
+  total_hits: 100000
 paths:
   channels: channels.json
 env: development

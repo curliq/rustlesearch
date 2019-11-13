@@ -4,15 +4,15 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/johnpyp/rustlesearch/go-api/rustlesearch"
+	"github.com/johnpyp/rustlesearch/go-api/models"
+	"github.com/johnpyp/rustlesearch/go-api/services"
 )
 
 type SurroundsController struct {
-	Surrounds rustlesearch.Surrounds
 }
 
 func (s SurroundsController) Retrieve(c *gin.Context) {
-	var query rustlesearch.SurroundsQuery
+	var query models.SurroundsQuery
 	if err := c.ShouldBindQuery(&query); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"data":    nil,
@@ -22,7 +22,7 @@ func (s SurroundsController) Retrieve(c *gin.Context) {
 		return
 	}
 
-	results, err := s.Surrounds.Query(query)
+	results, err := services.DoSurroundsQuery(query)
 	if err != nil {
 		DbErr(c)
 		return

@@ -3,9 +3,7 @@ package main
 import (
 	"github.com/johnpyp/rustlesearch/go-api/config"
 	"github.com/johnpyp/rustlesearch/go-api/elasticsearch"
-	"github.com/johnpyp/rustlesearch/go-api/handlers"
 	"github.com/johnpyp/rustlesearch/go-api/logging"
-	"github.com/johnpyp/rustlesearch/go-api/rustlesearch"
 	"github.com/johnpyp/rustlesearch/go-api/server"
 	_ "github.com/joho/godotenv/autoload"
 	"log"
@@ -25,13 +23,7 @@ func main() {
 
 	options := server.Options{
 		Environment: config.GetString("env"),
-		SearchController: handlers.SearchController{
-			Search: rustlesearch.Search{},
-		},
-		SurroundsController: handlers.SurroundsController{
-			Surrounds: rustlesearch.Surrounds{},
-		},
-		Port: config.GetInt("server.port"),
+		Port:        config.GetInt("server.port"),
 	}
 
 	s := server.Server{

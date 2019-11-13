@@ -4,15 +4,15 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/johnpyp/rustlesearch/go-api/rustlesearch"
+	"github.com/johnpyp/rustlesearch/go-api/models"
+	"github.com/johnpyp/rustlesearch/go-api/services"
 )
 
 type SearchController struct {
-	Search rustlesearch.Search
 }
 
 func (s SearchController) Retrieve(c *gin.Context) {
-	var query rustlesearch.SearchQuery
+	var query models.SearchQuery
 	if err := c.ShouldBindQuery(&query); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"data":    nil,
@@ -35,7 +35,7 @@ func (s SearchController) Retrieve(c *gin.Context) {
 		return
 	}
 
-	results, err := s.Search.Query(query)
+	results, err := services.DoSearchQuery(query)
 	if err != nil {
 		DbErr(c)
 		return

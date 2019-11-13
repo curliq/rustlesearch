@@ -1,0 +1,7 @@
+package models
+
+type SearchResponse struct {
+	CountLimit bool      `json:"countLimit"`
+	Count      int64     `json:"count"`
+	Messages   []Message `json:"messages"`
+}
