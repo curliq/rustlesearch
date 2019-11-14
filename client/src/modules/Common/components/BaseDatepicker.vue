@@ -1,9 +1,9 @@
 <template>
   <input
     ref="datepicker"
-    class="cursor-pointer bg-gray-700 shadow appearance-none rounded w-full py-2 px-3 text-gray-300 focus:outline-none"
+    v-mask="'####-##-##'"
+    class="bg-gray-700 shadow appearance-none rounded w-full py-2 px-3 text-gray-300 focus:outline-none"
     type="text"
-    readonly
     :value="value"
     @change="e => $emit('input', e.target.value)"
   />
@@ -17,7 +17,7 @@ export default {
   props: {
     value: {
       type: String,
-      default: null
+      default: dayjs().format("YYYY-MM-DD")
     },
     options: {
       type: Object,
@@ -45,8 +45,13 @@ export default {
     createDp() {
       this.dp = TinyDatePicker(this.$refs.datepicker, {
         mode: "dp-below",
-        parse(date) {
-          return dayjs(date).toDate();
+        parse(str) {
+          const date = dayjs(str);
+          if (date.isValid()) {
+            return date.toDate();
+          }
+
+          return dayjs().toDate();
         },
         format(date) {
           return dayjs(date).format("YYYY-MM-DD");
