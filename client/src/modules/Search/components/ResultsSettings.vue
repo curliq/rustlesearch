@@ -8,19 +8,6 @@
       <span v-if="results.countLimit">+</span>
     </p>
     <div class="ml-auto" />
-    <div
-      :class="[sharedWordClass, isUtc ? activeClass : nonActiveClass]"
-      @click="$emit('update:isUtc', true)"
-    >
-      UTC
-    </div>
-    <div
-      :class="[sharedWordClass, !isUtc ? activeClass : nonActiveClass]"
-      @click="$emit('update:isUtc', false)"
-    >
-      Local
-    </div>
-    <div class="border-l self-stretch my-1 border-gray-400" />
     <span
       :class="[sharedClasses, !isCompact ? activeClass : nonActiveClass]"
       @click="$emit('update:mode', 'normal')"
@@ -49,10 +36,6 @@ export default {
     mode: {
       type: String,
       default: "normal"
-    },
-    isUtc: {
-      type: Boolean,
-      default: true
     },
     results: {
       type: Object,

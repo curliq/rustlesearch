@@ -7,7 +7,7 @@
       {{ channel }}
     </span>
 
-    <span class="text-gray-500 mr-1">[ {{ formattedDate }} ]</span>
+    <span class="text-gray-500 mr-1">[ {{ date }} ]</span>
     <span class="font-bold mr-1"> {{ username }}:</span>
 
     <span class="">{{ text }}</span>
@@ -15,9 +15,6 @@
 </template>
 
 <script>
-import dayjs from "@/dayjs";
-import { displayFormat } from "@/utils";
-
 export default {
   props: {
     channel: {
@@ -32,26 +29,12 @@ export default {
       type: String,
       default: null
     },
-    ts: {
+    date: {
       type: String,
       default: null
-    },
-    isUtc: {
-      type: Boolean,
-      default: true
     }
   },
-  computed: {
-    date() {
-      return dayjs(this.ts);
-    },
-    formattedDate() {
-      if (this.isUtc) {
-        return this.date.utc().format(displayFormat);
-      }
-      return this.date.format(displayFormat);
-    }
-  }
+  computed: {}
 };
 </script>
 

@@ -1,10 +1,6 @@
 <template>
   <div class="bg-gray-850 rounded">
-    <results-settings
-      :results="results"
-      :mode.sync="mode"
-      :is-utc.sync="isUtc"
-    />
+    <results-settings :results="results" :mode.sync="mode" />
     <div v-if="results">
       <div v-if="results.messages.length > 0">
         <message
@@ -14,7 +10,6 @@
           :channel="message.channel"
           :username="message.username"
           :text="message.text"
-          :is-utc="isUtc"
           :mode="mode"
         />
 
@@ -63,8 +58,7 @@ export default {
   },
   data() {
     return {
-      mode: "normal",
-      isUtc: true
+      mode: "normal"
     };
   }
 };

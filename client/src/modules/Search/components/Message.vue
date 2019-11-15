@@ -1,15 +1,17 @@
 <template>
-  <message-normal
-    v-if="mode === 'normal'"
+  <component
+    :is="'message-' + mode"
+    :date="date"
     v-bind="$attrs"
     v-on="$listeners"
-  ></message-normal>
-  <message-compact v-else v-bind="$attrs" v-on="$listeners"></message-compact>
+  ></component>
 </template>
 
 <script>
 import MessageCompact from "./MessageCompact.vue";
 import MessageNormal from "./MessageNormal.vue";
+import dayjs from "@/dayjs";
+import { displayFormat } from "@/utils";
 
 export default {
   components: {
@@ -20,6 +22,17 @@ export default {
     mode: {
       type: String,
       default: "normal"
+    },
+    ts: {
+      type: String,
+      default: null
+    }
+  },
+  computed: {
+    date() {
+      return dayjs(this.ts)
+        .utc()
+        .format(displayFormat);
     }
   }
 };
