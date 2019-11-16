@@ -1,17 +1,15 @@
 <template>
-  <div class="text-gray-200 px-2">
-    <span
-      class="text-gray-400 border-gray-700 inline-block"
-      style="width: 6.5rem;"
-    >
+  <tr class="text-gray-200 px-2">
+    <td class="text-gray-400 inline-block pl-1 pr-4">
       {{ channel }}
-    </span>
+    </td>
+    <td class="pr-1">
+      <span class="text-gray-500 mr-1 block md:inline">[ {{ date }} ]</span>
+      <span class="font-bold mr-1"> {{ username }}:</span>
 
-    <span class="text-gray-500 mr-1">[ {{ date }} ]</span>
-    <span class="font-bold mr-1"> {{ username }}:</span>
-
-    <span class="">{{ text }}</span>
-  </div>
+      <span class="">{{ text }}</span>
+    </td>
+  </tr>
 </template>
 
 <script>

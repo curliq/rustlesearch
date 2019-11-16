@@ -3,16 +3,19 @@
     <results-settings :results="results" :mode.sync="mode" />
     <div v-if="results">
       <div v-if="results.messages.length > 0">
-        <message
-          v-for="(message, i) in results.messages"
-          :key="i"
-          :ts="message.ts"
-          :channel="message.channel"
-          :username="message.username"
-          :text="message.text"
-          :mode="mode"
-        />
-
+        <table class="table-auto">
+          <tbody>
+            <message
+              v-for="(message, i) in results.messages"
+              :key="i"
+              :ts="message.ts"
+              :channel="message.channel"
+              :username="message.username"
+              :text="message.text"
+              :mode="mode"
+            />
+          </tbody>
+        </table>
         <results-load-more
           :loading="loading"
           @click="$emit('loadMoreMessages')"
