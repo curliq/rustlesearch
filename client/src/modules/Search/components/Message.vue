@@ -1,6 +1,6 @@
 <template>
   <tr class="text-gray-200 px-2">
-    <td class="text-gray-400 pl-1 pr-4 whitespace-no-wrap inline-block">
+    <td class="text-gray-400 pl-1 pr-4 md:whitespace-no-wrap inline-block">
       <span
         class="hover:border-accent border-gray-800 border px-2 mx-1 rounded cursor-pointer select-none"
         @click="$emit('surrounds')"
