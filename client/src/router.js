@@ -13,6 +13,11 @@ export default new Router({
       component: () => import("./modules/Search/page/Search.vue")
     },
     {
+      path: "/surrounds",
+      name: "Surrounds",
+      component: () => import("./modules/Surrounds/page/Surrounds.vue")
+    },
+    {
       path: "/about",
       name: "About",
       component: () => import("./modules/About/page/About.vue")

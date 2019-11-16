@@ -1,7 +1,12 @@
 <template>
   <div class="flex flex-wrap">
     <div class="lg:mb-0 xl:1/5 lg:w-1/4 md:w-1/3 mb-4 w-full">
-      <search-form class="md:mr-4" :loading="loading" @submit="submitQuery" />
+      <search-form
+        class="md:mr-4"
+        :loading="loading"
+        :results="results"
+        @submit="submitQuery"
+      />
     </div>
     <div class="xl:4/5 lg:w-3/4 md:w-2/3 w-full">
       <results
@@ -9,6 +14,7 @@
         :current-query="currentQuery"
         :loading="loading"
         @loadMoreMessages="loadMoreMessages"
+        @surrounds="goToSurrounds"
       />
     </div>
   </div>
@@ -49,6 +55,16 @@ export default {
           });
         }
       }
+    },
+    goToSurrounds(message) {
+      this.$router.push({
+        name: "Surrounds",
+        query: {
+          channel: message.channel,
+          date: message.ts,
+          username: message.username
+        }
+      });
     },
     loadMoreMessages() {
       this.$store.dispatch("search/loadMoreMessages");

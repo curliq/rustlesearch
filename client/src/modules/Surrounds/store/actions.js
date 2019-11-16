@@ -6,7 +6,7 @@ const baseUrl = process.env.VUE_APP_API;
 
 export default {
   async getResults({ commit, dispatch }, query) {
-    commit("setCurrentQuery", query);
+    // commit("setCurrentQuery", query);
     commit("setLoading", true);
     try {
       const { body } = await superagent

@@ -1,3 +1,4 @@
 export default {
-  results: null
+  results: null,
+  loading: false
 };

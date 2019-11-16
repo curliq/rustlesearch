@@ -1,5 +1,8 @@
 export default {
-  setChannels(state, data) {
-    state.channels = data;
+  setResults(state, data) {
+    state.results = data;
+  },
+  setLoading(state, data) {
+    state.loading = data;
   }
 };

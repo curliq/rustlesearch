@@ -1,7 +1,12 @@
 <template>
   <tr class="text-gray-200 px-2">
-    <td class="text-gray-400 inline-block pl-1 pr-4">
-      {{ channel }}
+    <td class="text-gray-400 pl-1 pr-4 whitespace-no-wrap inline-block">
+      <span
+        class="hover:border-accent border-gray-800 border px-2 mx-1 rounded cursor-pointer"
+        @click="$emit('surrounds')"
+        >&gt;</span
+      >
+      <span> {{ channel }}</span>
     </td>
     <td class="pr-1">
       <span class="text-gray-500 mr-1 block md:inline">[ {{ date }} ]</span>

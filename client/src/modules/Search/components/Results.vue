@@ -13,6 +13,7 @@
               :username="message.username"
               :text="message.text"
               :mode="mode"
+              @surrounds="$emit('surrounds', message)"
             />
           </tbody>
         </table>

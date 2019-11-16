@@ -17,7 +17,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func DoSurroundsQuery(q models.SurroundsQuery) (string, error) {
+func DoSurroundsQuery(q models.SurroundsQuery) (models.SurroundsResponse, error) {
 	c := config.GetConfig()
 
 	date := q.DateTime.UTC().Format("2006-01-02")
@@ -29,14 +29,17 @@ func DoSurroundsQuery(q models.SurroundsQuery) (string, error) {
 
 	if err != nil {
 
-		return "", err
+		return models.SurroundsResponse{}, err
 	}
 
 	reader := bufio.NewReaderSize(bytes.NewReader(data), len(data))
-	datetimeOrl := q.DateTime.Format("2006-01-02 15:04:05 UTC")
+	datetimeOrl := q.DateTime.Format("2006-01-02 15:04:05 utc")
 	username := strings.ToLower(q.Username)
 	messageSubstring := fmt.Sprintf("[%s] %s", datetimeOrl, username)
-	return getLines(reader, messageSubstring, 40), nil
+	return models.SurroundsResponse{
+		Body:  getLines(reader, messageSubstring, 40),
+		Match: messageSubstring,
+	}, nil
 }
 
 func readFlate(path string) ([]byte, error) {
@@ -79,7 +82,7 @@ func getLines(reader *bufio.Reader, match string, n int) string {
 		}
 
 		if !isFound {
-			if strings.Contains(line, match) {
+			if strings.Contains(strings.ToLower(line), match) {
 				isFound = true
 				afterSlice = append(afterSlice, line)
 			} else {

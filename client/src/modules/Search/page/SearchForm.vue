@@ -68,6 +68,10 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    results: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -94,9 +98,12 @@ export default {
   },
   async mounted() {
     await this.$store.dispatch("common/getChannels");
+    console.log(this.results);
     if (keys(this.$route.query).length > 0) {
       this.query = mergeRight(this.query, this.$route.query);
-      this.$emit("submit", this.query);
+      if (!this.results) {
+        this.$emit("submit", this.query);
+      }
     }
   }
 };
