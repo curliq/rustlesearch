@@ -1,27 +1,40 @@
 <template>
-  <component
-    :is="'message-' + mode"
-    :date="date"
-    v-bind="$attrs"
-    v-on="$listeners"
-  ></component>
+  <tr class="text-gray-200 px-2">
+    <td class="text-gray-400 pl-1 pr-4 whitespace-no-wrap inline-block">
+      <span
+        class="hover:border-accent border-gray-800 border px-2 mx-1 rounded cursor-pointer select-none"
+        @click="$emit('surrounds')"
+        >&gt;</span
+      >
+      <span> {{ channel }}</span>
+    </td>
+    <td class="pr-1">
+      <span class="text-gray-500 mr-1 block md:inline font-date text-sm">{{
+        date
+      }}</span>
+      <span class="font-bold mr-1"> {{ username }}:</span>
+
+      <span class="">{{ text }}</span>
+    </td>
+  </tr>
 </template>
 
 <script>
-import MessageCompact from "./MessageCompact.vue";
-import MessageNormal from "./MessageNormal.vue";
 import dayjs from "@/dayjs";
-import { displayFormat } from "@/utils";
 
 export default {
-  components: {
-    MessageCompact,
-    MessageNormal
-  },
   props: {
-    mode: {
+    channel: {
       type: String,
-      default: "normal"
+      default: null
+    },
+    username: {
+      type: String,
+      default: null
+    },
+    text: {
+      type: String,
+      default: null
     },
     ts: {
       type: String,
@@ -32,10 +45,10 @@ export default {
     date() {
       return dayjs(this.ts)
         .utc()
-        .format(displayFormat);
+        .format("YYYY-MM-DD | HH:mm:ss");
     }
   }
 };
 </script>
 
-<style scoped></style>
+<style></style>

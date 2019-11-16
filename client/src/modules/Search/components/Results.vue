@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-850 rounded">
-    <results-settings :results="results" :mode.sync="mode" />
+    <results-settings :results="results" />
     <div v-if="results">
       <div v-if="results.messages.length > 0">
         <table class="table-auto">
@@ -12,7 +12,6 @@
               :channel="message.channel"
               :username="message.username"
               :text="message.text"
-              :mode="mode"
               @surrounds="$emit('surrounds', message)"
             />
           </tbody>
@@ -59,11 +58,6 @@ export default {
       type: Boolean,
       default: false
     }
-  },
-  data() {
-    return {
-      mode: "normal"
-    };
   }
 };
 </script>

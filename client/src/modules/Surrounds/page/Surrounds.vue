@@ -37,7 +37,9 @@ export default {
   },
   async mounted() {
     await this.$store.dispatch("surrounds/getResults", this.$route.query || {});
-    this.$scrollTo(".matches");
+    document.querySelector(".matches").scrollIntoView({
+      block: "center"
+    });
   }
 };
 </script>
