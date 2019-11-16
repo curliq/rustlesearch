@@ -7,6 +7,7 @@ elastic:
   total_hits: 100000
 paths:
   channels: channels.json
+  orl: ../scripts/data/orl
 env: development
 log:
   level: debug

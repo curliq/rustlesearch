@@ -1,70 +1,103 @@
 package services
 
 import (
-	"context"
-	"encoding/json"
+	"bufio"
+	"bytes"
+	"compress/zlib"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
 
-	"github.com/johnpyp/rustlesearch/go-api/elasticsearch"
+	"github.com/johnpyp/rustlesearch/go-api/config"
 	"github.com/johnpyp/rustlesearch/go-api/logging"
 	"github.com/johnpyp/rustlesearch/go-api/models"
-	"github.com/olivere/elastic/v7"
+	"github.com/rs/zerolog/log"
 )
 
-func DoSurroundsQuery(q models.SurroundsQuery) ([][]Message, error) {
-	log := logging.GetLogger()
-	client := elasticsearch.GetDB()
-	queryResult, err := surroundsBuilder(q, client).Do(context.Background())
-	if err != nil {
-		log.Error().Err(err).Msg("SurroundsQuery builder error")
-		return [][]Message{}, err
-	}
-	results := [][]Message{}
-	for i, resultItem := range queryResult.Responses {
-		results = append(results, []Message{})
-		if resultItem.TotalHits() > 0 {
-			log.Debug().Int64("totalHits", resultItem.TotalHits()).Msg("Total hits")
-			for _, hit := range resultItem.Hits.Hits {
-				var t Message
+func DoSurroundsQuery(q models.SurroundsQuery) (string, error) {
+	c := config.GetConfig()
 
-				err := json.Unmarshal(hit.Source, &t)
-				if err != nil {
-					log.Print(err)
+	date := q.DateTime.UTC().Format("2006-01-02")
+	orlPath := c.GetString("paths.orl")
+
+	channel := strings.Title(strings.ToLower(q.Channel))
+	path := fmt.Sprintf("%s/%s::%s.txt", orlPath, channel, date)
+	data, err := readFlate(filepath.Clean(path))
+
+	if err != nil {
+
+		return "", err
+	}
+
+	reader := bufio.NewReaderSize(bytes.NewReader(data), len(data))
+	datetimeOrl := q.DateTime.Format("2006-01-02 15:04:05 UTC")
+	username := strings.ToLower(q.Username)
+	messageSubstring := fmt.Sprintf("[%s] %s", datetimeOrl, username)
+	return getLines(reader, messageSubstring, 40), nil
+}
+
+func readFlate(path string) ([]byte, error) {
+	log := logging.GetLogger()
+	var buf []byte
+	f, err := os.Open(path)
+
+	defer f.Close()
+	if err != nil {
+		log.Error().Caller().Err(err).Msg("readFlate error")
+		return nil, err
+	}
+	r, err := zlib.NewReader(f)
+
+	defer r.Close()
+	if err != nil {
+		log.Error().Caller().Err(err).Msg("readFlate error")
+		return nil, err
+	}
+	buf, err = ioutil.ReadAll(r)
+	if err != nil {
+		log.Error().Caller().Err(err).Msg("readFlate error")
+		return nil, err
+	}
+	return buf, nil
+}
+
+func getLines(reader *bufio.Reader, match string, n int) string {
+	var beforeBuffer []string
+	var afterSlice []string
+	isFound := false
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			if err != io.EOF {
+
+				log.Error().Err(err).Msg("error reading bytes")
+			}
+			break
+		}
+
+		if !isFound {
+			if strings.Contains(line, match) {
+				isFound = true
+				afterSlice = append(afterSlice, line)
+			} else {
+				beforeBuffer = append(beforeBuffer, line)
+				length := len(beforeBuffer)
+				if length > n {
+					beforeBuffer = beforeBuffer[1:]
 				}
-				t.SearchAfter = int(hit.Sort[0].(float64))
-				results[i] = append(results[i], t)
 			}
 		} else {
-			log.Debug().Msg("No hits found")
+			if len(afterSlice) <= n {
+				afterSlice = append(afterSlice, line)
+			} else {
+				break
+			}
 		}
+
 	}
-	utils.ReverseAny(results[0])
-	return results, nil
-}
-func surroundsBuilder(q models.SurroundsQuery, client *elastic.Client) *elastic.MultiSearchService {
-	channel := strings.Title(strings.ToLower(q.Channel))
-	query := elastic.
-		NewBoolQuery().
-		Filter(elastic.NewTermQuery("channel", channel))
-	q1 := elastic.NewSearchRequest().
-		Index("rustlesearch-*").
-		Source(elastic.
-			NewSearchSource().
-			Query(query).
-			SearchAfter(q.SearchAfter).
-			Size(q.Size).
-			Sort("ts", true))
-	q2 := elastic.NewSearchRequest().
-		Index("rustlesearch-*").
-		Source(elastic.
-			NewSearchSource().
-			Query(query).
-			SearchAfter(q.SearchAfter).
-			Size(q.Size).
-			Sort("ts", false))
-
-	fullQuery := client.MultiSearch().
-		Add(q2, q1)
-
-	return fullQuery
+	fmt.Println(len(beforeBuffer), len(afterSlice), match)
+	return strings.Join(beforeBuffer, "") + strings.Join(afterSlice, "")
 }

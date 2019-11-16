@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"strings"
+	"time"
 
 	"github.com/johnpyp/rustlesearch/go-api/config"
 	"github.com/johnpyp/rustlesearch/go-api/elasticsearch"
@@ -32,7 +33,6 @@ func DoSearchQuery(q models.SearchQuery) (models.SearchResponse, error) {
 
 			// Deserialize hit.Source into a Tweet (could also be just a map[string]interface{}).
 			var t Message
-
 			err := json.Unmarshal(hit.Source, &t)
 			if err != nil {
 				log.Print(err)
@@ -68,10 +68,15 @@ func searchBuilder(q models.SearchQuery, client *elastic.Client) *elastic.Search
 	var rangeQuery = elastic.NewRangeQuery("ts")
 
 	if !q.StartDate.IsZero() {
-		rangeQuery = rangeQuery.From(q.StartDate)
+		_, offset := q.StartDate.Zone()
+		d := q.StartDate.Add(time.Duration(offset) * time.Second).UTC().Format("2006-01-02")
+		rangeQuery = rangeQuery.From(d)
+
 	}
 	if !q.EndDate.IsZero() {
-		rangeQuery = rangeQuery.To(q.EndDate)
+		_, offset := q.EndDate.Zone()
+		d := q.EndDate.Add(time.Duration(offset) * time.Second).UTC().Format("2006-01-02")
+		rangeQuery = rangeQuery.To(d)
 	}
 
 	query = query.Filter(rangeQuery)
