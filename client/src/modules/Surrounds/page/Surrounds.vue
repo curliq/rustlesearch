@@ -10,7 +10,9 @@
             'px-2'
           ]"
         >
-          {{ result.body }}
+          <text-highlight :queries="[username]">
+            {{ result.body }}
+          </text-highlight>
         </div>
       </div>
     </div>
@@ -19,6 +21,7 @@
 
 <script>
 import { mapState } from "vuex";
+import { last } from "ramda";
 
 export default {
   computed: {
@@ -33,6 +36,9 @@ export default {
           matches: x.toLowerCase().includes(this.results.match)
         };
       });
+    },
+    username() {
+      return last(this.results.match.split(" "));
     }
   },
   async mounted() {
