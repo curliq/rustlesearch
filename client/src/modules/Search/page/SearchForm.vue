@@ -59,7 +59,8 @@
 </template>
 
 <script>
-import { keys, mergeRight } from "ramda";
+import { keys, mergeRight, reject, isNil, anyPass, equals } from "ramda";
+import { isEqual } from "lodash-es";
 import { mapState } from "vuex";
 import dayjs from "@/dayjs";
 
@@ -94,16 +95,29 @@ export default {
   computed: {
     ...mapState("common", {
       channels: state => state.channels
+    }),
+    ...mapState("search", {
+      currentQuery: state => state.currentQuery
     })
   },
   async mounted() {
     await this.$store.dispatch("common/getChannels");
-    console.log(this.results);
     if (keys(this.$route.query).length > 0) {
       this.query = mergeRight(this.query, this.$route.query);
+
       if (!this.results) {
         this.$emit("submit", this.query);
       }
+    }
+    const isBad = anyPass([isNil, equals("")]);
+    const toPush = reject(isBad)(this.currentQuery);
+    if (!isEqual(toPush, this.$route.query)) {
+      this.$router.push({
+        name: "Search",
+        query: reject(isBad)(this.currentQuery)
+      });
+
+      this.query = mergeRight(this.query, this.$route.query);
     }
   }
 };
