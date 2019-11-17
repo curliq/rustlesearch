@@ -8,13 +8,13 @@
       >
       <span> {{ channel }}</span>
     </td>
-    <td class="pr-1">
+    <td class="pr-1 break-all">
       <span class="text-gray-500 mr-1 block md:inline font-date text-sm">{{
         date
       }}</span>
       <span class="font-bold mr-1"> {{ username }}:</span>
 
-      <span class="">{{ text }}</span>
+      <span class="break-words">{{ text }}</span>
     </td>
   </tr>
 </template>
