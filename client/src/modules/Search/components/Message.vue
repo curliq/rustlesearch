@@ -8,13 +8,16 @@
       >
       <span> {{ channel }}</span>
     </td>
-    <td class="pr-1 break-all">
-      <span class="text-gray-500 mr-1 block md:inline font-date text-sm">{{
-        date
-      }}</span>
-      <span class="font-bold mr-1"> {{ username }}:</span>
 
-      <span class="break-words">{{ text }}</span>
+    <td class="pr-1">
+      <div class="break-words-container">
+        <span class="text-gray-500 mr-1 block md:inline font-date text-sm">
+          {{ date }}
+        </span>
+        <span class="font-bold mr-1"> {{ username }}:</span>
+
+        <span class="break-words">{{ text }}</span>
+      </div>
     </td>
   </tr>
 </template>
@@ -51,4 +54,11 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.break-words-container {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+  word-wrap: break-word;
+}
+</style>
