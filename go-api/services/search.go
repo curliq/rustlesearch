@@ -59,10 +59,16 @@ func searchBuilder(q models.SearchQuery, client *elastic.Client) *elastic.Search
 		query = query.Filter(elastic.NewTermQuery("channel", channel))
 	}
 	if len(q.Username) != 0 {
-		query = query.Filter(elastic.NewSimpleQueryStringQuery(q.Username).Field("username"))
+		query = query.Filter(elastic.NewSimpleQueryStringQuery(q.Username).
+			Field("username").
+			Flags("AND|ESCAPE|NOT|OR|PHRASE|PRECEDENCE|PREFIX|WHITESPACE"))
 	}
 	if len(q.Text) != 0 {
-		query = query.Filter(elastic.NewSimpleQueryStringQuery(q.Text).Field("text").DefaultOperator("AND"))
+		query = query.Filter(elastic.NewSimpleQueryStringQuery(q.Text).
+			Field("text").
+			DefaultOperator("AND").
+			Flags("AND|ESCAPE|NOT|OR|PHRASE|PRECEDENCE|PREFIX|WHITESPACE"))
+
 	}
 	var rangeQuery = elastic.NewRangeQuery("ts")
 
