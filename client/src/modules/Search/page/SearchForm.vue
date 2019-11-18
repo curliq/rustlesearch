@@ -110,7 +110,7 @@ export default {
       }
     }
     const isBad = anyPass([isNil, equals("")]);
-    const toPush = reject(isBad)(this.currentQuery);
+    const toPush = reject(isBad)(this.currentQuery || {});
     if (!isEqual(toPush, this.$route.query)) {
       this.$router.push({
         name: "Search",
