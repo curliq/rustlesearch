@@ -7,6 +7,7 @@
         :results="results"
         @submit="submitQuery"
       />
+      <help-card class="mr-4 hidden md:block mt-4"></help-card>
     </div>
     <div class="xl:4/5 lg:w-3/4 md:w-2/3 w-full">
       <results
@@ -24,12 +25,14 @@ import { mapState } from "vuex";
 import { reject, isNil, anyPass, equals } from "ramda";
 import { isEqual } from "lodash-es";
 import Results from "../components/Results.vue";
+import HelpCard from "../components/HelpCard.vue";
 import SearchForm from "./SearchForm.vue";
 
 export default {
   components: {
     Results,
-    SearchForm
+    SearchForm,
+    HelpCard
   },
   data() {
     return {};
