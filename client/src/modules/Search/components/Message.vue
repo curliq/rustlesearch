@@ -14,7 +14,7 @@
         <span class="text-gray-500 mr-1 block md:inline font-date text-sm">
           {{ date }}
         </span>
-        <span class="font-bold mr-1"> {{ username }}:</span>
+        <span class="font-bold mr-1">{{ username }}:</span>
 
         <span class="break-words">{{ text }}</span>
       </div>
