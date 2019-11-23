@@ -1,5 +1,7 @@
 <template>
-  <div class="flex items-center text-gray-200 pl-2 mb-1 rounded-t bg-gray-800">
+  <div
+    class="flex items-center text-gray-200 pl-2 mb-1 rounded-t-sm bg-gray-800"
+  >
     <p class="py-2 pl-1 pr-4 font-bold">
       Results
     </p>

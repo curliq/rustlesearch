@@ -59,7 +59,8 @@ func searchBuilder(q models.SearchQuery, client *elastic.Client) *elastic.Search
 		query = query.Filter(elastic.NewTermQuery("channel", channel))
 	}
 	if len(q.Username) != 0 {
-		query = query.Filter(elastic.NewSimpleQueryStringQuery(q.Username).
+		username := strings.ToLower(q.Username)
+		query = query.Filter(elastic.NewSimpleQueryStringQuery(username).
 			Field("username").
 			Flags("AND|ESCAPE|NOT|OR|PHRASE|PRECEDENCE|WHITESPACE"))
 	}

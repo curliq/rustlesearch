@@ -9,7 +9,7 @@
       :value="value"
       :options="items"
       :placeholder="placeholder"
-      class="field__input bg-gray-700 style-chooser rounded w-full py-1 pr-3 pl-1 focus:outline-none"
+      class="field__input bg-gray-700 style-chooser rounded-sm w-full py-1 pr-3 pl-1 focus:outline-none"
       @input="v => $emit('input', v)"
       v-on="$listeners"
     />
@@ -18,7 +18,7 @@
       :type="type"
       :value="value"
       :placeholder="placeholder"
-      class="field__input bg-gray-700 rounded w-full py-2 px-3 placeholder-gray-400 text-gray-100 focus:outline-none"
+      class="field__input bg-gray-700 rounded-sm w-full py-2 px-3 placeholder-gray-400 text-gray-100 focus:outline-none"
       v-bind="$attrs"
       v-on="listeners"
     />

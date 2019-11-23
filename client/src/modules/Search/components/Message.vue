@@ -2,7 +2,7 @@
   <tr class="text-gray-200 px-2">
     <td class="text-gray-400 pl-1 pr-4 md:whitespace-no-wrap inline-block">
       <span
-        class="hover:border-accent border-gray-800 border px-2 mx-1 rounded cursor-pointer select-none"
+        class="hover:border-accent border-gray-800 border px-2 mx-1 rounded-sm cursor-pointer select-none"
         @click="$emit('surrounds')"
         >&gt;</span
       >
@@ -14,7 +14,7 @@
         <span class="text-gray-500 mr-1 block md:inline font-date text-sm">
           {{ date }}
         </span>
-        <span class="font-bold mr-1">{{ username }}:</span>
+        <span class="font-bold mr-1">{{ username }}: </span>
 
         <span class="break-words">{{ text }}</span>
       </div>

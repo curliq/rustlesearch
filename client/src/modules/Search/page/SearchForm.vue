@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-850 shadow flex flex-col rounded py-4 px-3">
+  <div class="bg-gray-850 shadow flex flex-col rounded-sm py-4 px-3">
     <div>
       <div class="flex lg:flex-row flex-col lg:items-center mb-5">
         <base-dark-label class="text-lg mr-2 flex-initial"
@@ -48,7 +48,7 @@
         />
       </div>
       <button
-        class="hover:border-accent border-gray-700 text-white border border-transparent w-full px-10 text-center py-3 rounded focus:outline-none my-1"
+        class="hover:border-accent border-gray-700 text-white border border-transparent w-full px-10 text-center py-3 rounded-sm focus:outline-none my-1"
         @click="$emit('submit', query)"
       >
         <span v-if="!loading">Submit</span>

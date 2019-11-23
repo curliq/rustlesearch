@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-850 rounded">
+  <div class="bg-gray-850 rounded-sm">
     <results-settings :results="results" />
     <div v-if="results">
       <div v-if="results.messages.length > 0">

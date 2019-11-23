@@ -2,7 +2,7 @@
   <input
     ref="datepicker"
     v-mask="'####-##-##'"
-    class="bg-gray-700 shadow appearance-none rounded w-full py-2 px-3 text-gray-300 focus:outline-none"
+    class="bg-gray-700 shadow appearance-none rounded-sm w-full py-2 px-3 text-gray-300 focus:outline-none"
     type="text"
     :value="value"
     @change="e => $emit('input', e.target.value)"

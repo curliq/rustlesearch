@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-wrap">
-    <div class="w-full bg-gray-850 rounded text-gray-400">
+    <div class="w-full bg-gray-850 rounded-sm text-gray-400">
       <div v-if="results">
         <div
           v-for="(result, i) in splitResults"

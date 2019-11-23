@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-gray-850 rounded shadow flex flex-col rounded py-4 px-3 text-gray-400"
+    class="bg-gray-850 rounded-sm shadow flex flex-col rounded-sm py-4 px-3 text-gray-400"
   >
     <div class="flex flex-col mb-5">
       <base-dark-label class="text-lg mr-2 flex-initial mb-2">

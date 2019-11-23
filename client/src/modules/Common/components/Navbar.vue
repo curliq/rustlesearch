@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="flex items-center justify-between flex-wrap bg-gray-850 px-6 py-3"
+    class="flex items-center justify-between flex-wrap bg-gray-850 px-6 py-0"
   >
     <div class="flex items-center flex-no-shrink mr-6">
       <router-link
@@ -12,7 +12,7 @@
     </div>
     <div class="block sm:hidden">
       <button
-        class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-500 hover:text-gray-400 hover:border-white"
+        class="flex items-center px-3 py-2 border rounded-sm text-gray-500 border-gray-500 hover:text-gray-400 hover:border-white"
         @click="open = !open"
       >
         <svg
