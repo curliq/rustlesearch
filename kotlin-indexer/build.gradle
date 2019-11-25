@@ -30,7 +30,9 @@ dependencies {
 
     // Use the Kotlin JUnit integration.
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
-    compile group: 'com.typesafe.akka', name: 'akka-stream_2.12', version: '2.5.25'
+
+    compile group: 'com.typesafe.akka', name: 'akka-stream_2.12', version: '2.5.23'
+    compile group: 'com.typesafe.akka', name: 'akka-stream-testkit_2.12', version: '2.5.23'
     compile group: 'com.lightbend.akka', name: 'akka-stream-alpakka-file_2.12', version: '1.1.2'
     compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.4.0'
     compile 'io.github.cdimascio:java-dotenv:5.1.3'

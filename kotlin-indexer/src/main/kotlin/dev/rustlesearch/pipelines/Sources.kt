@@ -1,15 +1,12 @@
 package dev.rustlesearch.pipelines
 
 class SourceBuilder(config: PipelineConfig) {
-    inner class RabbitMQSource() {
+    inner class RabbitMQSource()
 
-    }
+    inner class RabbitToElastic(
+        rabbitConfig: RabbitConfig,
+        elasticConfig: ElasticConfig
+    )
 
-    inner class RabbitToElastic(rabbitConfig: RabbitConfig, elasticConfig: ElasticConfig) {
-
-    }
-
-    inner class FileToElastic {
-
-    }
+    inner class FileToElastic
 }

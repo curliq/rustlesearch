@@ -3,12 +3,68 @@
  */
 package rustlesearch
 
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
+import akka.stream.javadsl.Source
+import akka.stream.testkit.javadsl.TestSink
+import dev.rustlesearch.pipelines.ChannelLine
+import dev.rustlesearch.pipelines.Flows
+import dev.rustlesearch.pipelines.Message
+import java.util.*
 import kotlin.test.Test
-import kotlin.test.assertNotNull
 
 class AppTest {
-    @Test fun testAppHasAGreeting() {
-        val classUnderTest = App()
-        assertNotNull(classUnderTest.greeting, "app should have a greeting")
+    @Test
+    fun basicLineWorks() {
+
+        val system = ActorSystem.create()
+        val materializer = ActorMaterializer.create(system)
+        val source = Source.single(
+            ChannelLine(
+                "destiny",
+                "[2019-11-23 00:00:05 UTC] Bacon: Destiny PepeLaugh click drewbertman 's link"
+            )
+        )
+        val runnable = source
+            .via(Flows.lineToMessage)
+
+        runnable.runWith(TestSink.probe(system), materializer).request(1).expectNext(
+            Message(
+                "2019-11-23T00:00:05.000Z",
+                "Destiny",
+                "bacon",
+                "Destiny PepeLaugh click drewbertman 's link"
+            )
+        )
+    }
+
+    @Test
+    fun erroredLineWorks() {
+
+        val system = ActorSystem.create()
+        val materializer = ActorMaterializer.create(system)
+        val source = Source.from(
+            listOf(
+                ChannelLine(
+                    "destiny",
+                    "019-11-23 00:00:05 UTC] Bacon: Destiny PepeLaugh click drewbertman 's link"
+                ),
+                ChannelLine(
+                    "destiny",
+                    "[2019-11-23 00:00:05 UTC] Bacon: Destiny PepeLaugh click drewbertman 's link"
+                )
+            )
+        )
+        val runnable = source
+            .via(Flows.lineToMessage)
+
+        runnable.runWith(TestSink.probe(system), materializer).request(2).expectNext(
+            Message(
+                "2019-11-23T00:00:05.000Z",
+                "Destiny",
+                "bacon",
+                "Destiny PepeLaugh click drewbertman 's link"
+            )
+        ).expectComplete()
     }
 }
