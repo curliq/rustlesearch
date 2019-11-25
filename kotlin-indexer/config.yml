@@ -1,0 +1,5 @@
+elastic:
+  port: 9200
+paths:
+  orl: "/home/johnpyp/orl-bak/orl"
+  indexCache: "index-cache.txt"

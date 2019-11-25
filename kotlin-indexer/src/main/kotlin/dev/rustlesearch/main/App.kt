@@ -8,6 +8,7 @@ import akka.stream.ActorMaterializer
 import akka.stream.javadsl.FileIO
 import akka.stream.javadsl.Source
 import akka.util.ByteString
+import dev.rustlesearch.config.config
 import dev.rustlesearch.pipelines.Flows
 import java.io.File
 import java.nio.file.Paths
@@ -15,12 +16,11 @@ import java.nio.file.Paths
 fun main(args: Array<String>) {
 
     // val client = RestClient.builder(HttpHost("localhost", 9201)).build()
+    println(config.elastic.host)
     val system = ActorSystem.create()
     val materializer = ActorMaterializer.create(system)
-//    println(File("/home/johnpyp/orl-bak/orl").listFiles()?.map { it.absolutePath })
     val source = Source.from(
         File("/home/johnpyp/orl-bak/orl").listFiles()?.map { it.absolutePath } ?: emptyList())
-    //    val sink = Sink.foreach<Message> { println(it) }
     val sink = FileIO.toPath(Paths.get("./data/parsed.txt"))
     val runnable = source
         .map { Paths.get(it) }
