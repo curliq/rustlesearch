@@ -1,12 +1,10 @@
 package dev.rustlesearch.pipelines
 
-class SourceBuilder(config: PipelineConfig) {
-    inner class RabbitMQSource()
+import akka.NotUsed
+import akka.stream.javadsl.Source
+import java.io.File
 
-    inner class RabbitToElastic(
-        rabbitConfig: RabbitConfig,
-        elasticConfig: ElasticConfig
-    )
-
-    inner class FileToElastic
+object Sources {
+   fun orlSource(path: String): Source<String, NotUsed> = Source.from(
+       File(path).listFiles()?.map { it.absolutePath } ?: emptyList())
 }

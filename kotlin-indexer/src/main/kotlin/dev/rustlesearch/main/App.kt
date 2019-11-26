@@ -5,28 +5,28 @@ package dev.rustlesearch.main
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import akka.stream.javadsl.FileIO
-import akka.stream.javadsl.Source
-import akka.util.ByteString
 import dev.rustlesearch.config.config
 import dev.rustlesearch.pipelines.Flows
-import java.io.File
+import dev.rustlesearch.pipelines.Sinks.ElasticMessageSink
+import dev.rustlesearch.pipelines.Sources
+import org.apache.http.HttpHost
+import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestHighLevelClient
 import java.nio.file.Paths
 
 fun main(args: Array<String>) {
 
-    // val client = RestClient.builder(HttpHost("localhost", 9201)).build()
-    println(config.elastic.host)
+    val client = RestHighLevelClient(
+        RestClient.builder(HttpHost(config.elastic.host.v, config.elastic.port.v))
+    )
     val system = ActorSystem.create()
     val materializer = ActorMaterializer.create(system)
-    val source = Source.from(
-        File("/home/johnpyp/orl-bak/orl").listFiles()?.map { it.absolutePath } ?: emptyList())
-    val sink = FileIO.toPath(Paths.get("./data/parsed.txt"))
+    val source = Sources.orlSource(config.paths.orl.toString())
+    val sink = ElasticMessageSink(client)
     val runnable = source
         .map { Paths.get(it) }
         .via(Flows.filesToLines)
         .via(Flows.lineToMessage)
-        .map { ByteString.fromString(it.toString() + "\n") }
 
-    runnable.runWith(sink, materializer).whenComplete { _, _ -> println("Done") }
+    runnable.runWith(sink, materializer)
 }

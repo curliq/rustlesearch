@@ -22,6 +22,7 @@ val messageRegex =
     Regex(regexString, setOf(RegexOption.IGNORE_CASE, RegexOption.UNIX_LINES))
 
 object Flows {
+
     val lineToMessage: Flow<ChannelLine, Message, NotUsed> =
         Flow.create<ChannelLine>()
             .map(::lineToBasicMessage)

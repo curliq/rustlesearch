@@ -3,9 +3,6 @@
   "version": "0.0.1",
   "main": "index.js",
   "license": "AGPL-3.0-or-later",
-  "engines": {
-    "node": "12"
-  },
   "scripts": {
     "cli": "node -r dotenv/config ./src/cli.js",
     "lint": "eslint --ext .js ./",

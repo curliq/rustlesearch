@@ -1,5 +1,7 @@
 elastic:
+  host: "localhost"
   port: 9200
+  index: "rustlesearch"
 paths:
   orl: "/home/johnpyp/orl-bak/orl"
   indexCache: "index-cache.txt"
