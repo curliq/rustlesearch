@@ -44,7 +44,7 @@ object Flows {
             ByteString.fromString("\n"),
             10000,
             FramingTruncation.ALLOW
-        ).map { it.utf8String() }
+        ).map(ByteString::utf8String)
 
     private fun bodyToChannelLine(path: Path, line: String): ChannelLine {
         val channel = path.fileName.toString().split("::")[0]
