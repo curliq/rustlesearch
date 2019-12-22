@@ -2,3 +2,4 @@
 build/
 .gradle/
 .mypy_cache/
+.lsp/
