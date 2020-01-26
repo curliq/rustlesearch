@@ -1,10 +1,10 @@
 <template>
   <tr class="text-gray-200 px-2">
     <td class="text-gray-400 pl-1 pr-4 md:whitespace-no-wrap inline-block">
-      <span
+      <router-link
+        :to="{ name: 'Surrounds', query: { channel, date: ts, username } }"
         class="hover:border-accent border-gray-800 border px-2 mx-1 rounded-sm cursor-pointer select-none"
-        @click="$emit('surrounds')"
-        >&gt;</span
+        >&gt;</router-link
       >
       <span> {{ channel }}</span>
     </td>

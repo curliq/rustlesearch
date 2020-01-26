@@ -15,7 +15,6 @@
         :current-query="currentQuery"
         :loading="loading"
         @loadMoreMessages="loadMoreMessages"
-        @surrounds="goToSurrounds"
       />
     </div>
   </div>
@@ -58,16 +57,6 @@ export default {
           });
         }
       }
-    },
-    goToSurrounds(message) {
-      this.$router.push({
-        name: "Surrounds",
-        query: {
-          channel: message.channel,
-          date: message.ts,
-          username: message.username
-        }
-      });
     },
     loadMoreMessages() {
       this.$store.dispatch("search/loadMoreMessages");

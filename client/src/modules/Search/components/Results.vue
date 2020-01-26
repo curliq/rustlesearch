@@ -12,7 +12,6 @@
               :channel="message.channel"
               :username="message.username"
               :text="message.text"
-              @surrounds="$emit('surrounds', message)"
             />
           </tbody>
         </table>
