@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "confic": "^0.1.3",
+    "dank-twitch-irc": "^3.0.7",
     "express": "^4.17.1"
   }
 }
