@@ -1,6 +1,10 @@
 /* eslint-disable no-sync */
 const Promise = require("bluebird");
 const fs = require("fs-extra");
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
+
+dayjs.extend(utc);
 
 const co = fn => Promise.coroutine(fn);
 
@@ -71,4 +75,5 @@ module.exports = {
   sleep,
   fs,
   getFileByLine,
+  dayjs,
 };

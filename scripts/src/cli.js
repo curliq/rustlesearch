@@ -2,6 +2,7 @@ const program = require("commander");
 const { download } = require("./download_service");
 const { indexToElastic } = require("./index_service");
 const { initElastic } = require("./init-elastic");
+const { deleteBack } = require("./delete-service");
 const rimraf = require("./rimraf");
 const status = require("./status");
 const config = require("./config");
@@ -81,6 +82,18 @@ program
   .description("Echo computed configuration")
   .action(() => {
     console.log(JSON.stringify(config, null, 2));
+  });
+
+program
+  .command("delete-back")
+  .description("Delete some amount of days in the past")
+  .option(
+    "-d, --days <number>",
+    "Days back to delete logs (does not include today)",
+  )
+  .option("-t, --only-today", "Only delete exactly today")
+  .action(cmd => {
+    return deleteBack(cmd);
   });
 
 program.parse(process.argv);

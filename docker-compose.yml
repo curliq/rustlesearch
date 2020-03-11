@@ -1,0 +1,24 @@
+version: '3'
+services:
+  node-scraper:
+    build: ./scraper
+    environment:
+      - ELASTIC_ENABLE=true
+      - FILE_WRITER_DIRECTORY=/workspace/data
+      - PUID=1000
+      - PGID=100
+    volumes:
+      - ./orl:/workspace/data
+    network_mode: host
+    restart: unless-stopped
+  rustlesearch:
+    build: ./go-api
+    environment:
+      - VIP_ENV=production
+      - VIP_PATHS_ORL=/orl
+    # ports:
+    #   - ${VIP_SERVER_PORT:-3000}:${VIP_SERVER_PORT:-3000}
+    volumes:
+      - ${HOST_ORL_PATH:-./orl}:/orl
+    network_mode: host
+    restart: unless-stopped

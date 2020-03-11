@@ -26,9 +26,7 @@ module.exports = confic({
     get months() {
       return join(this.data, "months");
     },
-    get orl() {
-      return join(this.data, "orl");
-    },
+    orl: "../orl",
     get downloadCache() {
       return join(this.cache, "download_cache.txt");
     },

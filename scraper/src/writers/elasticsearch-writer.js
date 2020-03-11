@@ -3,6 +3,7 @@ const dayjs = require("dayjs");
 
 const utc = require("dayjs/plugin/utc");
 const { Client } = require("@elastic/elasticsearch");
+const initElastic = require("../init-elastic");
 
 dayjs.extend(utc);
 
@@ -19,11 +20,11 @@ const capitalise = string => string.charAt(0).toUpperCase() + string.slice(1).to
 
 class ElasticsearchWriter {
   constructor(config) {
-    this.config = config;
+    this.elasticConfig = config.elastic;
     this.esClient = new Client({
-      node: config.elastic.url,
+      node: this.elasticConfig.url,
     });
-    this.messageStream = buildElasticStream(this.esClient, config.elastic);
+    this.messageStream = buildElasticStream(this.esClient, this.elasticConfig);
   }
 
   write({ channel, text, ts, username }) {
@@ -35,6 +36,10 @@ class ElasticsearchWriter {
         .format("YYYY-MM-DDTHH:mm:ss[.000Z]"),
       username: username.toLowerCase(),
     });
+  }
+
+  async setup() {
+    await initElastic(this.elasticConfig);
   }
 }
 module.exports = ElasticsearchWriter;
