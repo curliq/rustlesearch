@@ -3,12 +3,14 @@ const confic = require("confic");
 module.exports = confic(
   {
     elastic: {
+      enable: true,
       url: "http://localhost:9200",
       index: "rustlesearch",
       bulkSize: 2000,
       pipeline: "rustlesearch-pipeline",
     },
     fileWriter: {
+      enable: true,
       directory: "data/orl",
     },
     chatClient: {

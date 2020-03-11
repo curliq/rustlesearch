@@ -10,11 +10,11 @@ const { syncChannelsCron } = require("./cron-jobs");
 let client = null;
 
 const main = async () => {
-  const elasticsearchWriter = new ElasticsearchWriter(config);
-  const fileWriter = new FileWriter(config);
+  const elasticsearchWriter = config.elastic.enable && new ElasticsearchWriter(config);
+  const fileWriter = config.fileWriter.enable && new FileWriter(config);
   await fileWriter.setup();
 
-  client = new SuperClient(config, [elasticsearchWriter, fileWriter]);
+  client = new SuperClient(config, [elasticsearchWriter, fileWriter].filter(Boolean));
   await client.syncChannels();
   syncChannelsCron(client).start();
 
