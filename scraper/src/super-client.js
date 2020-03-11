@@ -3,12 +3,12 @@ const superagent = require("superagent");
 
 class SuperClient {
   constructor(config, writers) {
-    this.config = config;
+    this.chatClientConfig = config.chatClient;
     this.writers = writers;
     this.chatClient = new ChatClient({
-      maxChannelCountPerConnection: config.chatClient.maxChannels,
+      maxChannelCountPerConnection: this.chatClientConfig.maxChannels,
       connectionRateLimits: {
-        parallelConnections: config.chatClient.maxConnections,
+        parallelConnections: this.chatClientConfig.maxConnections,
       },
     });
     this.initializeListeners();
