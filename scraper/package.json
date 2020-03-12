@@ -4,6 +4,7 @@
   "description": "Scrapes/downloads/indexes stuff",
   "scripts": {
     "start": "node -r dotenv/config src/index.js",
+    "cli": "node -r dotenv/config src/cli/index.js",
     "lint": "eslint \"./src/**/*.js\""
   },
   "main": "src/index.js",
@@ -21,12 +22,13 @@
   "dependencies": {
     "@elastic/elasticsearch": "^7.6.0",
     "confic": "^0.1.3",
-    "cron": "^1.8.2",
     "dank-twitch-irc": "^3.0.7",
     "dayjs": "^1.8.21",
+    "elastic-builder": "^2.6.0",
     "etl": "git+https://github.com/johnpyp/node-etl.git",
     "express": "^4.17.1",
     "fs-extra": "^8.1.0",
+    "node-cron": "^2.0.3",
     "superagent": "^5.2.2",
     "ws": "^7.2.3"
   }
