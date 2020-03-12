@@ -1,14 +1,14 @@
 const { ChatClient } = require("dank-twitch-irc");
 const superagent = require("superagent");
 
-class SuperClient {
-  constructor(config, writers) {
-    this.chatClientConfig = config.chatClient;
+class TwitchScraper {
+  constructor({ twitchScraper }, writers) {
+    this.config = twitchScraper;
     this.writers = writers;
     this.chatClient = new ChatClient({
-      maxChannelCountPerConnection: this.chatClientConfig.maxChannels,
+      maxChannelCountPerConnection: this.config.maxChannels,
       connectionRateLimits: {
-        parallelConnections: this.chatClientConfig.maxConnections,
+        parallelConnections: this.config.maxConnections,
       },
     });
     this.initializeListeners();
@@ -69,4 +69,4 @@ class SuperClient {
     });
   }
 }
-module.exports = SuperClient;
+module.exports = TwitchScraper;

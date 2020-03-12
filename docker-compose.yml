@@ -5,8 +5,8 @@ services:
     environment:
       - ELASTIC_ENABLE=true
       - FILE_WRITER_DIRECTORY=/workspace/data
-      - PUID=1000
-      - PGID=100
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-100}
     volumes:
       - ./orl:/workspace/data
     network_mode: host

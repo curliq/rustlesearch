@@ -13,9 +13,14 @@ module.exports = confic(
       enable: true,
       directory: "data/orl",
     },
-    chatClient: {
+    twitchScraper: {
+      enable: true,
       maxChannels: 200, // Maximum channels per individual connection
       maxConnections: 20, // Maximum parallel connections, not sure what this really means tho
+    },
+    dggScraper: {
+      enable: true,
+      url: "wss://www.destiny.gg/ws",
     },
     port: 3000,
   },
