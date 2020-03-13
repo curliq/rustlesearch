@@ -22,8 +22,9 @@ module.exports = async elasticConfig => {
         number_of_shards: 1,
 
         refresh_interval: "60s",
-        "sort.field": "ts",
-        "sort.order": "desc",
+        "sort.field": ["ts", "ts"],
+        "sort.order": ["desc", "asc"],
+        codec: "best_compression",
       },
     },
     name: "rustlesearch-template",

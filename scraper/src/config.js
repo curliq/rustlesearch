@@ -1,16 +1,18 @@
 const confic = require("confic");
 
-module.exports = confic(
+const config = confic(
   {
     elastic: {
-      enable: true,
+      writerEnabled: true,
       url: "http://localhost:9200",
       index: "rustlesearch",
       bulkSize: 2000,
       pipeline: "rustlesearch-pipeline",
+      maxCount: 10000,
+      size: 200,
     },
     fileWriter: {
-      enable: true,
+      writerEnabled: true,
       directory: "data/orl",
     },
     twitchScraper: {
@@ -22,7 +24,19 @@ module.exports = confic(
       enable: true,
       url: "wss://www.destiny.gg/ws",
     },
+    downloadService: {
+      monthsPath: "data/months",
+    },
+    cliApi: {
+      port: 4000,
+    },
+    cache: {
+      downloadCachePath: "data/download-cache.txt",
+      indexCachePath: "data/index-cache.txt",
+    },
     port: 3000,
   },
   { inspect: true },
 );
+
+module.exports = config;

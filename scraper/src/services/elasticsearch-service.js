@@ -1,66 +1,66 @@
-const etl = require("etl");
-const esb = require("elastic-builder"); // the builder
+const esb = require("elastic-builder");
 const { Client } = require("@elastic/elasticsearch");
-const { dayjs } = require("../util");
+const ElasticsearchWriter = require("./writers/elasticsearch-writer");
 
 const initElastic = require("../init-elastic");
 
-const buildElasticStream = (esClient, { bulkSize, index, pipeline }) =>
-  etl.collect(bulkSize).pipe(
-    etl.elastic.index(esClient, index, null, {
-      concurrency: 10,
-      pipeline,
-      pushErrors: true,
-    }),
-  );
-
-const capitalise = string => string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-
+/** Contains abstractions for interfacing with elasticsearch */
 class ElasticsearchService {
+  /**
+   * Create new ElasticsearchService
+   *
+   * @param {Object} config Main config object
+   */
   constructor(config) {
-    this.elasticConfig = config.elastic;
+    this.config = config.elastic;
     this.esClient = new Client({
-      node: this.elasticConfig.url,
+      node: this.config.url,
     });
-    this.messageStream = buildElasticStream(this.esClient, this.elasticConfig);
   }
 
   async setup() {
-    await initElastic(this.elasticConfig);
+    await initElastic(this.config);
+    if (this.config.writerEnabled) {
+      this.writer = await ElasticsearchWriter.build(this.config);
+    } else {
+      this.writer = null;
+    }
   }
 
+  /*
+   * Construct new ElasticsearchWriter and initializes it
+   *
+   * @param {Object} config Main config object
+   */
   static async build(...args) {
     const instance = new ElasticsearchService(...args);
     await instance.setup();
     return instance;
   }
 
-  write({ channel, text, ts, username }) {
-    this.messageStream.write({
-      channel: capitalise(channel),
-      text,
-      ts: dayjs(ts)
-        .utc()
-        .format("YYYY-MM-DDTHH:mm:ss[.000Z]"),
-      username: username.toLowerCase(),
-    });
-  }
-
-  static generalQueryBuilder({ start, end, channel, username }) {
+  static generalQueryBuilder({ start, end, channel, username }, advanced = false) {
     let qry = esb.boolQuery();
-    if (start && end) {
-      qry = qry.filter(
-        esb
-          .RangeQuery("ts")
-          .gte(start.format("YYYY-MM-DD"))
-          .lte(end.format("YYYY-MM-DD")),
-      );
+    if (start || end) {
+      let rangeQuery = esb.RangeQuery("ts");
+      if (start) {
+        rangeQuery = rangeQuery.gte(start.format("YYYY-MM-DD"));
+      }
+      if (end) {
+        rangeQuery = rangeQuery.lte(end.format("YYYY-MM-DD"));
+      }
+      qry = qry.filter(rangeQuery);
     }
     if (channel) {
-      qry = qry.filter(esb.termsQuery("channel", channel));
+      const channelQuery = advanced
+        ? esb.simpleQueryStringQuery(channel).field("channel")
+        : esb.termsQuery("channel", channel);
+      qry = qry.filter(channelQuery);
     }
     if (username) {
-      qry = qry.filter(esb.termsQuery("username", username));
+      const usernameQuery = advanced
+        ? esb.simpleQueryStringQuery(username).field("username")
+        : esb.termsQuery("username", username);
+      qry = qry.filter(usernameQuery);
     }
     const requestBody = esb.requestBodySearch().query(qry);
     return requestBody;
@@ -74,32 +74,61 @@ class ElasticsearchService {
       username,
     });
     await this.esClient.deleteByQuery({
-      index: this.elasticConfig.index,
+      index: `${this.config.index}-*`,
+      body: query.toJSON(),
+    });
+  }
+
+  async deleteOneDay({ day, channel, username } = {}) {
+    const query = ElasticsearchService.generalQueryBuilder({
+      start: day,
+      end: day,
+      channel,
+      username,
+    });
+    await this.esClient.deleteByQuery({
+      index: `${this.config.index}-${day.format("YYYY-MM-[01]")}`,
       body: query.toJSON(),
     });
   }
 
   async search({ start, end, channel, username }) {
-    let qry = esb.boolQuery();
-    if (start && end) {
-      qry = qry.filter(
-        esb
-          .RangeQuery("ts")
-          .gte(start.format("YYYY-MM-DD"))
-          .lte(end.format("YYYY-MM-DD")),
-      );
-    }
-    if (channel) {
-      qry = qry.filter(esb.simpleQueryStringQuery(channel).field("channel"));
-    }
-    if (username) {
-      qry = qry.filter(esb.simpleQueryStringQuery(username).field("username"));
-    }
-    const query = esb.requestBodySearch().query(qry);
-    await this.esClient.search({
-      index: `${this.elasticConfig.index}-*`,
-      body: query.sort(esb.sort("ts", "desc")).toJSON(),
+    const query = ElasticsearchService.generalQueryBuilder(
+      {
+        start,
+        end,
+        channel,
+        username,
+      },
+      true,
+    )
+      .sort(esb.sort("ts", "desc"))
+      .size(this.config.size);
+
+    const res = await this.esClient.search({
+      index: `${this.config.index}-*`,
+      body: query.toJSON(),
     });
+    return res;
+  }
+
+  async count({ start, end, channel, username }) {
+    const query = ElasticsearchService.generalQueryBuilder(
+      {
+        start,
+        end,
+        channel,
+        username,
+      },
+      true,
+    );
+
+    const res = await this.esClient.count({
+      index: `${this.config.index}-*`,
+      body: query.toJSON(),
+      terminate_after: this.config.maxCount,
+    });
+    return res;
   }
 }
 module.exports = ElasticsearchService;

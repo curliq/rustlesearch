@@ -68,5 +68,15 @@ class TwitchScraper {
       this.chatClient.part(channel);
     });
   }
+
+  async setup() {
+    await this.syncChannels();
+  }
+
+  static async build(...args) {
+    const instance = new TwitchScraper(...args);
+    await instance.setup();
+    return instance;
+  }
 }
 module.exports = TwitchScraper;

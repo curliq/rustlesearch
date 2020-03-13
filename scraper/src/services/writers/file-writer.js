@@ -1,11 +1,7 @@
 const fs = require("fs-extra");
-const path = require("path");
-const dayjs = require("dayjs");
-const utc = require("dayjs/plugin/utc");
+const { join } = require("path");
 
-dayjs.extend(utc);
-
-const capitalise = string => string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+const { normalizeMessage } = require("../../util");
 
 class FileWriter {
   constructor(config) {
@@ -13,28 +9,40 @@ class FileWriter {
     this.streamMap = new Map();
   }
 
+  async setup() {
+    console.log("dir", this.config.directory);
+    await fs.ensureDir(this.config.directory);
+  }
+
+  static async build(...args) {
+    const instance = new FileWriter(...args);
+    await instance.setup();
+    return instance;
+  }
+
   getFileWriteStream(channel, day) {
-    const filePath = path.join(
-      this.config.fileWriter.directory,
-      `${channel}::${day.format("YYYY-MM-DD")}.txt`,
-    );
-    if (this.streamMap.has(filePath)) {
-      return this.streamMap.get(filePath);
+    const filepath = join(this.config.directory, `${channel}::${day.format("YYYY-MM-DD")}.txt`);
+    if (this.streamMap.has(filepath)) {
+      return this.streamMap.get(filepath);
     }
-    this.streamMap.set(filePath, fs.createWriteStream(filePath, { flags: "a" }));
-    return this.streamMap.get(filePath);
+    const writeStream = fs.createWriteStream(filepath, { flags: "a", encoding: "utf8" });
+    this.streamMap.set(filepath, writeStream);
+    return this.streamMap.get(filepath);
   }
 
   write({ channel, text, ts, username }) {
-    const day = dayjs(ts).utc();
-    const formattedDate = day.format("YYYY-MM-DD HH:mm:ss");
-    this.getFileWriteStream(capitalise(channel), day).write(
-      `[${formattedDate} UTC] ${username.toLowerCase()}: ${text}\n`,
+    const { normMsg, day } = normalizeMessage(
+      {
+        channel,
+        text,
+        ts,
+        username,
+      },
+      "YYYY-MM-DD HH:mm:ss",
     );
-  }
-
-  async setup() {
-    await fs.ensureDir(this.config.fileWriter.directory);
+    this.getFileWriteStream(normMsg.channel, day).write(
+      `[${normMsg.ts} UTC] ${normMsg.username}: ${normMsg.text}\n`,
+    );
   }
 }
 

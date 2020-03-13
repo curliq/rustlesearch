@@ -1,30 +1,33 @@
 const config = require("./config");
-const TwitchScraper = require("./scrapers/twitch-scraper");
-const DggScraper = require("./scrapers/dgg-scraper");
-const ElasticsearchWriter = require("./writers/elasticsearch-writer");
-const FileWriter = require("./writers/file-writer");
-const { syncChannelsCron } = require("./cron-jobs");
+const TwitchScraper = require("./services/scrapers/twitch-scraper");
+const DggScraper = require("./services/scrapers/dgg-scraper");
+const ElasticsearchService = require("./services/elasticsearch-service");
+const CacheService = require("./services/cache-service");
+const FileService = require("./services/file-service");
+const DownloadService = require("./services/download-service");
+const cliApi = require("./apis/cli-api/index");
 
 const main = async () => {
-  const elasticsearchWriter = config.elastic.enable && new ElasticsearchWriter(config);
-  if (elasticsearchWriter) {
-    await elasticsearchWriter.setup();
-  }
-  const fileWriter = config.fileWriter.enable && new FileWriter(config);
-  const writers = [elasticsearchWriter, fileWriter].filter(Boolean);
-  if (fileWriter) {
-    await fileWriter.setup();
-  }
+  const cacheService = await CacheService.build(config);
+  const elasticsearchService = await ElasticsearchService.build(config);
+  const fileService = await FileService.build(config);
+  const downloadService = await DownloadService.build(config, fileService, cacheService);
+  const writers = [elasticsearchService.writer, fileService.writer].filter(Boolean);
   if (config.dggScraper.enable) {
     // eslint-disable-next-line no-unused-vars
     const dggScraper = new DggScraper(config, writers);
   }
   if (config.twitchScraper.enable) {
-    const twitchScraper = new TwitchScraper(config, writers);
-    await twitchScraper.syncChannels();
-    syncChannelsCron(twitchScraper).start();
+    const twitchScraper = await TwitchScraper.build(config, writers);
     console.log(twitchScraper.chatClient.joinedChannels);
+    downloadService.getMonths([...twitchScraper.chatClient.joinedChannels]);
   }
+  cliApi(config, {
+    cacheService,
+    downloadService,
+    fileService,
+    elasticsearchService,
+  });
 };
 
 main();
