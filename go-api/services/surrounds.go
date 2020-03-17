@@ -24,7 +24,7 @@ func DoSurroundsQuery(q models.SurroundsQuery) (models.SurroundsResponse, error)
 	orlPath := c.GetString("paths.orl")
 
 	channel := strings.Title(strings.ToLower(q.Channel))
-	path := fmt.Sprintf("%s/%s::%s.txt", orlPath, channel, date)
+	path := fmt.Sprintf("%s/%s::%s.txt.zz", orlPath, channel, date)
 	data, err := readFlate(filepath.Clean(path))
 
 	if err != nil {
