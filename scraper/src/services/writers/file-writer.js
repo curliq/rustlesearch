@@ -5,13 +5,15 @@ const { normalizeMessage } = require("../../util");
 
 class FileWriter {
   constructor(config) {
+    this.dir = config.fileWriter.directory;
+
     this.config = config;
     this.streamMap = new Map();
   }
 
   async setup() {
-    console.log("dir", this.config.directory);
-    await fs.ensureDir(this.config.directory);
+    console.log("dir", this.dir);
+    await fs.ensureDir(this.dir);
   }
 
   static async build(...args) {
@@ -21,7 +23,7 @@ class FileWriter {
   }
 
   getFileWriteStream(channel, day) {
-    const filepath = join(this.config.directory, `${channel}::${day.format("YYYY-MM-DD")}.txt`);
+    const filepath = join(this.dir, `${channel}::${day.format("YYYY-MM-DD")}.txt`);
     if (this.streamMap.has(filepath)) {
       return this.streamMap.get(filepath);
     }

@@ -1,12 +1,10 @@
 const { Client } = require("@elastic/elasticsearch");
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-module.exports = async elasticConfig => {
+module.exports = elasticConfig => async () => {
   const client = new Client({
     node: elasticConfig.url,
   });
-  client.indices.putTemplate({
+  await client.indices.putTemplate({
     body: {
       index_patterns: `${elasticConfig.index}*`,
       mappings: {
@@ -20,8 +18,7 @@ module.exports = async elasticConfig => {
       settings: {
         number_of_replicas: 0,
         number_of_shards: 1,
-
-        refresh_interval: "60s",
+        refresh_interval: "1s",
         "sort.field": ["ts", "ts"],
         "sort.order": ["desc", "asc"],
         codec: "best_compression",
@@ -30,7 +27,7 @@ module.exports = async elasticConfig => {
     name: "rustlesearch-template",
   });
 
-  client.ingest.putPipeline({
+  await client.ingest.putPipeline({
     body: {
       description: "monthly date-time index naming",
       processors: [
@@ -51,5 +48,4 @@ module.exports = async elasticConfig => {
     },
     id: "rustlesearch-pipeline",
   });
-  await sleep(500);
 };

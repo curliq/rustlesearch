@@ -1,40 +1,56 @@
 const confic = require("confic");
 
 const config = confic(
+  // {
+  //   elastic: {
+  //     writerEnabled: true,
+  //     url: "http://localhost:9200",
+  //     index: "rustlesearch",
+  //     bulkSize: 2000,
+  //     pipeline: "rustlesearch-pipeline",
+  //     maxCount: 10000,
+  //     size: 200,
+  //   },
+  //   fileWriter: {
+  //     writerEnabled: true,
+  //     directory: "data/orl",
+  //   },
+  //   twitchScraper: {
+  //     enable: true,
+  //     maxChannels: 200, // Maximum channels per individual connection
+  //     maxConnections: 20, // Maximum parallel connections, not sure what this really means tho
+  //   },
+  //   dggScraper: {
+  //     enable: true,
+  //     url: "wss://www.destiny.gg/ws",
+  //   },
+  //   downloadService: {
+  //     channelsUrl: "https://overrustlelogs.net/api/v1/channels.json",
+  //     monthsPath: "data/months",
+  //   },
+  //   cliApi: {
+  //     port: 4000,
+  //   },
+  //   cache: {
+  //     downloadCachePath: "data/download-cache.txt",
+  //     indexCachePath: "data/index-cache.txt",
+  //   },
+  //   port: 3000,
+  // },
   {
     elastic: {
-      writerEnabled: true,
-      url: "http://localhost:9200",
       index: "rustlesearch",
-      bulkSize: 2000,
       pipeline: "rustlesearch-pipeline",
-      maxCount: 10000,
-      size: 200,
+      bulkSize: 4000,
+      url: "http://localhost:9200",
     },
-    fileWriter: {
-      writerEnabled: true,
-      directory: "data/orl",
+    fileService: {
+      dir: "data",
+      orlDir: "data/orl",
     },
-    twitchScraper: {
-      enable: true,
-      maxChannels: 200, // Maximum channels per individual connection
-      maxConnections: 20, // Maximum parallel connections, not sure what this really means tho
+    integration: {
+      concurrentIndex: 10,
     },
-    dggScraper: {
-      enable: true,
-      url: "wss://www.destiny.gg/ws",
-    },
-    downloadService: {
-      monthsPath: "data/months",
-    },
-    cliApi: {
-      port: 4000,
-    },
-    cache: {
-      downloadCachePath: "data/download-cache.txt",
-      indexCachePath: "data/index-cache.txt",
-    },
-    port: 3000,
   },
   { inspect: true },
 );

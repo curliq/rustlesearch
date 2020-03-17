@@ -1,112 +1,112 @@
-const fs = require("fs-extra");
 const superagent = require("superagent");
-const { join } = require("path");
-const { createDeflate } = require("zlib");
-const { finished, Readable } = require("stream");
-const { promisify } = require("util");
-const Bluebird = require("bluebird");
-const { dayjs, capitalise, getDayRangeList } = require("../util");
 
-const finishedAsync = promisify(finished);
+const buildLogUrl = ({ channel, day }) =>
+  `https://overrustlelogs.net/${channel} chatlog/${day.format(`MMMM YYYY/YYYY-MM-DD`)}.txt`;
+const buildMonthsUrl = channel => `https://overrustlelogs.net/api/v1/${channel}/months.json`;
 
-class DownloadService {
-  constructor(config, fileService, cacheService) {
-    this.config = config.downloadService;
-    this.fileService = fileService;
-    this.cacheService = cacheService;
-    this.monthsMap = new Map();
-  }
+const downloadLog = ({ channel, day }) =>
+  superagent.get(buildLogUrl({ channel, day })).then(res => res.text);
+const downloadMonths = channel => superagent.get(buildMonthsUrl(channel)).then(res => res.body);
 
-  static async build(...args) {
-    const instance = new DownloadService(...args);
-    return instance;
-  }
+module.exports = () => {
+  return {
+    buildMonthsUrl,
+    buildLogUrl,
+    downloadLog,
+    downloadMonths,
+  };
+};
+// const FileWriter = require("./writers/file-writer");
 
-  async cachedGet(path, url) {
-    const pathExists = await fs.pathExists(path);
+// class FileService {
+//   constructor(config) {
+//     this.dir = config.fileWriter.directory;
+//     this.writerEnabled = config.fileWriter.writerEnabled;
 
-    if (!pathExists) {
-      try {
-        const { text: res } = await superagent.get(url);
-        await fs.outputFile(path, res);
-      } catch (error) {
-        return null;
-      }
-    }
+//     this.config = config;
+//     this.fileEnding = ".zz";
+//   }
 
-    return fs.readFile(path);
-  }
+//   async setup() {
+//     if (this.writerEnabled) {
+//       this.writer = await FileWriter.build(this.config);
+//     } else {
+//       this.writer = null;
+//     }
+//   }
 
-  async downloadLog(channel, day) {
-    console.log("---------");
-    const filepath = await this.fileService.getFilepathSmart(channel, day);
-    console.log("Searched path: ", filepath);
-    const { path, filename } = await this.fileService.getFilepathNaive(channel, day);
-    console.log("Presumptive path: ", path);
-    const isPossibleDate = day.isSameOrAfter(this.monthsMap.get(channel));
-    console.log("Is a possible date: ", isPossibleDate);
-    if (!filepath && !this.cacheService.downloadCached(filename) && isPossibleDate) {
-      const timeStringComponent = day.format(`MMMM yyyy/yyyy-MM-dd`);
-      try {
-        const { text: res } = await superagent.get(
-          `https://overrustlelogs.net/${channel} chatlog/${timeStringComponent}.txt`,
-        );
-        const s = new Readable();
-        s.push(res);
-        s.push(null);
-        const writeStream = fs.createWriteStream(path);
-        const encoder = createDeflate();
-        await finishedAsync(s.pipe(encoder).pipe(writeStream));
-        console.log(`Downloaded: ${filename}...`);
-      } catch (e) {
-        this.cacheService.writeDownload(filename);
-        console.log(`Cached: ${filename}...`);
-        /* handle error */
-      }
-    }
-  }
+//   static async build(...args) {
+//     const instance = new FileService(...args);
+//     await instance.setup();
+//     return instance;
+//   }
 
-  async downloadLogsDaysBack(daysBack) {
-    const endDate = dayjs()
-      .subtract(1, "d")
-      .utc();
-    const startDate = endDate.subtract(daysBack, "d");
-    const dateRange = getDayRangeList(startDate, endDate);
-    console.log(dateRange);
-    console.log("Date range length:", dateRange.length);
-    const channels = await this.fetchChannels();
-    console.log("Channels count: ", channels);
-    for (const day of dateRange) {
-      Bluebird.map(
-        channels,
-        channel => {
-          return this.downloadLog(channel, day);
-        },
-        { concurrency: 5 },
-      );
-    }
-  }
+//   async logExists(channel, day) {
+//     const { path } = this.getFilepathNaive(channel, day);
+//     const fileExists = await fs.pathExists(path);
+//     if (fileExists) {
+//       return true;
+//     }
+//     const compressedFileExists = await fs.pathExists(`${path}${this.fileEnding}`);
+//     if (compressedFileExists) {
+//       return true;
+//     }
+//     return false;
+//   }
 
-  async fetchChannels() {
-    const { body: baseChannels } = await superagent.get(
-      "https://overrustlelogs.net/api/v1/channels.json",
-    );
-    return baseChannels.map(capitalise);
-  }
+//   async readLog(filename) {
+//     const filepath = join(this.dir, filename);
+//     const fileExists = await fs.pathExists(filepath);
+//     if (fileExists) {
+//       return fs.readFile(filepath);
+//     }
+//     const compressedFileExists = await fs.pathExists(`${filepath}${this.fileEnding}`);
+//     if (compressedFileExists) {
+//       const decoder = zlib.createInflate();
 
-  async getMonths() {
-    const channels = await this.fetchChannels();
-    const promises = channels.map(async channel => {
-      const contents = await this.cachedGet(
-        `${this.config.monthsPath}/${channel}.json`,
-        `https://overrustlelogs.net/api/v1/${channel}/months.json`,
-      );
-      const parsed = JSON.parse(contents);
-      const minDate = dayjs(parsed[parsed.length - 1]);
-      this.monthsMap.set(channel, minDate);
-    });
-    Promise.all(promises);
-  }
-}
+//       const stream = fs.createReadStream(filepath).pipe(decoder);
+//       return getStream(stream);
+//     }
+//     return null;
+//   }
 
-module.exports = DownloadService;
+//   async listFiles() {
+//     const dirExists = await fs.pathExists(this.dir);
+//     if (dirExists) {
+//       return fs.readdir(this.dir);
+//     }
+//     return [];
+//   }
+
+//   getFilepathNaive(channel, day) {
+//     const filename = `${channel}::${day.format("YYYY-MM-DD")}.txt`;
+//     return {
+//       filename,
+//       path: join(this.dir, filename),
+//     };
+//   }
+
+//   async compressFile(filepath) {
+//     if (!filepath.endsWith(this.fileEnding)) {
+//       const encoder = zlib.createDeflate();
+//       const readStream = fs.createReadStream(filepath);
+//       const writeStream = fs.createWriteStream(`${filepath}${this.fileEnding}`);
+//       await pipe(readStream, encoder, writeStream);
+//       return `${filepath}${this.fileEnding}`;
+//     }
+//     return filepath;
+//   }
+
+//   async compressAllLogs() {
+//     const filepaths = await this.listFiles();
+//     const uncompressedFiles = filepaths.filter(filename => {
+//       return !filename.endsWith(this.fileEnding);
+//     });
+//     const promises = uncompressedFiles.map(FileService.compressFile);
+//     return Promise.all(promises);
+//   }
+
+//   get orlDir() {
+//     return this.dir;
+//   }
+// }

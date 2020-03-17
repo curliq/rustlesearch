@@ -1,116 +1,125 @@
+const nanomemoize = require("nano-memoize");
 const fs = require("fs-extra");
-const dayjs = require("dayjs");
-const getStream = require("get-stream");
 const { join } = require("path");
-const zlib = require("zlib");
-const { pipeline } = require("stream");
 const { promisify } = require("util");
+const R = require("ramda");
+const zlib = require("zlib");
+const { normalizeMessage, capitalise } = require("../util");
 
-const pipe = promisify(pipeline);
-const utc = require("dayjs/plugin/utc");
-const FileWriter = require("./writers/file-writer");
+const deflate = promisify(zlib.deflate);
+const inflate = promisify(zlib.inflate);
 
-dayjs.extend(utc);
-
-class FileService {
-  constructor(config) {
-    this.config = config.fileWriter;
-    this.fileEnding = ".zz";
-  }
-
-  async setup() {
-    if (this.config.writerEnabled) {
-      this.writer = await FileWriter.build(this.config);
-    } else {
-      this.writer = null;
+module.exports = cfg => {
+  const safeRead = async (path, ...args) => {
+    try {
+      const text = await fs.readFile(path, ...args);
+      return text;
+    } catch (e) {
+      await fs.ensureFile(path);
+      return safeRead(path, ...args);
     }
-  }
+  };
+  const safeWrite = fs.outputFile;
+  const safeWriteStream = async (path, ...args) => {
+    await fs.ensureFile(path);
+    return fs.createWriteStream(path, ...args);
+  };
+  const memoWriteAppendStream = nanomemoize(path =>
+    safeWriteStream(path, { flags: "a", encoding: "utf8" }),
+  );
+  const getLogFilename = ({ channel, day }) =>
+    `${capitalise(channel)}::${day.format("YYYY-MM-DD")}.txt`;
+  const jsonExt = path => `${path}.json`;
+  const deflateExt = path => `${path}.zz`;
+  const join2 = R.curryN(2, join);
+  const join3 = R.curryN(3, join);
+  const utf8Read = v => safeRead(v, "utf8");
+  const messageToLogString = msg => {
+    const { normMsg } = normalizeMessage(msg, "YYYY-MM-DD HH:mm:ss");
+    return `[${normMsg.ts} UTC] ${normMsg.username}: ${normMsg.text}`;
+  };
 
-  static async build(...args) {
-    const instance = new FileService(...args);
-    await instance.setup();
-    return instance;
-  }
+  const compressedRead = R.pipe(fs.readFile, R.andThen(inflate), R.andThen(R.toString));
 
-  async logExists(filename) {
-    const filepath = join(this.config.directory, filename);
-    const fileExists = await fs.pathExists(filepath);
-    if (fileExists) {
-      return true;
-    }
-    const compressedFileExists = await fs.pathExists(`${filepath}${this.fileEnding}`);
-    if (compressedFileExists) {
-      return true;
-    }
-    return false;
-  }
+  const compressedLogPath = R.pipe(getLogFilename, deflateExt, join2(cfg.fileService.orlDir));
+  const compressedLogExists = R.pipe(compressedLogPath, fs.pathExists);
+  const compressedLogRead = R.pipe(compressedLogPath, compressedRead);
+  const compressedLogWrite = async (logInfo, data) =>
+    safeWrite(compressedLogPath(logInfo), await deflate(data));
 
-  async readLog(filename) {
-    const filepath = join(this.config.directory, filename);
-    const fileExists = await fs.pathExists(filepath);
-    if (fileExists) {
-      return fs.readFile(filepath);
-    }
-    const compressedFileExists = await fs.pathExists(`${filepath}${this.fileEnding}`);
-    if (compressedFileExists) {
-      const decoder = zlib.createInflate();
+  const uncompressedLogPath = R.pipe(getLogFilename, join2(cfg.fileService.orlDir));
+  const uncompressedLogExists = R.pipe(uncompressedLogPath, fs.pathExists);
+  const uncompressedLogRead = R.pipe(compressedLogPath, utf8Read);
+  const uncompressedLogWrite = (logInfo, data) => safeWrite(compressedLogPath(logInfo), data);
 
-      const stream = fs.createReadStream(filepath).pipe(decoder);
-      return getStream(stream);
-    }
-    return null;
-  }
+  const uncompressedLogWriteStream = ({ channel, day }) => {
+    const path = uncompressedLogPath({ channel: capitalise(channel), day });
+    return memoWriteAppendStream(path);
+  };
 
-  async listFiles() {
-    const dirExists = await fs.pathExists(this.config.directory);
-    if (dirExists) {
-      return fs.readdir(this.config.directory);
-    }
-    return [];
-  }
-
-  getFilepathNaive(channel, day) {
-    const filename = `${channel}::${day.format("YYYY-MM-DD")}.txt`;
-    return {
-      filename,
-      path: join(this.config.directory, filename),
-    };
-  }
-
-  async getFilepathSmart(channel, day) {
-    const { path: naive } = this.getFilepathNaive(channel, day);
-    if (await fs.pathExists(naive)) {
-      return naive;
-    }
-    if (await fs.pathExists(`${naive}.zz`)) {
-      return `${naive}.zz`;
-    }
-    return null;
-  }
-
-  async compressFile(filepath) {
-    if (!filepath.endsWith(this.fileEnding)) {
-      const encoder = zlib.createDeflate();
-      const readStream = fs.createReadStream(filepath);
-      const writeStream = fs.createWriteStream(`${filepath}${this.fileEnding}`);
-      await pipe(readStream, encoder, writeStream);
-      return `${filepath}${this.fileEnding}`;
-    }
-    return filepath;
-  }
-
-  async compressAllLogs() {
-    const filepaths = await this.listFiles();
-    const uncompressedFiles = filepaths.filter(filename => {
-      return !filename.endsWith(this.fileEnding);
+  const messageWrite = async msg => {
+    const stream = await uncompressedLogWriteStream({ channel: msg.channel, day: msg.ts });
+    return new Promise(resolve => {
+      stream.write(`${messageToLogString(msg)}\n`, () => {
+        resolve();
+      });
     });
-    const promises = uncompressedFiles.map(FileService.compressFile);
-    return Promise.all(promises);
-  }
+  };
+  const monthsPath = R.pipe(jsonExt, join3(cfg.fileService.dir, "months"));
+  const monthsExists = R.pipe(monthsPath, fs.pathExists);
+  const monthsRead = R.pipe(monthsPath, utf8Read);
+  const monthsWrite = async (channel, data) => fs.outputFile(monthsPath(channel), data);
 
-  get orlDir() {
-    return this.config.directory;
-  }
-}
+  const downloadCachePath = `${cfg.fileService.dir}/download-cache.txt`;
+  const downloadCacheRead = () => utf8Read(downloadCachePath);
 
-module.exports = FileService;
+  const downloadCacheWrite = async logInfo => {
+    const stream = await memoWriteAppendStream(downloadCachePath);
+    return new Promise(resolve => {
+      stream.write(`${getLogFilename(logInfo)}\n`, () => {
+        resolve();
+      });
+    });
+  };
+  const indexCachePath = `${cfg.fileService.dir}/index-cache.txt`;
+  const indexCacheRead = () => utf8Read(indexCachePath);
+
+  const indexCacheWrite = async logInfo => {
+    const stream = await memoWriteAppendStream(indexCachePath);
+    return new Promise(resolve => {
+      stream.write(`${getLogFilename(logInfo)}\n`, () => {
+        resolve();
+      });
+    });
+  };
+  const anywhereLogExists = async v =>
+    (await Promise.all([compressedLogExists(v), uncompressedLogExists(v)])).includes(true);
+
+  return {
+    getLogFilename,
+    jsonExt,
+    deflateExt,
+    utf8Read,
+    compressedRead,
+    messageToLogString,
+    compressedLogPath,
+    compressedLogExists,
+    compressedLogRead,
+    compressedLogWrite,
+    uncompressedLogPath,
+    uncompressedLogExists,
+    uncompressedLogRead,
+    uncompressedLogWrite,
+    uncompressedLogWriteStream,
+    messageWrite,
+    monthsPath,
+    monthsExists,
+    monthsRead,
+    monthsWrite,
+    downloadCacheRead,
+    downloadCacheWrite,
+    indexCacheRead,
+    indexCacheWrite,
+    anywhereLogExists,
+  };
+};

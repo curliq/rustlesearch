@@ -20,7 +20,7 @@ const dateFromMonths = months => DateTime.fromFormat(last(months), "LLLL yyyy");
 const toPathAndUrl = ({ channel: { channel, startDate }, date }) => {
   if (startDate < date) {
     return [
-      `${config.paths.orl}/${channel}::${fileDateFormat(date)}.txt`,
+      `${config.paths.orl}/${channel}::${fileDateFormat(date)}.txt.zz`,
       `${baseUrl}/${channel} chatlog/${fullDateFormat(date)}.txt`,
     ];
   }
