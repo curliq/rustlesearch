@@ -38,10 +38,10 @@ const indexPathsToMessages = co(function* indexPathsToMessages(filePath) {
     .pipe(decoder)
     .pipe(etl.split())
     .pipe(etl.map(line => lineToMessageWithBlacklist(line, channel)))
-    .pipe(etl.collect(config.index.bulkSize))
+    .pipe(etl.collect(config.index.bulkSize * 6))
     .pipe(
       etl.elastic.index(client, config.elastic.index, null, {
-        concurrency: 5,
+        concurrency: 5 * 6,
         pipeline: "rustlesearch-pipeline",
         pushErrors: true,
       }),

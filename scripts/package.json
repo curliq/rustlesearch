@@ -43,7 +43,7 @@
     ]
   },
   "dependencies": {
-    "@elastic/elasticsearch": "7.6.0",
+    "@elastic/elasticsearch": "7.6.1",
     "bluebird": "3.7.2",
     "cli-table3": "0.5.1",
     "commander": "4.1.1",

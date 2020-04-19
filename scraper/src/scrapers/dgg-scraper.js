@@ -8,17 +8,14 @@ class DggScraper {
     this.initializeListeners();
   }
 
-  sendToWriters(data, shouldConsole) {
-    this.writers.forEach(writer => {
+  sendToWriters(data) {
+    this.writers.forEach((writer) => {
       writer.write(data);
     });
-    if (shouldConsole) {
-      console.log(data);
-    }
   }
 
   initializeListeners() {
-    this.ws.on("message", data => {
+    this.ws.on("message", (data) => {
       const split = data.indexOf(" ");
       const type = data.slice(0, split);
       const msg = JSON.parse(data.slice(split + 1));

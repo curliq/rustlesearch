@@ -1,21 +1,22 @@
 const { ChatClient } = require("dank-twitch-irc");
-const superagent = require("superagent");
+// const superagent = require("superagent");
+const fs = require("fs-extra");
 
 class TwitchScraper {
-  constructor({ twitchScraper }, writers) {
-    this.config = twitchScraper;
+  constructor(cfg, writers) {
+    this.cfg = cfg;
     this.writers = writers;
     this.chatClient = new ChatClient({
-      maxChannelCountPerConnection: this.config.maxChannels,
+      maxChannelCountPerConnection: this.cfg.twitchScraper.maxChannels,
       connectionRateLimits: {
-        parallelConnections: this.config.maxConnections,
+        parallelConnections: this.cfg.twitchScraper.maxConnections,
       },
     });
     this.initializeListeners();
   }
 
   sendToWriters(data, shouldConsole) {
-    this.writers.forEach(writer => {
+    this.writers.forEach((writer) => {
       writer.write(data);
     });
     if (shouldConsole) {
@@ -25,12 +26,12 @@ class TwitchScraper {
 
   initializeListeners() {
     this.chatClient.on("ready", () => console.log("Successfully connected to chat"));
-    this.chatClient.on("close", error => {
+    this.chatClient.on("close", (error) => {
       if (error != null) {
         console.error("Client closed due to error", error);
       }
     });
-    this.chatClient.on("PRIVMSG", msg => {
+    this.chatClient.on("PRIVMSG", (msg) => {
       this.sendToWriters({
         channel: msg.channelName,
         username: msg.displayName,
@@ -39,7 +40,7 @@ class TwitchScraper {
       });
     });
 
-    this.chatClient.on("USERNOTICE", msg => {
+    this.chatClient.on("USERNOTICE", (msg) => {
       let messageString = msg.systemMessage;
       if (msg.isSub() || msg.isResub() || msg.isSubgift() || msg.isAnonSubgift()) {
         if (msg.messageText != null) {
@@ -56,27 +57,19 @@ class TwitchScraper {
   }
 
   async syncChannels() {
-    const { body: baseChannels } = await superagent.get(
-      "https://overrustlelogs.net/api/v1/channels.json",
-    );
-    const channels = baseChannels.map(str => str.toLowerCase());
+    const baseChannels = await fs.readJson(this.cfg.paths.channels);
+    const channels = baseChannels.map((str) => str.toLowerCase());
     await this.chatClient.joinAll(channels);
 
     const copiedSet = new Set(this.chatClient.joinedChannels);
-    channels.forEach(channel => copiedSet.delete(channel));
-    Array.from(copiedSet).forEach(channel => {
+    channels.forEach((channel) => copiedSet.delete(channel));
+    Array.from(copiedSet).forEach((channel) => {
       this.chatClient.part(channel);
     });
   }
 
   async setup() {
     await this.syncChannels();
-  }
-
-  static async build(...args) {
-    const instance = new TwitchScraper(...args);
-    await instance.setup();
-    return instance;
   }
 }
 module.exports = TwitchScraper;

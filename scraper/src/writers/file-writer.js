@@ -1,25 +1,19 @@
 const fs = require("fs-extra");
 const { join } = require("path");
 
-const { normalizeMessage } = require("../../util");
+const TransformService = require("../transform-service");
 
 class FileWriter {
-  constructor(config) {
-    this.dir = config.fileWriter.directory;
+  constructor(cfg) {
+    this.dir = cfg.paths.orl;
 
-    this.config = config;
+    this.cfg = cfg;
     this.streamMap = new Map();
   }
 
   async setup() {
     console.log("dir", this.dir);
     await fs.ensureDir(this.dir);
-  }
-
-  static async build(...args) {
-    const instance = new FileWriter(...args);
-    await instance.setup();
-    return instance;
   }
 
   getFileWriteStream(channel, day) {
@@ -33,18 +27,8 @@ class FileWriter {
   }
 
   write({ channel, text, ts, username }) {
-    const { normMsg, day } = normalizeMessage(
-      {
-        channel,
-        text,
-        ts,
-        username,
-      },
-      "YYYY-MM-DD HH:mm:ss",
-    );
-    this.getFileWriteStream(normMsg.channel, day).write(
-      `[${normMsg.ts} UTC] ${normMsg.username}: ${normMsg.text}\n`,
-    );
+    const msg = TransformService.toMessage({ channel, text, ts, username });
+    this.getFileWriteStream(msg.channel, msg.ts).write(`${TransformService.msgToLine(msg)}\n`);
   }
 }
 

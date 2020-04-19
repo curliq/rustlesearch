@@ -2,11 +2,12 @@ const program = require("commander");
 const { download } = require("./download_service");
 const { indexToElastic } = require("./index_service");
 const { initElastic } = require("./init-elastic");
+const countLines = require("./count-lines");
 const { deleteBack } = require("./delete-service");
 const rimraf = require("./rimraf");
 const status = require("./status");
 const config = require("./config");
-const cleanIndex = require("./index_service/clean-index.js");
+// const cleanIndex = require("./index_service/clean-index.js");
 
 program.version("0.1.0", "-v, --version", "Output the current version");
 const myParseInt = v => parseInt(v, 10);
@@ -70,12 +71,12 @@ program
     return rimraf(cmd);
   });
 
-program
-  .command("clean-index")
-  .description("Clean index cache by checking Elasticsearch")
-  .action(() => {
-    return cleanIndex();
-  });
+// program
+//   .command("clean-index")
+//   .description("Clean index cache by checking Elasticsearch")
+//   .action(() => {
+//     return cleanIndex();
+//   });
 
 program
   .command("config")
@@ -94,6 +95,13 @@ program
   .option("-t, --only-today", "Only delete exactly today")
   .action(cmd => {
     return deleteBack(cmd);
+  });
+
+program
+  .command("count-lines <channel> <day>")
+  .description("Count lines in a compressed log")
+  .action(async (channel, day) => {
+    await countLines(channel, day);
   });
 
 program.parse(process.argv);

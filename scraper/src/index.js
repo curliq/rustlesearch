@@ -1,33 +1,30 @@
 const config = require("./config");
-const TwitchScraper = require("./services/scrapers/twitch-scraper");
-const DggScraper = require("./services/scrapers/dgg-scraper");
-const ElasticsearchService = require("./services/elasticsearch-service");
-const CacheService = require("./services/cache-service");
-const FileService = require("./services/file-service");
-const DownloadService = require("./services/download-service");
-const cliApi = require("./apis/cli-api/index");
+const TwitchScraper = require("./scrapers/twitch-scraper");
+const DggScraper = require("./scrapers/dgg-scraper");
+const ElasticsearchWriter = require("./writers/elasticsearch-writer");
+const FileWriter = require("./writers/file-writer");
 
 const main = async () => {
-  const cacheService = await CacheService.build(config);
-  const elasticsearchService = await ElasticsearchService.build(config);
-  const fileService = await FileService.build(config);
-  const downloadService = await DownloadService.build(config, fileService, cacheService);
-  const writers = [elasticsearchService.writer, fileService.writer].filter(Boolean);
+  const writers = [];
+  if (config.elastic.enable) {
+    const elasticsearchWriter = new ElasticsearchWriter(config);
+    await elasticsearchWriter.setup();
+    writers.push(elasticsearchWriter);
+  }
+  if (config.file.enable) {
+    const fileWriter = new FileWriter(config);
+    await fileWriter.setup();
+    writers.push(fileWriter);
+  }
   if (config.dggScraper.enable) {
     // eslint-disable-next-line no-unused-vars
-    const dggScraper = new DggScraper(config, writers);
+    const _dggScraper = new DggScraper(config, writers);
   }
   if (config.twitchScraper.enable) {
-    const twitchScraper = await TwitchScraper.build(config, writers);
+    const twitchScraper = new TwitchScraper(config, writers);
+    await twitchScraper.setup();
     console.log(twitchScraper.chatClient.joinedChannels);
-    downloadService.getMonths([...twitchScraper.chatClient.joinedChannels]);
   }
-  cliApi(config, {
-    cacheService,
-    downloadService,
-    fileService,
-    elasticsearchService,
-  });
 };
 
 main();

@@ -1,16 +1,18 @@
 version: '3'
 services:
-  # node-scraper:
-  #   build: ./scraper
-  #   environment:
-  #     - ELASTIC_ENABLE=true
-  #     - FILE_WRITER_DIRECTORY=/workspace/data
-  #     - PUID=${PUID:-1000}
-  #     - PGID=${PGID:-100}
-  #   volumes:
-  #     - ./orl:/workspace/data
-  #   network_mode: host
-  #   restart: unless-stopped
+  scraper:
+    build: ./scraper
+    environment:
+      - ELASTIC_ENABLE=true
+      - PATHS_ORL=/workspace/data
+      - PATHS_CHANNELS=/workspace/channels.json
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-100}
+    volumes:
+      - ./orl:/workspace/data
+      - ./channels.json:/workspace/channels.json
+    network_mode: host
+    restart: unless-stopped
   rustlesearch:
     build: ./go-api
     environment:

@@ -40,16 +40,25 @@ const config = confic(
   {
     elastic: {
       index: "rustlesearch",
-      pipeline: "rustlesearch-pipeline",
-      bulkSize: 4000,
+      bulkSize: 500,
       url: "http://localhost:9200",
+      enable: true,
     },
-    fileService: {
-      dir: "data",
-      orlDir: "data/orl",
+    file: {
+      enable: true,
     },
-    integration: {
-      concurrentIndex: 10,
+    paths: {
+      channels: "../channels.json",
+      orl: "data/orl",
+    },
+    twitchScraper: {
+      enable: true,
+      maxChannels: 200, // Maximum channels per individual connection
+      maxConnections: 20, // Maximum parallel connections, not sure what this really means tho
+    },
+    dggScraper: {
+      enable: true,
+      url: "wss://www.destiny.gg/ws",
     },
   },
   { inspect: true },

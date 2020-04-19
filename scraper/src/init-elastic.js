@@ -1,12 +1,7 @@
-const { Client } = require("@elastic/elasticsearch");
-
-module.exports = elasticConfig => async () => {
-  const client = new Client({
-    node: elasticConfig.url,
-  });
+module.exports = async (cfg, client) => {
   await client.indices.putTemplate({
     body: {
-      index_patterns: `${elasticConfig.index}*`,
+      index_patterns: `${cfg.elastic.index}*`,
       mappings: {
         properties: {
           channel: { type: "keyword" },
@@ -24,7 +19,7 @@ module.exports = elasticConfig => async () => {
         codec: "best_compression",
       },
     },
-    name: "rustlesearch-template",
+    name: `${cfg.elastic.index}-template`,
   });
 
   await client.ingest.putPipeline({
@@ -35,7 +30,7 @@ module.exports = elasticConfig => async () => {
           date_index_name: {
             date_rounding: "M",
             field: "ts",
-            index_name_prefix: `${elasticConfig.index}-`,
+            index_name_prefix: `${cfg.elastic.index}-`,
           },
         },
         {
@@ -46,6 +41,6 @@ module.exports = elasticConfig => async () => {
         },
       ],
     },
-    id: "rustlesearch-pipeline",
+    id: `${cfg.elastic.index}-pipeline`,
   });
 };
