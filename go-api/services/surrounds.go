@@ -3,7 +3,7 @@ package services
 import (
 	"bufio"
 	"bytes"
-	"compress/zlib"
+	"compress/gzip"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -24,8 +24,9 @@ func DoSurroundsQuery(q models.SurroundsQuery) (models.SurroundsResponse, error)
 	orlPath := c.GetString("paths.orl")
 
 	channel := strings.Title(strings.ToLower(q.Channel))
-	path := fmt.Sprintf("%s/%s::%s.txt.zz", orlPath, channel, date)
-	data, err := readFlate(filepath.Clean(path))
+	path := fmt.Sprintf("%s/%s::%s.txt", orlPath, channel, date)
+
+	data, err := readLog(findRealLogFile(filepath.Clean(path)))
 
 	if err != nil {
 
@@ -42,26 +43,33 @@ func DoSurroundsQuery(q models.SurroundsQuery) (models.SurroundsResponse, error)
 	}, nil
 }
 
-func readFlate(path string) ([]byte, error) {
+func readLog(path string) ([]byte, error) {
+	if strings.HasSuffix(path, ".txt") {
+		body, err := ioutil.ReadFile(path)
+		if err != nil {
+			return nil, err
+		}
+		return body, nil
+	}
 	log := logging.GetLogger()
 	var buf []byte
 	f, err := os.Open(path)
 
 	defer f.Close()
 	if err != nil {
-		log.Error().Caller().Err(err).Msg("readFlate error")
+		log.Error().Caller().Err(err).Msg("readLog error")
 		return nil, err
 	}
-	r, err := zlib.NewReader(f)
+	r, err := gzip.NewReader(f)
 
 	defer r.Close()
 	if err != nil {
-		log.Error().Caller().Err(err).Msg("readFlate error")
+		log.Error().Caller().Err(err).Msg("readLog error")
 		return nil, err
 	}
 	buf, err = ioutil.ReadAll(r)
 	if err != nil {
-		log.Error().Caller().Err(err).Msg("readFlate error")
+		log.Error().Caller().Err(err).Msg("readLog error")
 		return nil, err
 	}
 	return buf, nil
@@ -103,4 +111,18 @@ func getLines(reader *bufio.Reader, match string, n int) string {
 	}
 	fmt.Println(len(beforeBuffer), len(afterSlice), match)
 	return strings.Join(beforeBuffer, "") + strings.Join(afterSlice, "")
+}
+
+func findRealLogFile(filename string) string {
+	if fileExists(filename) {
+		return filename
+	}
+	return filename + ".gz"
+}
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
 }
