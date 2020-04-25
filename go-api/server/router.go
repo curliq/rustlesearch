@@ -24,7 +24,7 @@ func NewRouter(options Options) *gin.Engine {
 	r.GET("/surrounds", handlers.SurroundsController{}.Retrieve)
 
 	c := config.GetConfig() // Not sure what this is, exercise for you is to lift this up.
-	r.StaticFile("/channels.json", c.GetString("paths.channels"))
+	r.StaticFile("/channels.txt", c.GetString("paths.channels"))
 
 	return r
 }

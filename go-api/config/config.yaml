@@ -6,8 +6,8 @@ elastic:
   size: 100
   total_hits: 100000
 paths:
-  channels: channels.json
-  orl: ../scripts/data/orl
+  channels: channels.txt
+  orl: ../orl
 env: development
 log:
   level: debug

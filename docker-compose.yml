@@ -5,20 +5,22 @@ services:
     environment:
       - ELASTIC_ENABLE=true
       - PATHS_ORL=/workspace/data
-      - PATHS_CHANNELS=/workspace/channels.json
+      - PATHS_CHANNELS=/workspace/channels.txt
       - PUID=${PUID:-1000}
       - PGID=${PGID:-100}
     volumes:
-      - ./orl:/workspace/data
-      - ./channels.json:/workspace/channels.json
+      - ${HOST_ORL_PATH:-./orl}:/workspace/data
+      - ./channels.txt:/workspace/channels.txt
     network_mode: host
     restart: unless-stopped
   rustlesearch:
     build: ./go-api
     environment:
       - VIP_ENV=production
-      - VIP_PATHS_ORL=/orl
+      - VIP_PATHS_ORL=/workspace/data
+      - VIP_PATHS_CHANNELS=/workspace/channels.txt
     volumes:
-      - ${HOST_ORL_PATH:-./orl}:/orl
+      - ${HOST_ORL_PATH:-./orl}:/workspace/data
+      - ./channels.txt:/workspace/channels.txt
     network_mode: host
     restart: unless-stopped

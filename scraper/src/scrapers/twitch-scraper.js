@@ -57,8 +57,11 @@ class TwitchScraper {
   }
 
   async syncChannels() {
-    const baseChannels = await fs.readJson(this.cfg.paths.channels);
-    const channels = baseChannels.map((str) => str.toLowerCase());
+    const baseChannels = await fs.readFile(this.cfg.paths.channels, "utf8");
+    const channels = baseChannels
+      .trim()
+      .split("\n")
+      .map((str) => str.toLowerCase());
     await this.chatClient.joinAll(channels);
 
     const copiedSet = new Set(this.chatClient.joinedChannels);

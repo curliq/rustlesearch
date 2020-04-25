@@ -48,7 +48,7 @@ const config = confic(
       enable: true,
     },
     paths: {
-      channels: "../channels.json",
+      channels: "../channels.txt",
       orl: "data/orl",
     },
     twitchScraper: {

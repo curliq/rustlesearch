@@ -1,8 +1,10 @@
 FROM golang:1.13 AS build
 
-WORKDIR /app
-COPY . .
+RUN mkdir -p /workspace/app /workspace/data
+
+COPY . /workspace/app
+WORKDIR /workspace/app
 
 RUN go build
 
-CMD ["/app/go-api"]
+CMD ["/workspace/app/go-api"]

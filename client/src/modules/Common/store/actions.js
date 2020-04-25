@@ -5,8 +5,8 @@ const baseUrl = process.env.VUE_APP_API;
 export default {
   async getChannels({ commit }) {
     try {
-      const { body } = await superagent.get(`${baseUrl}/channels.json`);
-      commit("setChannels", body);
+      const { text } = await superagent.get(`${baseUrl}/channels.txt`);
+      commit("setChannels", text.trim().split("\n"));
     } catch (e) {
       console.log(e);
     }
