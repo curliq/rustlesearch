@@ -6,7 +6,6 @@ import TextHighlight from "vue-text-highlight";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import "vue-select/dist/vue-select.css";
 
 import "./modules/Common";
 import "./main.css";

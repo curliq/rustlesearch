@@ -6,8 +6,10 @@ const purgecss = require("@fullhuman/postcss-purgecss")({
     "./public/**/*.html",
     "./src/**/*.vue",
     "./src/**/*.css",
+    "./src/**/*.scss",
     "./src/**/*.js"
   ],
+  whitelistPatterns: [/^vs/],
   defaultExtractor: content => content.match(/[A-Za-z0-9-_:/]+/g) || []
 });
 
