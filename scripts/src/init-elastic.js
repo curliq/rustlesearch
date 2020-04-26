@@ -1,16 +1,14 @@
 /* eslint-disable camelcase */
+
 const { Client } = require("@elastic/elasticsearch");
-const config = require("./config");
-const { sleep } = require("../util");
 
-const client = new Client({
-  node: config.elastic.url,
-});
-
-const initElastic = async (refreshInterval = "60s") => {
-  client.indices.putTemplate({
+module.exports = async cfg => {
+  const client = new Client({
+    nodes: cfg.elastic.url,
+  });
+  await client.indices.putTemplate({
     body: {
-      index_patterns: `${config.elastic.index}*`,
+      index_patterns: `${cfg.elastic.index}*`,
       mappings: {
         properties: {
           channel: { type: "keyword" },
@@ -22,16 +20,16 @@ const initElastic = async (refreshInterval = "60s") => {
       settings: {
         number_of_replicas: 0,
         number_of_shards: 1,
-
-        refresh_interval: refreshInterval,
-        "sort.field": "ts",
-        "sort.order": "desc",
+        refresh_interval: "1s",
+        "sort.field": ["ts", "ts"],
+        "sort.order": ["desc", "asc"],
+        codec: "best_compression",
       },
     },
-    name: "rustlesearch-template",
+    name: `${cfg.elastic.index}-template`,
   });
 
-  client.ingest.putPipeline({
+  await client.ingest.putPipeline({
     body: {
       description: "monthly date-time index naming",
       processors: [
@@ -39,7 +37,7 @@ const initElastic = async (refreshInterval = "60s") => {
           date_index_name: {
             date_rounding: "M",
             field: "ts",
-            index_name_prefix: `${config.elastic.index}-`,
+            index_name_prefix: `${cfg.elastic.index}-`,
           },
         },
         {
@@ -50,11 +48,6 @@ const initElastic = async (refreshInterval = "60s") => {
         },
       ],
     },
-    id: "rustlesearch-pipeline",
+    id: `${cfg.elastic.index}-pipeline`,
   });
-  await sleep(500);
-};
-
-module.exports = {
-  initElastic,
 };

@@ -1,11 +1,10 @@
 const program = require("commander");
-const { download } = require("./download_service");
-const { indexToElastic } = require("./index_service");
-const { initElastic } = require("./init-elastic");
+const download = require("./download/download");
+const indexToElastic = require("./index-to-elastic/index-to-elastic");
+const initElastic = require("./init-elastic");
 const countLines = require("./count-lines");
-const { deleteBack } = require("./delete-service");
-const rimraf = require("./rimraf");
-const status = require("./status");
+// const rimraf = require("./rimraf");
+// const status = require("./status");
 const config = require("./config");
 // const cleanIndex = require("./index_service/clean-index.js");
 
@@ -28,7 +27,7 @@ program
   )
   .description("Downloads OverRustleLogs chat logs")
   .action(cmd => {
-    download(cmd.days, cmd.throttle);
+    download(config, cmd.days);
   });
 
 program
@@ -41,35 +40,35 @@ program
   )
   .description("Indexes chat logs into Elasticsearch")
   .action(async cmd => {
-    await initElastic();
+    await initElastic(config);
     indexToElastic(cmd.threads);
   });
 
-program
-  .command("status")
-  .description("Show status of various parts of Rustlesearch")
-  .action(() => status());
+// program
+//   .command("status")
+//   .description("Show status of various parts of Rustlesearch")
+//   .action(() => status());
 
 program
   .command("init")
   .description("Initialize index settings for Elasticsearch")
   .action(() => initElastic());
 
-program
-  .command("rimraf")
-  .description("Delete stuff monkaW")
-  .option("--download-cache", "Delete download_cache.txt file")
-  .option("--index-cache", "Delete index_cache.txt file")
-  .option("--discard-cache", "Delete discard_cache.txt file")
-  .option("--chat-logs", "Delete all ORL chat logs")
-  .option("--all", "Delete all possible files (reset)")
-  .action(cmd => {
-    if (!process.argv.slice(3).length) {
-      return cmd.outputHelp();
-    }
+// program
+//   .command("rimraf")
+//   .description("Delete stuff monkaW")
+//   .option("--download-cache", "Delete download_cache.txt file")
+//   .option("--index-cache", "Delete index_cache.txt file")
+//   .option("--discard-cache", "Delete discard_cache.txt file")
+//   .option("--chat-logs", "Delete all ORL chat logs")
+//   .option("--all", "Delete all possible files (reset)")
+//   .action(cmd => {
+//     if (!process.argv.slice(3).length) {
+//       return cmd.outputHelp();
+//     }
 
-    return rimraf(cmd);
-  });
+//     return rimraf(cmd);
+//   });
 
 // program
 //   .command("clean-index")
@@ -86,13 +85,8 @@ program
   });
 
 program
-  .command("delete-back")
-  .description("Delete some amount of days in the past")
-  .option(
-    "-d, --days <number>",
-    "Days back to delete logs (does not include today)",
-  )
-  .option("-t, --only-today", "Only delete exactly today")
+  .command("delete-logs <startDate> <endDate> [channels...]")
+  .description("Delete logs for channels and date ranges")
   .action(cmd => {
     return deleteBack(cmd);
   });

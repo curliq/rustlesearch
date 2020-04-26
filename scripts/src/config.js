@@ -1,5 +1,4 @@
 const confic = require("confic");
-const { join } = require("path");
 
 module.exports = confic({
   elastic: {
@@ -12,29 +11,13 @@ module.exports = confic({
   },
   index: {
     threads: 6,
-    bulkSize: 2000,
+    bulkSize: 8000,
   },
   paths: {
-    data: "data",
-    channels: "channels.json",
-    get cache() {
-      return join(this.data, "cache");
-    },
-    get blacklist() {
-      return join(this.cache, "blacklist.txt");
-    },
-    get months() {
-      return join(this.data, "months");
-    },
+    months: "data/months",
+    channels: "../channels.txt",
     orl: "../orl",
-    get downloadCache() {
-      return join(this.cache, "download_cache.txt");
-    },
-    get indexCache() {
-      return join(this.cache, "index_cache.txt");
-    },
-    get discardCache() {
-      return join(this.cache, "discard_cache.txt");
-    },
+    missingCache: "data/missing-cache.txt",
+    indexCache: "data/index-cache.txt",
   },
 });
