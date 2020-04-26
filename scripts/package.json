@@ -23,25 +23,6 @@
       "url": "https://ayaya.dev"
     }
   ],
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.js": [
-      "yarn lint --fix",
-      "git add"
-    ],
-    "*.json": [
-      "prettier --write",
-      "git add"
-    ],
-    "*.yml": [
-      "prettier --write",
-      "git add"
-    ]
-  },
   "dependencies": {
     "@elastic/elasticsearch": "7.6.1",
     "bluebird": "3.7.2",

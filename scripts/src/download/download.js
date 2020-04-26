@@ -21,6 +21,7 @@ const buildAppendMissing = async config => {
   });
   return line => missingStream.write(`${line}\n`);
 };
+const toComboStr = (day, channel) => `${channel}::${day.format("YYYY-MM-DD")}`;
 const buildDownloadLog = (config, missing, appendMissing) => async (
   channel,
   day,
@@ -52,7 +53,7 @@ const buildDownloadLog = (config, missing, appendMissing) => async (
 };
 const main = async (config, daysback) => {
   const channelsContent = await fs.readFile(config.paths.channels, "utf8");
-  const channels = new Set(channelsContent.trim().split("\n"));
+  const channels = channelsContent.trim().split("\n");
   const today = dayjs().utc();
 
   const dayList = _.range(1, daysback + 1).map(n => today.subtract(n, "d"));
@@ -61,12 +62,19 @@ const main = async (config, daysback) => {
   console.log(`${missing.size} in cache`);
   const appendMissing = await buildAppendMissing(config);
   const downloadLog = buildDownloadLog(config, missing, appendMissing);
-  for (const day of dayList) {
-    // eslint-disable-next-line no-await-in-loop
-    await pMap(channels, channel => downloadLog(capitalise(channel), day), {
+  const combos = dayList.flatMap(day =>
+    channels.map(channel => [day, channel]),
+  );
+  const toDownload = combos.filter(
+    ([day, channel]) => !missing.has(toComboStr(day, channel)),
+  );
+  await pMap(
+    toDownload,
+    ([day, channel]) => downloadLog(capitalise(channel), day),
+    {
       concurrency: 10,
-    });
-  }
+    },
+  );
   console.log(`Finished ${daysback} days back`);
 };
 
