@@ -1,6 +1,8 @@
 /* eslint-disable no-restricted-syntax */
 const _ = require("lodash");
 const pMap = require("p-map");
+const fg = require("fast-glob");
+const { parse } = require("path");
 const {
   dayjs,
   capitalise,
@@ -52,6 +54,10 @@ const buildDownloadLog = (config, missing, appendMissing) => async (
   if (!cached) console.log(str.green);
 };
 const main = async (config, daysback) => {
+  const files = await fg(`${config.paths.orl}/*.txt.gz`);
+  const filenames = new Set(
+    files.map(file => parse(file).base.replace(".txt.gz", "")),
+  );
   const channelsContent = await fs.readFile(config.paths.channels, "utf8");
   const channels = channelsContent.trim().split("\n");
   const today = dayjs().utc();
@@ -65,9 +71,10 @@ const main = async (config, daysback) => {
   const combos = dayList.flatMap(day =>
     channels.map(channel => [day, channel]),
   );
-  const toDownload = combos.filter(
-    ([day, channel]) => !missing.has(toComboStr(day, channel)),
-  );
+  const toDownload = combos.filter(([day, channel]) => {
+    const comboStr = toComboStr(day, channel);
+    return !missing.has(comboStr) && !filenames.has(comboStr);
+  });
   await pMap(
     toDownload,
     ([day, channel]) => downloadLog(capitalise(channel), day),
