@@ -92,6 +92,8 @@ expose({
       node: config.elastic.url,
     });
     await client.info();
-    await pMap(paths, buildIndexPath(client, indexCacheStream));
+    await pMap(paths, buildIndexPath(client, indexCacheStream), {
+      concurrency: 1,
+    });
   },
 });
