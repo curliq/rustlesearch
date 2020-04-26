@@ -4,7 +4,7 @@ module.exports = confic({
   elastic: {
     url: "http://localhost:9200",
     index: "rustlesearch",
-    bulkSize: 16000,
+    bulkSize: 64000,
   },
   download: {
     throttle: 500,

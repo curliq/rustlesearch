@@ -66,9 +66,18 @@ const buildIndexPath = (client, indexCacheStream) => async filePath => {
     .pipe(etl.collect(config.elastic.bulkSize))
     // .pipe(etl.map(msgs => bulkIndex(msgs)))
     .pipe(
+      etl.map(msgs => {
+        console.log(
+          msgs.length,
+          new TextEncoder().encode(JSON.stringify(msgs)).length,
+        );
+        return msgs;
+      }),
+    )
+    .pipe(
       etl.elastic.index(client, config.elastic.index, null, {
         pipeline: `${config.elastic.index}-pipeline`,
-        concurrency: 10,
+        concurrency: 2,
         pushErrors: true,
       }),
     )
