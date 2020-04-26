@@ -17,9 +17,9 @@ module.exports = async threads => {
   const pathsToIngest = allPaths.filter(
     file => !indexed.has(parse(file).base.replace(".txt.gz", "")),
   );
-  // const chunkLength = Math.ceil(pathsToIngest.length / threads);
-  // if (chunkLength < 1) return;
-  const chunkedPaths = _.chunk(pathsToIngest, 50);
+  const chunkLength = Math.ceil(pathsToIngest.length / threads);
+  if (chunkLength < 1) return;
+  const chunkedPaths = _.chunk(pathsToIngest, Math.min(50, chunkLength));
   if (chunkedPaths.length < 1) return;
 
   const pool = Pool(() => spawn(new Worker("./worker.js")), threads);
