@@ -21,6 +21,7 @@ const client = new Client({
 const bulkIndex = async msgs => {
   const { index } = config.elastic;
   const body = msgs.flatMap(doc => [{ index: { _index: index } }, doc]);
+  // console.log(msgs.length);
   await client.bulk({
     pipeline: `${index}-pipeline`,
     body,

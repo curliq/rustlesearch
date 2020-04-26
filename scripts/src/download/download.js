@@ -30,13 +30,13 @@ const buildDownloadLog = (config, months, missing, appendMissing) => async (
 ) => {
   const str = `${channel}::${day.format("YYYY-MM-DD")}`;
   if (missing.has(str)) return;
-  if (await fs.pathExists(`${config.paths.orl}/${str}.txt.gz`)) return;
 
   if (!months[channel]) {
     console.log("months don't exist");
     return;
   }
   if (dayjs(_.last(months[channel])).isAfter(day)) return;
+  if (await fs.pathExists(`${config.paths.orl}/${str}.txt.gz`)) return;
   const { success, cached } = await cachedCompressedDownload(
     `${baseUrl}/${channel} chatlog/${day.format("MMMM YYYY/YYYY-MM-DD")}.txt`,
     `${config.paths.orl}/${str}.txt.gz`,

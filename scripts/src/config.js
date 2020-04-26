@@ -4,6 +4,7 @@ module.exports = confic({
   elastic: {
     url: "http://localhost:9200",
     index: "rustlesearch",
+    bulkSize: 16000,
   },
   download: {
     throttle: 500,
@@ -11,7 +12,6 @@ module.exports = confic({
   },
   index: {
     threads: 6,
-    bulkSize: 8000,
   },
   paths: {
     months: "data/months",

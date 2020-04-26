@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { spawn, Worker, Pool } = require("threads");
+const { spawn, Worker, Thread } = require("threads");
 const fg = require("fast-glob");
 const { parse } = require("path");
 const config = require("../config");
@@ -20,16 +20,16 @@ module.exports = async threads => {
   const chunkLength = Math.ceil(pathsToIngest.length / threads);
   if (chunkLength < 1) return;
   const chunkedPaths = _.chunk(pathsToIngest, chunkLength);
-  const pool = Pool(() => spawn(new Worker("./worker.js")), threads);
 
-  chunkedPaths.forEach(pathsChunk =>
-    pool.queue(async worker => worker.index(pathsChunk)),
-  );
+  chunkedPaths.forEach(async pathsChunk => {
+    const worker = await spawn(new Worker("./worker"));
+    await worker.index(pathsChunk);
+    console.log(`Finished ${pathsChunk.length} logs`);
+    await Thread.terminate(worker);
+  });
   console.info({
     totalDaysIngested: indexed.size,
     totalDaysOfLogs: allPaths.length,
     totalDaysToIngest: pathsToIngest.length,
   });
-  await pool.completed();
-  await pool.terminate();
 };
