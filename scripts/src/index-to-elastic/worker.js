@@ -62,16 +62,15 @@ const indexPath = async filePath => {
   const name = base.replace(".txt.gz", "");
   const [channel] = name.split("::");
 
-  const raw = await fs.readFile(filePath);
-  const text = await gunzip(raw);
-  const lines = text
-    .toString()
-    .trim()
-    .split("\n");
+  const stream = etl.streamz();
 
-  await etl
-    .toStream(lines)
-    .pipe(etl.map(line => parseLineToMsg(channel, line)))
+  const raw = await fs.readFile(filePath);
+  stream.end(raw);
+  await stream
+    .pipe(zlib.createGunzip())
+    .pipe(etl.map(text => text.toString().trim()))
+    .pipe(etl.split())
+    .pipe(etl.map(line => parseLineToMsg(channel, line.text)))
     .pipe(etl.collect(config.elastic.bulkSize))
     .pipe(etl.map(msgs => bulkIndex(msgs)))
     .promise()
@@ -79,6 +78,7 @@ const indexPath = async filePath => {
       console.log(error);
       console.error({ error, message: "Elastic error" });
     });
+
   indexCacheStream.write(`${name}\n`);
   console.debug(`Indexed ${name}`.green);
 };
