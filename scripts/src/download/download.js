@@ -24,7 +24,7 @@ const buildAppendMissing = async config => {
   return line => missingStream.write(`${line}\n`);
 };
 const toComboStr = (day, channel) => `${channel}::${day.format("YYYY-MM-DD")}`;
-const buildDownloadLog = (config, missing, appendMissing) => async (
+const buildDownloadLog = (config, months, missing, appendMissing) => async (
   channel,
   day,
 ) => {
@@ -32,16 +32,11 @@ const buildDownloadLog = (config, missing, appendMissing) => async (
   if (missing.has(str)) return;
   if (await fs.pathExists(`${config.paths.orl}/${str}.txt.gz`)) return;
 
-  const months = await cachedFetch(
-    `${baseUrl}/api/v1/${channel}/months.json`,
-    `${config.paths.months}/${channel}.json`,
-    true,
-  );
-  if (!months) {
+  if (!months[channel]) {
     console.log("months don't exist");
     return;
   }
-  if (dayjs(_.last(months)).isAfter(day)) return;
+  if (dayjs(_.last(months[channel])).isAfter(day)) return;
   const { success, cached } = await cachedCompressedDownload(
     `${baseUrl}/${channel} chatlog/${day.format("MMMM YYYY/YYYY-MM-DD")}.txt`,
     `${config.paths.orl}/${str}.txt.gz`,
@@ -52,6 +47,18 @@ const buildDownloadLog = (config, missing, appendMissing) => async (
     return;
   }
   if (!cached) console.log(str.green);
+};
+const getMonths = async (config, channels) => {
+  const months = {};
+  for (const channel of channels) {
+    // eslint-disable-next-line no-await-in-loop
+    months[channel] = await cachedFetch(
+      `${baseUrl}/api/v1/${channel}/months.json`,
+      `${config.paths.months}/${channel}.json`,
+      true,
+    );
+  }
+  return months;
 };
 const main = async (config, daysback) => {
   const files = await fg(`${config.paths.orl}/*.txt.gz`);
@@ -67,7 +74,8 @@ const main = async (config, daysback) => {
   const missing = new Set(missingContents.trim().split("\n"));
   console.log(`${missing.size} in cache`);
   const appendMissing = await buildAppendMissing(config);
-  const downloadLog = buildDownloadLog(config, missing, appendMissing);
+  const months = await getMonths(config, channels);
+  const downloadLog = buildDownloadLog(config, months, missing, appendMissing);
   const combos = dayList.flatMap(day =>
     channels.map(channel => [day, channel]),
   );
@@ -75,6 +83,7 @@ const main = async (config, daysback) => {
     const comboStr = toComboStr(day, channel);
     return !missing.has(comboStr) && !filenames.has(comboStr);
   });
+  console.log(`${toDownload.length} to download`);
   await pMap(
     toDownload,
     ([day, channel]) => downloadLog(capitalise(channel), day),
