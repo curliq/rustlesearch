@@ -1,5 +1,5 @@
 const { parse } = require("path");
-const etl = require("etl");
+const etl = require("@johnpyp/etl");
 const pMap = require("p-map");
 const { Client } = require("@elastic/elasticsearch");
 const zlib = require("zlib");
@@ -57,14 +57,21 @@ const buildIndexPath = (client, indexCacheStream) => async filePath => {
 
   const raw = await fs.readFile(filePath);
   stream.end(raw);
-  const bulkIndex = buildBulkIndex(client);
+  // const bulkIndex = buildBulkIndex(client);
   await stream
     .pipe(zlib.createGunzip())
     .pipe(etl.map(text => text.toString().trim()))
     .pipe(etl.split())
     .pipe(etl.map(line => parseLineToMsg(channel, line.text)))
     .pipe(etl.collect(config.elastic.bulkSize))
-    .pipe(etl.map(msgs => bulkIndex(msgs)))
+    // .pipe(etl.map(msgs => bulkIndex(msgs)))
+    .pipe(
+      etl.elastic.index(client, config.elastic.index, null, {
+        pipeline: `${config.elastic.index}-pipeline`,
+        concurrency: 10,
+        pushErrors: true,
+      }),
+    )
     .promise()
     .catch(error => {
       console.log(error);
@@ -85,8 +92,6 @@ expose({
       node: config.elastic.url,
     });
     await client.info();
-    await pMap(paths, buildIndexPath(client, indexCacheStream), {
-      concurrency: 10,
-    });
+    await pMap(paths, buildIndexPath(client, indexCacheStream));
   },
 });
