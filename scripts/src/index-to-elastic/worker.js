@@ -4,21 +4,12 @@ const pMap = require("p-map");
 const { Client } = require("@elastic/elasticsearch");
 const zlib = require("zlib");
 const { expose } = require("threads/worker");
-const { promisify } = require("util");
 const config = require("../config");
 const { fs, capitalise } = require("../util");
 require("colors");
 
-const gunzip = promisify(zlib.gunzip);
-const indexCacheStream = fs.createWriteStream(config.paths.indexCache, {
-  flags: "a",
-});
-
-const client = new Client({
-  node: config.elastic.url,
-});
-
-const bulkIndex = async msgs => {
+const buildBulkIndex = client => async msgs => {
+  console.log(msgs.length);
   const { index } = config.elastic;
   const body = msgs.flatMap(doc => [{ index: { _index: index } }, doc]);
   // console.log(msgs.length);
@@ -57,7 +48,7 @@ const parseLineToMsg = (channel, line) => {
     text,
   };
 };
-const indexPath = async filePath => {
+const buildIndexPath = (client, indexCacheStream) => async filePath => {
   const { base } = parse(filePath);
   const name = base.replace(".txt.gz", "");
   const [channel] = name.split("::");
@@ -66,6 +57,7 @@ const indexPath = async filePath => {
 
   const raw = await fs.readFile(filePath);
   stream.end(raw);
+  const bulkIndex = buildBulkIndex(client);
   await stream
     .pipe(zlib.createGunzip())
     .pipe(etl.map(text => text.toString().trim()))
@@ -85,7 +77,16 @@ const indexPath = async filePath => {
 
 expose({
   index: async paths => {
+    const indexCacheStream = fs.createWriteStream(config.paths.indexCache, {
+      flags: "a",
+    });
+
+    const client = new Client({
+      node: config.elastic.url,
+    });
     await client.info();
-    await pMap(paths, indexPath, { concurrency: 10 });
+    await pMap(paths, buildIndexPath(client, indexCacheStream), {
+      concurrency: 10,
+    });
   },
 });
