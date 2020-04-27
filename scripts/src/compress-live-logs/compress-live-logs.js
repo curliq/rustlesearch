@@ -32,14 +32,14 @@ const buildCompressFile = (indexCacheStream, config) => async fname => {
     console.log(`Already exists ${name}`);
   }
 };
+const dateFromFname = fname => dayjs.utc(parse(fname).name.split("::")[1]);
 module.exports = async config => {
   const rawFnames = await fg(join(config.paths.orl, "*.txt"));
-  const today = dayjs().utc();
+  const today = dayjs()
+    .utc()
+    .startOf("day");
   const fnames = rawFnames.filter(
-    fname =>
-      !dayjs(parse(fname).name.split("::")[1])
-        .utc()
-        .isSameOrAfter(today),
+    fname => !dateFromFname(fname).isSameOrAfter(today),
   );
 
   const indexCacheStream = fs.createWriteStream(config.paths.indexCache, {
