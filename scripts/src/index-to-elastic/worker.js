@@ -8,17 +8,6 @@ const config = require("../config");
 const { fs, capitalise } = require("../util");
 require("colors");
 
-const buildBulkIndex = client => async msgs => {
-  console.log(msgs.length);
-  const { index } = config.elastic;
-  const body = msgs.flatMap(doc => [{ index: { _index: index } }, doc]);
-  // console.log(msgs.length);
-  await client.bulk({
-    pipeline: `${index}-pipeline`,
-    body,
-  });
-};
-
 const parseLineDateToISO = date => {
   const yyyy = date.slice(0, 4);
   const MM = date.slice(5, 7);

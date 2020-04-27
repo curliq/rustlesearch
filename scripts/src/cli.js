@@ -1,8 +1,10 @@
 const program = require("commander");
 const download = require("./download/download");
 const indexToElastic = require("./index-to-elastic/index-to-elastic");
+const compressLiveLogs = require("./compress-live-logs/compress-live-logs");
 const initElastic = require("./init-elastic");
 const countLines = require("./count-lines");
+const deleteScript = require("./delete/delete");
 // const rimraf = require("./rimraf");
 // const status = require("./status");
 const config = require("./config");
@@ -85,17 +87,31 @@ program
   });
 
 program
-  .command("delete-logs <startDate> <endDate> [channels...]")
+  .command("delete-logs [channels...]")
+  .requiredOption(
+    "-s, --start-date <string>",
+    "Start of date range to delete, e.g 2019-02-01",
+  )
+  .requiredOption(
+    "-e, --end-date <string>",
+    "End of date range to delete, e.g 2019-03-01",
+  )
   .description("Delete logs for channels and date ranges")
-  .action(cmd => {
-    return deleteBack(cmd);
+  .action(async (channels, cmd) => {
+    await deleteScript(config, cmd.startDate, cmd.endDate, channels);
   });
 
 program
   .command("count-lines <channel> <day>")
   .description("Count lines in a compressed log")
   .action(async (channel, day) => {
-    await countLines(channel, day);
+    await countLines(config, channel, day);
+  });
+program
+  .command("compress-live-logs")
+  .description("Compresses all live logs to .gz files")
+  .action(async () => {
+    await compressLiveLogs(config);
   });
 
 program.parse(process.argv);

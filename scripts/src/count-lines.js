@@ -2,14 +2,14 @@ const { promisify } = require("util");
 const { join } = require("path");
 const fs = require("fs-extra");
 const zlib = require("zlib");
-const { capitalise } = require("./util");
+const { capitalise, dayjs } = require("./util");
 
 const gunzip = promisify(zlib.gunzip);
 
 module.exports = async (config, channel, day) => {
   const filepath = join(
     config.paths.orl,
-    `${capitalise(channel)}::${day}.txt.gz`,
+    `${capitalise(channel)}::${dayjs.utc(day).format("YYYY-MM-DD")}.txt.gz`,
   );
   const fileExists = await fs.pathExists(filepath);
   if (!fileExists) {
