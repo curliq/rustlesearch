@@ -9,7 +9,7 @@ const {
   cachedFetch,
   cachedCompressedDownload,
   fs,
-} = require("../util");
+} = require("./util");
 
 require("colors");
 

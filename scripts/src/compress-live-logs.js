@@ -9,7 +9,7 @@ const { pipeline } = require("stream");
 const fs = require("fs-extra");
 const pMap = require("p-map");
 const { Confirm } = require("enquirer");
-const { dayjs } = require("../util");
+const { dayjs } = require("./util");
 
 const pipe = promisify(pipeline);
 

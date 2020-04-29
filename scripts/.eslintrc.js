@@ -8,5 +8,7 @@ module.exports = {
   extends: ["airbnb-base", "plugin:prettier/recommended"],
   rules: {
     "no-console": 0,
+    "no-restricted-syntax": 0,
+    "no-await-in-loop": 0,
   },
 };

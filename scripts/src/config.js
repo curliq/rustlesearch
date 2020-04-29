@@ -5,13 +5,10 @@ module.exports = confic({
     url: "http://localhost:9200",
     index: "rustlesearch",
     bulkSize: 64000,
+    threads: 6,
   },
   download: {
     throttle: 500,
-    days: 10,
-  },
-  index: {
-    threads: 6,
   },
   paths: {
     months: "data/months",

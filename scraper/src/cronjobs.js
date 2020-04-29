@@ -1,10 +1,11 @@
 const { CronJob } = require("cron");
+const { dayjs } = require("./util");
 
 module.exports = (state) => {
   const syncChannels = new CronJob(
     "*/1 * * * *",
     () => {
-      console.log("[Cron] Syncing twitch channels");
+      console.log(`[${dayjs.utc().toString()}] Syncing twitch channels`);
       state.twitchScraper.syncChannels();
     },
     null,

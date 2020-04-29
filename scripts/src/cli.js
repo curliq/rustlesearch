@@ -1,10 +1,10 @@
 const program = require("commander");
-const download = require("./download/download");
-const indexToElastic = require("./index-to-elastic/index-to-elastic");
-const compressLiveLogs = require("./compress-live-logs/compress-live-logs");
+const download = require("./download");
+const indexToElastic = require("./index-to-elastic");
+const compressLiveLogs = require("./compress-live-logs");
 const initElastic = require("./init-elastic");
 const countLines = require("./count-lines");
-const deleteScript = require("./delete/delete");
+const deleteScript = require("./delete");
 // const rimraf = require("./rimraf");
 // const status = require("./status");
 const config = require("./config");
@@ -15,11 +15,10 @@ const myParseInt = v => parseInt(v, 10);
 
 program
   .command("download")
-  .option(
+  .requiredOption(
     "-d, --days <number>",
     "Days back to download logs",
     myParseInt,
-    config.download.days,
   )
   .option(
     "-t, --throttle <number>",
@@ -38,7 +37,7 @@ program
     "-t, --threads <number>",
     "# of parallel worker threads to use",
     myParseInt,
-    config.index.threads,
+    config.elastic.threads,
   )
   .description("Indexes chat logs into Elasticsearch")
   .action(async cmd => {
@@ -54,7 +53,7 @@ program
 program
   .command("init")
   .description("Initialize index settings for Elasticsearch")
-  .action(() => initElastic());
+  .action(() => initElastic(config));
 
 // program
 //   .command("rimraf")
@@ -96,6 +95,7 @@ program
     "-e, --end-date <string>",
     "End of date range to delete, e.g 2019-03-01",
   )
+  .option("--no-cache", "Do not remove deleted items from index-cache")
   .description("Delete logs for channels and date ranges")
   .action(async (channels, cmd) => {
     await deleteScript(config, cmd.startDate, cmd.endDate, channels);

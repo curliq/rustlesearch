@@ -3,22 +3,17 @@ const { Client } = require("@elastic/elasticsearch");
 const esb = require("elastic-builder");
 const _ = require("lodash");
 const { Confirm } = require("enquirer");
-const { dayjs, sleep } = require("../util");
+const { dayjs, sleep, fs, getChannels } = require("./util");
 
 module.exports = async (cfg, start, end, channels) => {
-  let boolQuery = esb.boolQuery();
-  if (start || end) {
-    let rangeQuery = esb.rangeQuery("ts");
-    if (start) {
-      const startDate = dayjs.utc(start).format("YYYY-MM-DD");
-      rangeQuery = rangeQuery.gte(startDate);
-    }
-    if (end) {
-      const endDate = dayjs.utc(end).format("YYYY-MM-DD");
-      rangeQuery = rangeQuery.lte(endDate);
-    }
-    boolQuery = boolQuery.filter(rangeQuery);
-  }
+  const startDate = dayjs.utc(start).startOf("day");
+  const endDate = dayjs.utc(end).startOf("day");
+  let boolQuery = esb.boolQuery().filter(
+    esb
+      .rangeQuery("ts")
+      .gte(startDate.format("YYYY-MM-DD"))
+      .lte(endDate.format("YYYY-MM-DD")),
+  );
   if (channels.length > 0) {
     boolQuery = boolQuery.filter(
       esb.termsQuery("channel", _.castArray(channels)),
@@ -54,8 +49,29 @@ module.exports = async (cfg, start, end, channels) => {
         completed = body2.completed;
         console.log("completed: ", completed);
       }
+      const indexCache = await fs
+        .readFile(cfg.paths.indexCache, "utf8")
+        .then(txt => new Set(txt.trim().split("\n")));
+      const prevSize = indexCache.size;
+      const list = [];
+      let day = endDate;
+      const goodChannels =
+        channels.length > 0 ? _.castArray(channels) : await getChannels(cfg);
+      while (day.isSameOrAfter(startDate)) {
+        for (const channel of goodChannels) {
+          list.push(`${channel}::${day.format("YYYY-MM-DD")}`);
+        }
+        day = day.subtract(1, "d");
+      }
+
+      list.forEach(item => indexCache.delete(item));
+      console.log(indexCache.size, prevSize);
+      const indexToWrite = [...indexCache].join("\n");
+      await fs.writeFile(cfg.paths.indexCache, indexToWrite, {
+        encoding: "utf8",
+      });
     } catch (e) {
-      console.error(e.meta);
+      console.error(e);
     }
   }
 };

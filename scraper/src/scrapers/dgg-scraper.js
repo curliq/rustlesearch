@@ -1,10 +1,14 @@
+const ReconnectingWebSocket = require("reconnecting-websocket");
 const WebSocket = require("ws");
 
 class DggScraper {
   constructor({ dggScraper }, writers) {
     this.config = dggScraper;
     this.writers = writers;
-    this.ws = new WebSocket(this.config.url);
+    console.log(this.config.url);
+    this.ws = new ReconnectingWebSocket(this.config.url, [], {
+      WebSocket,
+    });
     this.initializeListeners();
   }
 
@@ -15,7 +19,7 @@ class DggScraper {
   }
 
   initializeListeners() {
-    this.ws.on("message", (data) => {
+    this.ws.addEventListener("message", ({ data }) => {
       const split = data.indexOf(" ");
       const type = data.slice(0, split);
       const msg = JSON.parse(data.slice(split + 1));

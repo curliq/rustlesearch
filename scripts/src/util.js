@@ -117,6 +117,8 @@ const cachedCompressedDownload = async (url, path) => {
   }
 };
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const getChannels = cfg =>
+  fs.readFile(cfg.paths.channels).then(channels => channels.trim().split("\n"));
 
 module.exports = {
   capitalise,
@@ -128,4 +130,5 @@ module.exports = {
   cachedFetch,
   cachedCompressedFetch,
   cachedCompressedDownload,
+  getChannels,
 };
