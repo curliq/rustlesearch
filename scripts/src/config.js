@@ -6,6 +6,7 @@ module.exports = confic({
     index: "rustlesearch",
     bulkSize: 64000,
     threads: 6,
+    enable: true,
   },
   download: {
     throttle: 500,
