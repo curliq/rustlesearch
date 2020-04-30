@@ -81,6 +81,7 @@ class DggScraper {
               "subscribed on Twitch!",
               "has resubscribed! Active for",
               "has resubscribed on Twitch! active",
+              "a Twitch subscription! active for",
             ];
             for (const subMsg of subMessages) {
               if (msg.data.includes(subMsg)) {
