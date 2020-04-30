@@ -75,6 +75,7 @@ class DggScraper {
         [
           R.equals("BROADCAST"),
           () => {
+            console.log("Broadcast:", msg.nick, msg.data);
             const subMessages = [
               "subscriber!",
               "subscribed on Twitch!",

@@ -3,9 +3,10 @@ const { Client } = require("@elastic/elasticsearch");
 const esb = require("elastic-builder");
 const _ = require("lodash");
 const { Confirm } = require("enquirer");
+const { join } = require("path");
 const { dayjs, sleep, fs, getChannels } = require("./util");
 
-module.exports = async (cfg, start, end, channels) => {
+module.exports = async (cfg, start, end, channels, removeLogs) => {
   const startDate = dayjs.utc(start).startOf("day");
   const endDate = dayjs.utc(end).startOf("day");
   let boolQuery = esb.boolQuery().filter(
@@ -31,23 +32,25 @@ module.exports = async (cfg, start, end, channels) => {
   // console.log(answer);
   if (answer) {
     try {
-      const { body } = await client.deleteByQuery({
-        index: `${cfg.elastic.index}-*`,
-        body: requestBody.toJSON(),
-        wait_for_completion: false,
-      });
-
-      const { task } = body;
-      let completed = false;
-
-      while (!completed) {
-        await sleep(2000);
-        const { body: body2 } = await client.tasks.get({
-          task_id: task,
+      if (cfg.elastic.enable) {
+        const { body } = await client.deleteByQuery({
+          index: `${cfg.elastic.index}-*`,
+          body: requestBody.toJSON(),
+          wait_for_completion: false,
         });
 
-        completed = body2.completed;
-        console.log("completed: ", completed);
+        const { task } = body;
+        let completed = false;
+
+        while (!completed) {
+          await sleep(2000);
+          const { body: body2 } = await client.tasks.get({
+            task_id: task,
+          });
+
+          completed = body2.completed;
+          console.log("completed: ", completed);
+        }
       }
       const indexCache = await fs
         .readFile(cfg.paths.indexCache, "utf8")
@@ -70,6 +73,17 @@ module.exports = async (cfg, start, end, channels) => {
       await fs.writeFile(cfg.paths.indexCache, indexToWrite, {
         encoding: "utf8",
       });
+      if (removeLogs) {
+        for (const combo of list) {
+          const path = join(cfg.paths.orl, `${combo}.txt`);
+          if (await fs.exists(`${path}.gz`)) {
+            await fs.remove(`${path}.gz`);
+          }
+          if (await fs.exists(path)) {
+            await fs.remove(path);
+          }
+        }
+      }
     } catch (e) {
       console.error(e);
     }

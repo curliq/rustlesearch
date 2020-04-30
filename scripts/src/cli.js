@@ -95,10 +95,17 @@ program
     "-e, --end-date <string>",
     "End of date range to delete, e.g 2019-03-01",
   )
+  .option("--remove-logs", "Remove log files")
   .option("--no-cache", "Do not remove deleted items from index-cache")
   .description("Delete logs for channels and date ranges")
   .action(async (channels, cmd) => {
-    await deleteScript(config, cmd.startDate, cmd.endDate, channels);
+    await deleteScript(
+      config,
+      cmd.startDate,
+      cmd.endDate,
+      channels,
+      cmd.removeLogs,
+    );
   });
 
 program
