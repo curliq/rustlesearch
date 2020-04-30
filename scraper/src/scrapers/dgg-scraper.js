@@ -79,12 +79,11 @@ class DggScraper {
             const subMessages = [
               "subscriber!",
               "subscribed on Twitch!",
-              "has resubscribed! Active for",
-              "has resubscribed on Twitch! active",
+              "has resubscribed",
               "a Twitch subscription! active for",
             ];
             for (const subMsg of subMessages) {
-              if (msg.data.includes(subMsg)) {
+              if (msg.data.toLowerCase().includes(subMsg.toLowerCase())) {
                 return {
                   channel: "destinygg",
                   username: "subscriber",
