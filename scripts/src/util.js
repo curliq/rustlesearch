@@ -7,6 +7,8 @@ const utc = require("dayjs/plugin/utc");
 const isSameOrAfter = require("dayjs/plugin/isSameOrAfter");
 const zlib = require("zlib");
 const { promisify } = require("util");
+const { parse, sep, join } = require("path");
+const _ = require("lodash");
 
 const gzip = promisify(zlib.gzip);
 const gunzip = promisify(zlib.gunzip);
@@ -122,6 +124,18 @@ const getChannels = cfg =>
     .readFile(cfg.paths.channels, "utf8")
     .then(channels => channels.trim().split("\n"));
 
+const pathToCombo = p => {
+  const channel = _.last(parse(p).dir.split(sep));
+  const date = parse(p)
+    .base.replace(".gz", "")
+    .replace(".txt", "");
+  return { channel, date: dayjs.utc(date) };
+};
+const comboToPath = ({ channel, date }, gz = false) => {
+  const ext = gz ? ".txt.gz" : ".txt";
+  return join(channel, `${date.format("YYYY-MM-DD")}${ext}`);
+};
+
 module.exports = {
   capitalise,
   co,
@@ -133,4 +147,6 @@ module.exports = {
   cachedCompressedFetch,
   cachedCompressedDownload,
   getChannels,
+  pathToCombo,
+  comboToPath,
 };
