@@ -41,5 +41,6 @@ The scripts utilize a set of caching files to make indexing and downloading resi
 
 ## Contributors
 - johnpyp
+- LinusRed
 - alg1142
 - mmacheerpuppy
