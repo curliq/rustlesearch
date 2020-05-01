@@ -6,9 +6,7 @@ With over 4.3 billion messages indexed, and millions more each day, this is the 
 
 ## How was Rustlesearch built?
 
-A project called [OverRustleLogs](https://overrustlelogs.net) has collected full chat logs for hundreds of channels over the past 5 years. This project is amazing, however chat logs are stored in plaintext and are difficult to filter and search to find exactly what you're looking for.
-
-Rustlesearch uses the logs provided by OverRustleLogs and indexes them into Elasticsearch to enable complex searching capabilities.
+Rustlesearch uses chat irc logs and indexes them into Elasticsearch to enable complex searching capabilities.
 
 Rustlesearch is built around Elasticsearch, using a few different tools.
 
