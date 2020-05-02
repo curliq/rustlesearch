@@ -1,12 +1,7 @@
 <template>
   <div class="flex flex-col px-3 py-4 rounded-sm shadow bg-gray-850">
     <div>
-      <div class="flex flex-row mb-5 lg:flex-row lg:items-center">
-        <base-dark-label class="flex-initial mr-2 text-lg"
-          >Search Options</base-dark-label
-        >
-        <div class="flex-1 text-sm text-gray-500">(one field required)</div>
-      </div>
+      <base-dark-label class="flex-initial mb-5 text-lg">Search Options</base-dark-label>
 
       <base-dark-input
         v-model="query.username"
@@ -17,7 +12,7 @@
       />
       <base-dark-input
         v-model="query.channel"
-        placeholder="Channel"
+        placeholder="Channel (Optional)"
         label="Channel"
         :items="channels"
         type="select"
@@ -25,7 +20,7 @@
       />
       <base-dark-input
         v-model="query.text"
-        placeholder="Text"
+        placeholder="Filter messages (Optional)"
         @keydown.enter="$emit('submit', query)"
       />
       <div class="h-px my-4 border-b border-gray-800" />
