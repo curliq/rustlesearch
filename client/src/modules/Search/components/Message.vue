@@ -1,9 +1,10 @@
 <template>
-  <tr class="text-gray-200 px-2">
-    <td class="text-gray-400 pl-1 pr-4 md:whitespace-no-wrap inline-block">
+  <tr class="px-2 text-gray-200">
+    <td class="inline-block pl-1 pr-4 text-gray-400 md:whitespace-no-wrap">
       <router-link
         :to="{ name: 'Surrounds', query: { channel, date: ts, username } }"
-        class="hover:border-accent border-gray-800 border px-2 mx-1 rounded-sm cursor-pointer select-none"
+        target="_blank"
+        class="px-2 mx-1 border border-gray-800 rounded-sm cursor-pointer select-none hover:border-accent"
         >&gt;</router-link
       >
       <span> {{ channel }}</span>
@@ -11,10 +12,10 @@
 
     <td class="pr-1">
       <div class="break-words-container">
-        <span class="text-gray-500 mr-1 block md:inline font-date text-sm">
+        <span class="block mr-1 text-sm text-gray-500 md:inline font-date">
           {{ date }}
         </span>
-        <span class="font-bold mr-1">{{ username }}: </span>
+        <span class="mr-1 font-bold">{{ username }}: </span>
 
         <span class="break-words">{{ text }}</span>
       </div>
