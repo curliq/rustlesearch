@@ -1,4 +1,3 @@
-const { parse } = require("path");
 const etl = require("@johnpyp/etl");
 const pMap = require("p-map");
 const { Client } = require("@elastic/elasticsearch");
@@ -37,23 +36,17 @@ const parseLineToMsg = (channel, line) => {
     text,
   };
 };
-const buildIndexPath = (client, indexCacheStream) => async filePath => {
-  const { base } = parse(filePath);
-  const name = base.replace(".txt.gz", "");
-  const [channel] = name.split("::");
-
+const buildIndexPath = (client, indexCacheStream) => async log => {
   const stream = etl.streamz();
 
-  const raw = await fs.readFile(filePath);
+  const raw = await fs.readFile(log.path);
   stream.end(raw);
-  // const bulkIndex = buildBulkIndex(client);
   await stream
     .pipe(zlib.createGunzip())
     .pipe(etl.map(text => text.toString().trim()))
     .pipe(etl.split())
-    .pipe(etl.map(line => parseLineToMsg(channel, line.text)))
+    .pipe(etl.map(line => parseLineToMsg(log.channel, line.text)))
     .pipe(etl.collect(config.elastic.bulkSize))
-    // .pipe(etl.map(msgs => bulkIndex(msgs)))
     .pipe(
       etl.map(msgs => {
         console.log("Bulk:", msgs.length);
@@ -73,12 +66,12 @@ const buildIndexPath = (client, indexCacheStream) => async filePath => {
       console.error({ error, message: "Elastic error" });
     });
 
-  indexCacheStream.write(`${name}\n`);
-  console.debug(`Indexed ${name}`.green);
+  indexCacheStream.write(`${log.combo}\n`);
+  console.debug(`Indexed ${log.combo}`.green);
 };
 
 expose({
-  index: async paths => {
+  index: async logs => {
     const indexCacheStream = fs.createWriteStream(config.paths.indexCache, {
       flags: "a",
     });
@@ -87,7 +80,7 @@ expose({
       node: config.elastic.url,
     });
     await client.info();
-    await pMap(paths, buildIndexPath(client, indexCacheStream), {
+    await pMap(logs, buildIndexPath(client, indexCacheStream), {
       concurrency: 1,
     });
   },

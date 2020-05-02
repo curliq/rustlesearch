@@ -10,12 +10,20 @@ const {
   cachedCompressedDownload,
   fs,
 } = require("./util");
+const config = require("./config");
 
 require("colors");
 
+const buildOrlFs = require("./orl-fs");
+
+const orlFs = buildOrlFs({
+  orl: config.paths.orl,
+  channelsPath: config.paths.channels,
+});
+
 const baseUrl = "https://overrustlelogs.net";
 
-const buildAppendMissing = async config => {
+const buildAppendMissing = async () => {
   await fs.ensureFile(config.paths.missingCache);
   const missingStream = fs.createWriteStream(config.paths.missingCache, {
     encoding: "utf8",
@@ -23,8 +31,7 @@ const buildAppendMissing = async config => {
   });
   return line => missingStream.write(`${line}\n`);
 };
-const toComboStr = (day, channel) => `${channel}::${day.format("YYYY-MM-DD")}`;
-const buildDownloadLog = (config, months, missing, appendMissing) => async (
+const buildDownloadLog = (months, missing, appendMissing) => async (
   channel,
   day,
 ) => {
@@ -48,7 +55,7 @@ const buildDownloadLog = (config, months, missing, appendMissing) => async (
   }
   if (!cached) console.log(str.green);
 };
-const getMonths = async (config, channels) => {
+const getMonths = async channels => {
   const months = {};
   for (const channel of channels) {
     // eslint-disable-next-line no-await-in-loop
@@ -60,28 +67,29 @@ const getMonths = async (config, channels) => {
   }
   return months;
 };
-const main = async (config, daysback) => {
-  const files = await fg(`${config.paths.orl}/*.txt.gz`);
-  const filenames = new Set(
-    files.map(file => parse(file).base.replace(".txt.gz", "")),
-  );
-  const channelsContent = await fs.readFile(config.paths.channels, "utf8");
-  const channels = channelsContent.trim().split("\n");
+const main = async daysback => {
+  const filecombos = await orlFs
+    .listCompressedLogs()
+    .then(logs => new Set(logs.map(x => x.combo)));
+  const channels = [...(await orlFs.fetchChannels())];
   const today = dayjs().utc();
 
   const dayList = _.range(1, daysback + 1).map(n => today.subtract(n, "d"));
   const missingContents = await fs.inputFile(config.paths.missingCache, "utf8");
   const missing = new Set(missingContents.trim().split("\n"));
   console.log(`${missing.size} in cache`);
-  const appendMissing = await buildAppendMissing(config);
-  const months = await getMonths(config, channels);
-  const downloadLog = buildDownloadLog(config, months, missing, appendMissing);
+  const appendMissing = await buildAppendMissing();
+  const months = await getMonths(channels);
+  const downloadLog = buildDownloadLog(months, missing, appendMissing);
   const combos = dayList.flatMap(day =>
     channels.map(channel => [day, channel]),
   );
   const toDownload = combos.filter(([day, channel]) => {
-    const comboStr = toComboStr(day, channel);
-    return !missing.has(comboStr) && !filenames.has(comboStr);
+    const comboStr = orlFs.buildComboString({
+      channel,
+      date: day.format("YYYY-MM-DD"),
+    });
+    return !missing.has(comboStr) && !filecombos.has(comboStr);
   });
   console.log(`${toDownload.length} to download`);
   await pMap(
